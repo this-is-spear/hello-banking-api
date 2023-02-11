@@ -142,4 +142,7 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
+### API Documentation ###
+/src/main/resources/static/docs/*
+
 # End of https://www.toptal.com/developers/gitignore/api/gradle,intellij+all,java

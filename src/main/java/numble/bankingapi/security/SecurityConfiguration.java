@@ -22,7 +22,8 @@ public class SecurityConfiguration {
     http
         .authorizeHttpRequests((authorize) -> authorize
             .requestMatchers("/hello").permitAll()
-            .anyRequest().denyAll()
+            .requestMatchers("/docs/**").permitAll()
+            .anyRequest().authenticated()
         )
         .httpBasic(withDefaults())
         .formLogin(withDefaults());
