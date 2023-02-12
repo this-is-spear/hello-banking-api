@@ -135,5 +135,6 @@ task copyDocument(type: Copy) {
 }
 
 build {
+    dependsOn check
     dependsOn copyDocument
 }
