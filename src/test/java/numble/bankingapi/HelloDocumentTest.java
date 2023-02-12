@@ -1,8 +1,8 @@
 package numble.bankingapi;
 
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,37 +23,37 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @AutoConfigureMockMvc
 class HelloDocumentTest {
 
-  @Autowired
-  MockMvc mockMvc;
+	@Autowired
+	MockMvc mockMvc;
 
-  @Test
-  void addExtension() throws Exception {
-    MockHttpServletRequestBuilder builder = RestDocumentationRequestBuilders
-        .get("/hello");
+	@Test
+	void addExtension() throws Exception {
+		MockHttpServletRequestBuilder builder = RestDocumentationRequestBuilders
+			.get("/hello");
 
-    mockMvc.perform(builder)
-        .andExpect(status().isOk())
-        .andDo(
-            document(
-                "hello",
-                getDocumentRequest(),
-                getDocumentResponse(),
-                pathParameters()
-            )
-        );
-  }
+		mockMvc.perform(builder)
+			.andExpect(status().isOk())
+			.andDo(
+				document(
+					"hello",
+					getDocumentRequest(),
+					getDocumentResponse(),
+					pathParameters()
+				)
+			);
+	}
 
-  private OperationRequestPreprocessor getDocumentRequest() {
-    return Preprocessors.preprocessRequest(
-        Preprocessors.modifyUris()
-            .scheme("http")
-            .host("127.0.0.1")
-            .port(8080),
-        Preprocessors.prettyPrint()
-    );
-  }
+	private OperationRequestPreprocessor getDocumentRequest() {
+		return Preprocessors.preprocessRequest(
+			Preprocessors.modifyUris()
+				.scheme("http")
+				.host("127.0.0.1")
+				.port(8080),
+			Preprocessors.prettyPrint()
+		);
+	}
 
-  private OperationResponsePreprocessor getDocumentResponse() {
-    return Preprocessors.preprocessResponse(Preprocessors.prettyPrint());
-  }
+	private OperationResponsePreprocessor getDocumentResponse() {
+		return Preprocessors.preprocessResponse(Preprocessors.prettyPrint());
+	}
 }
