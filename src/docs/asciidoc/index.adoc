@@ -1,0 +1,23 @@
+= Money Transfer Service
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+== Hello
+
+=== Hello 출력
+
+==== HTTP request
+
+include::{snippets}/hello/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/hello/http-response.adoc[]
