@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import numble.bankingapi.banking.application.AccountApplicationService;
 import numble.bankingapi.banking.application.HistoryResponses;
 import numble.bankingapi.banking.application.TargetResponses;
+import numble.bankingapi.banking.application.TransferCommand;
 import numble.bankingapi.banking.domain.Money;
 
 @RestController

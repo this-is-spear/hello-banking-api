@@ -1,4 +1,4 @@
-package numble.bankingapi.banking.ui;
+package numble.bankingapi.banking.application;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

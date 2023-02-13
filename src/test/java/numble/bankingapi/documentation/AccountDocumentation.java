@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import numble.bankingapi.banking.ui.TransferCommand;
+import numble.bankingapi.banking.application.TransferCommand;
 
 public class AccountDocumentation extends DocumentationTemplate {
 
