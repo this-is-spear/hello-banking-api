@@ -2,13 +2,10 @@ package numble.bankingapi.security;
 
 import static org.springframework.security.config.Customizer.*;
 
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,10 +31,14 @@ public class SecurityConfiguration {
 	}
 
 	@Bean
+	@SuppressWarnings("all")
 	public UserDetailsService users() {
-		UserDetails admin = User.withUserDetails(
-			new User("admin", "password", List.of(new SimpleGrantedAuthority("ADMIN")))
-		).build();
+		User.UserBuilder users = User.withDefaultPasswordEncoder();
+		UserDetails admin = users
+			.username("admin")
+			.password("password")
+			.roles("USER", "ADMIN")
+			.build();
 		return new InMemoryUserDetailsManager(admin);
 	}
 }
