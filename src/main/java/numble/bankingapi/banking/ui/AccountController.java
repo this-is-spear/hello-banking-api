@@ -37,7 +37,8 @@ public class AccountController {
 	}
 
 	@GetMapping("/{accountNumber}/transfer")
-	public ResponseEntity<Void> transferMoney(@PathVariable String accountNumber, @RequestBody TransferCommand transferCommand) {
+	public ResponseEntity<Void> transferMoney(@PathVariable String accountNumber,
+		@RequestBody TransferCommand transferCommand) {
 		accountApplicationService.transfer(accountNumber, transferCommand);
 		return ResponseEntity.ok().build();
 	}

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -122,7 +121,7 @@ public class BankingAcceptanceTest {
 		ExecutorService executorService = Executors.newFixedThreadPool(threads);
 
 		for (int i = 0; i < times; i++) {
-			executorService.execute(()-> {
+			executorService.execute(() -> {
 				try {
 					transfer(fromAccountNumber, toAccountNumber, transferMoney);
 				} catch (Exception e) {
