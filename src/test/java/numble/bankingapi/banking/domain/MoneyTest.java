@@ -22,6 +22,6 @@ class MoneyTest {
 	void createMoney_canNotBeNegative(Long 음수) {
 		assertThatThrownBy(
 			() -> new Money(음수)
-		).isInstanceOf(NotNegativeException.class);
+		).isInstanceOf(NotNegativeMoneyException.class);
 	}
 }
