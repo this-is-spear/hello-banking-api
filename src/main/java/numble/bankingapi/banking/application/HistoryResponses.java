@@ -1,4 +1,4 @@
-package numble.bankingapi.banking.ui;
+package numble.bankingapi.banking.application;
 
 import java.util.List;
 

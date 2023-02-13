@@ -8,8 +8,8 @@ import numble.bankingapi.banking.application.TargetResponses;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.domain.Money;
-import numble.bankingapi.banking.ui.HistoryResponse;
-import numble.bankingapi.banking.ui.HistoryResponses;
+import numble.bankingapi.banking.application.HistoryResponse;
+import numble.bankingapi.banking.application.HistoryResponses;
 
 public class BankingFixture {
 
