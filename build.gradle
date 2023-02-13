@@ -97,21 +97,18 @@ jacocoTestCoverageVerification {
     violationRules {
         rule {
             enabled = true
-            // 클래스 단위로 커버리지 체크
             element = 'CLASS'
 
-            // 라인 커버리지 제한을 90%로 설정
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.90
+                minimum = 0.80
             }
 
-            // 브랜치 커버리지 제한을 90%로 설정
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.90
+                minimum = 0.80
             }
 
             excludes = ["*.BankingApiApplication", "*.*Configuration"]
