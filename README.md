@@ -3,7 +3,8 @@ Numble Challenge - Banking API
 
 ### Development Environment
 
-- Back-End : Spring-Boot, Spring-Security, JPA, MySQL
+- Back-End : Spring-Boot, Spring-Security, JPA, MySQL, Testcontainers
+- Fornt-End : Thymeleaf
 - Cloud : AWS - RDS
 - Infra : Docker
 - Document : Rest Docs
