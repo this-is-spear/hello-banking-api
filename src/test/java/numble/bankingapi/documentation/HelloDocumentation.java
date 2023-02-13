@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 class HelloDocumentation extends DocumentationTemplate {
 
 	@Test
-	void addExtension() throws Exception {
+	void hello() throws Exception {
 		MockHttpServletRequestBuilder builder = RestDocumentationRequestBuilders
 			.get("/hello");
 

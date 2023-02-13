@@ -25,6 +25,7 @@ public class SecurityConfiguration {
 			.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers("/hello").permitAll()
 				.requestMatchers("/docs/**").permitAll()
+				.requestMatchers("/account/**").authenticated()
 				.anyRequest().denyAll()
 			)
 			.httpBasic(withDefaults())

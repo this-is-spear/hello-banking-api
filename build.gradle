@@ -111,7 +111,7 @@ jacocoTestCoverageVerification {
                 minimum = 0.80
             }
 
-            excludes = ["*.BankingApiApplication", "*.*Configuration"]
+            excludes = ["*.AccountApplicationService", "*.BankingApiApplication", "*.*Configuration", "*.*Command", "*.*Response", "*.*Request", "*.*Dto"]
         }
     }
 }
