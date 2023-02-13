@@ -2,19 +2,19 @@ package numble.bankingapi.banking.domain;
 
 import java.util.regex.Pattern;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AccountNumber {
 	private static final Pattern PATTERN = Pattern.compile("[\\d\\-]+");
 	private String number;
 
-	private AccountNumber() {/*no-op*/}
-
 	public AccountNumber(String number) {
 		validateNumber(number);
 		this.number = number;
-	}
-
-	public String getNumber() {
-		return number;
 	}
 
 	private void validateNumber(String number) {
