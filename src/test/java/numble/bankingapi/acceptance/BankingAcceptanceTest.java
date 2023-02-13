@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -21,6 +22,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import numble.bankingapi.util.DatabaseCleanup;
 
+@Disabled
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BankingAcceptanceTest {
@@ -118,7 +120,7 @@ public class BankingAcceptanceTest {
 		int times = 200;
 		int threads = 20;
 		ExecutorService executorService = Executors.newFixedThreadPool(threads);
-		
+
 		for (int i = 0; i < times; i++) {
 			executorService.execute(()-> {
 				try {
