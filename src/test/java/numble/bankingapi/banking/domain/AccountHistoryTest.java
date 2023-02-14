@@ -1,5 +1,6 @@
 package numble.bankingapi.banking.domain;
 
+import static numble.bankingapi.fixture.AccountFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,15 +8,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class AccountHistoryTest {
+
 	@Test
 	@DisplayName("히스토리 식별자(Id), 계좌 번호(FromAccountNumber)와, 상대 계좌 번호(ToAccountNumber) 기록 타입(HistoryType)과 금액(Money), 기록 날짜(RecordDate)을 포함한다.")
 	void createAccountHistory() {
 		assertDoesNotThrow(
 			() -> AccountHistory.builder()
-				.fromAccountNumber(new AccountNumber("123-324-34"))
-				.toAccountNumber(new AccountNumber("34-4353-1322"))
-				.money(new Money(20_000L))
-				.type(HistoryType.DEPOSIT)
+				.fromAccountNumber(계좌번호)
+				.toAccountNumber(상대방_계좌번호)
+				.money(이만원)
+				.type(입금)
 				.build()
 		);
 	}
@@ -25,9 +27,10 @@ class AccountHistoryTest {
 	void createAccountHistory_fromAccountNumberNotNull() {
 		assertThatThrownBy(
 			() -> AccountHistory.builder()
-				.toAccountNumber(new AccountNumber("34-4353-1322"))
-				.money(new Money(20_000L))
-				.type(HistoryType.DEPOSIT)
+				.fromAccountNumber(null)
+				.toAccountNumber(상대방_계좌번호)
+				.money(이만원)
+				.type(입금)
 				.build()
 		).isInstanceOf(NullPointerException.class);
 	}
@@ -37,9 +40,10 @@ class AccountHistoryTest {
 	void createAccountHistory_toAccountNumberNotNull() {
 		assertThatThrownBy(
 			() -> AccountHistory.builder()
-				.fromAccountNumber(new AccountNumber("123-324-34"))
-				.money(new Money(20_000L))
-				.type(HistoryType.DEPOSIT)
+				.fromAccountNumber(계좌번호)
+				.toAccountNumber(null)
+				.money(이만원)
+				.type(입금)
 				.build()
 		).isInstanceOf(NullPointerException.class);
 	}
@@ -49,9 +53,10 @@ class AccountHistoryTest {
 	void createAccountHistory_moneyNotNull() {
 		assertThatThrownBy(
 			() -> AccountHistory.builder()
-				.fromAccountNumber(new AccountNumber("123-324-34"))
-				.toAccountNumber(new AccountNumber("34-4353-1322"))
-				.type(HistoryType.DEPOSIT)
+				.fromAccountNumber(계좌번호)
+				.toAccountNumber(상대방_계좌번호)
+				.money(null)
+				.type(입금)
 				.build()
 		).isInstanceOf(NullPointerException.class);
 	}
@@ -61,9 +66,9 @@ class AccountHistoryTest {
 	void createAccountHistory_typeNotNull() {
 		assertThatThrownBy(
 			() -> AccountHistory.builder()
-				.fromAccountNumber(new AccountNumber("123-324-34"))
-				.toAccountNumber(new AccountNumber("34-4353-1322"))
-				.money(new Money(20_000L))
+				.fromAccountNumber(계좌번호)
+				.toAccountNumber(상대방_계좌번호)
+				.money(이만원)
 				.build()
 		).isInstanceOf(NullPointerException.class);
 	}
