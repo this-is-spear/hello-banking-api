@@ -3,14 +3,16 @@ package numble.bankingapi.banking.domain;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Embeddable
 @EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountNumber {
 	private static final Pattern PATTERN = Pattern.compile("[\\d\\-]+");
 	private String number;
