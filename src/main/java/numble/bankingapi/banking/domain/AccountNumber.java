@@ -1,5 +1,6 @@
 package numble.bankingapi.banking.domain;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import lombok.AccessLevel;
@@ -20,7 +21,7 @@ public class AccountNumber {
 	}
 
 	private void validateNumber(String number) {
-		if (number == null || number.isBlank()) {
+		if (Objects.isNull(number) || number.isBlank()) {
 			throw InvalidAccountNumberException.nullAndEmpty();
 		}
 
