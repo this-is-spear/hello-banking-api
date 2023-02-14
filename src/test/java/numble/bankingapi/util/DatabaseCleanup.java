@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Profile("test")
+@Profile("acceptance")
 public class DatabaseCleanup implements InitializingBean {
 
 	@Autowired

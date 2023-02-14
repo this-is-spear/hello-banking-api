@@ -24,7 +24,7 @@ import numble.bankingapi.util.DatabaseCleanup;
 
 @Disabled
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles("acceptance")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BankingAcceptanceTest {
 
