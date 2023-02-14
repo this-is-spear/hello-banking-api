@@ -1,11 +1,8 @@
 package numble.bankingapi.util;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
+import static org.testcontainers.shaded.com.google.common.base.CaseFormat.*;
 
-import javax.sql.DataSource;
+import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +11,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Service
-@Profile("acceptance")
+@Profile("test")
 public class DatabaseCleanup implements InitializingBean {
-
-	@Autowired
-	private DataSource dataSource;
-
+	@PersistenceContext
+	private EntityManager entityManager;
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -28,19 +27,10 @@ public class DatabaseCleanup implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() {
-		tableNames = new ArrayList<>();
-		try {
-			DatabaseMetaData metaData = dataSource.getConnection().getMetaData();
-			ResultSet tables = metaData.getTables(null, null, null, new String[] {"TABLE"});
-			while (tables.next()) {
-				if (!tables.getString("TABLE_SCHEM").equals("INFORMATION_SCHEMA")) {
-					String tableName = tables.getString("TABLE_NAME");
-					tableNames.add(tableName);
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException();
-		}
+		tableNames = entityManager.getMetamodel().getEntities().stream()
+			.filter(e -> e.getJavaType().getAnnotation(Entity.class) != null)
+			.map(e -> UPPER_CAMEL.to(LOWER_UNDERSCORE, e.getName()))
+			.toList();
 	}
 
 	@Transactional
