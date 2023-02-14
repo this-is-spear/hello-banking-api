@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import numble.bankingapi.banking.exception.InvalidAccountNumberException;
 
 @Getter
 @ToString

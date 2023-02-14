@@ -1,4 +1,4 @@
-package numble.bankingapi.banking.domain;
+package numble.bankingapi.banking.exception;
 
 public class InvalidAccountNumberException extends RuntimeException {
 	public InvalidAccountNumberException(String message) {

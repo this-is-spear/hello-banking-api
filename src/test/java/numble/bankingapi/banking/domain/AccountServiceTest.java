@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import numble.bankingapi.banking.exception.NotNegativeMoneyException;
+
 @Transactional
 @SpringBootTest
 class AccountServiceTest {

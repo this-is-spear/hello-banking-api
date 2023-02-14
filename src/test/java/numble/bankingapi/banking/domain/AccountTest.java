@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 
+import numble.bankingapi.banking.exception.NotNegativeMoneyException;
+
 class AccountTest {
 
 	@Test

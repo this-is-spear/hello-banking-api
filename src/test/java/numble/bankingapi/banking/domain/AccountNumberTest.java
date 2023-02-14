@@ -8,6 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import numble.bankingapi.banking.exception.InvalidAccountNumberException;
+
 class AccountNumberTest {
 
 	@ParameterizedTest
