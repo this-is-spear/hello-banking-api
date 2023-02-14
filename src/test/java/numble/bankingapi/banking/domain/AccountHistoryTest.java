@@ -20,6 +20,7 @@ class AccountHistoryTest {
 				.fromAccountNumber(계좌번호)
 				.toAccountNumber(상대방_계좌번호)
 				.money(이만원)
+				.balance(이만원)
 				.type(타입)
 				.build()
 		);
@@ -34,6 +35,7 @@ class AccountHistoryTest {
 				.fromAccountNumber(계좌번호)
 				.toAccountNumber(상대방_계좌번호)
 				.money(이만원)
+				.balance(이만원)
 				.type(입금)
 				.build()
 		).isInstanceOf(NullPointerException.class);
@@ -48,6 +50,7 @@ class AccountHistoryTest {
 				.fromAccountNumber(계좌번호)
 				.toAccountNumber(상대방_계좌번호)
 				.money(이만원)
+				.balance(이만원)
 				.type(입금)
 				.build()
 		).isInstanceOf(NullPointerException.class);
@@ -62,6 +65,7 @@ class AccountHistoryTest {
 				.fromAccountNumber(계좌번호)
 				.toAccountNumber(상대방_계좌번호)
 				.money(비어있는_금액)
+				.balance(이만원)
 				.type(입금)
 				.build()
 		).isInstanceOf(NullPointerException.class);
@@ -76,6 +80,7 @@ class AccountHistoryTest {
 				.fromAccountNumber(계좌번호)
 				.toAccountNumber(상대방_계좌번호)
 				.money(이만원)
+				.balance(이만원)
 				.type(비어있는_타입)
 				.build()
 		).isInstanceOf(NullPointerException.class);
