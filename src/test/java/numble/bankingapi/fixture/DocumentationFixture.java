@@ -1,4 +1,4 @@
-package numble.bankingapi.documentation;
+package numble.bankingapi.fixture;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +11,7 @@ import numble.bankingapi.banking.domain.Money;
 import numble.bankingapi.banking.application.HistoryResponse;
 import numble.bankingapi.banking.application.HistoryResponses;
 
-public class BankingFixture {
+public class DocumentationFixture {
 
 	public static final Money 오천원 = new Money(5_000);
 	public static final Money 만원 = new Money(10_000);
