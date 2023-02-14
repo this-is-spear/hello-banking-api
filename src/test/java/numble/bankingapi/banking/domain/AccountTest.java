@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 
 class AccountTest {
 
@@ -21,38 +23,41 @@ class AccountTest {
 		);
 	}
 
-	@Test
+	@NullSource
+	@ParameterizedTest
 	@DisplayName("accountNumber 가 Null 이면 NullPoint 가 발생한다.")
-	void createAccount_accountNumberNotNull() {
+	void createAccount_accountNumberNotNull(AccountNumber 비어있는_계좌번호) {
 		assertThatThrownBy(
 			() -> Account.builder()
-				.accountNumber(null)
+				.accountNumber(비어있는_계좌번호)
 				.balance(이만원)
 				.userId(사용자_ID)
 				.build()
 		).isInstanceOf(NullPointerException.class);
 	}
 
-	@Test
+	@NullSource
+	@ParameterizedTest
 	@DisplayName("balance 가 Null 이면 NullPoint 가 발생한다.")
-	void createAccount_balanceNotNull() {
+	void createAccount_balanceNotNull(Money 텅_빈_잔액) {
 		assertThatThrownBy(
 			() -> Account.builder()
 				.accountNumber(계좌번호)
-				.balance(null)
+				.balance(텅_빈_잔액)
 				.userId(사용자_ID)
 				.build()
 		).isInstanceOf(NullPointerException.class);
 	}
 
-	@Test
+	@NullSource
+	@ParameterizedTest
 	@DisplayName("userId 가 Null 이면 NullPoint 가 발생한다.")
-	void createAccount_userIdNotNull() {
+	void createAccount_userIdNotNull(Long 비어있는_사용자_ID) {
 		assertThatThrownBy(
 			() -> Account.builder()
 				.accountNumber(계좌번호)
 				.balance(이만원)
-				.userId(null)
+				.userId(비어있는_사용자_ID)
 				.build()
 		).isInstanceOf(NullPointerException.class);
 	}
