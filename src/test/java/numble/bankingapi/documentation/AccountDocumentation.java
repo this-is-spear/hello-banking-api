@@ -1,5 +1,6 @@
 package numble.bankingapi.documentation;
 
+import static numble.bankingapi.fixture.AccountFixture.*;
 import static numble.bankingapi.fixture.DocumentationFixture.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
