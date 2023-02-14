@@ -111,4 +111,26 @@ class AccountHistoryServiceTest {
 			() -> assertThat(toAccountHistory.getToAccountNumber()).isEqualTo(fromAccountAccountNumber)
 		);
 	}
+
+	@Test
+	@DisplayName("계좌 번호로 기록을 찾는다.")
+	void findByFromAccountNumber() {
+		accountHistoryRepository.save(AccountHistory.builder()
+			.fromAccountNumber(계좌번호)
+			.toAccountNumber(상대방_계좌번호)
+			.money(만원)
+			.balance(만원)
+			.type(HistoryType.DEPOSIT)
+			.build());
+
+		accountHistoryRepository.save(AccountHistory.builder()
+			.fromAccountNumber(계좌번호)
+			.toAccountNumber(상대방_계좌번호)
+			.money(만원)
+			.balance(만원)
+			.type(HistoryType.DEPOSIT)
+			.build());
+		List<AccountHistory> histories = accountHistoryService.findByFromAccountNumber(계좌번호);
+		assertThat(histories).hasSize(2);
+	}
 }

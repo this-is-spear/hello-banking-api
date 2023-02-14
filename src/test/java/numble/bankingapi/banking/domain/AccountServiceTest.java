@@ -4,6 +4,8 @@ import static numble.bankingapi.fixture.AccountFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -127,5 +129,21 @@ class AccountServiceTest {
 			() -> assertThat(이전_사용자_잔액_이만원).isEqualTo(이만원),
 			() -> assertThat(이전_상대방_잔액_만원).isEqualTo(삼만원)
 		);
+	}
+
+	@Test
+	@DisplayName("계좌 번호로 계좌를 조회할 수 있다.")
+	void getAccountByAccountNumber() {
+		assertDoesNotThrow(
+			() -> accountService.getAccountByAccountNumber(계좌번호)
+		);
+	}
+
+	@Test
+	@DisplayName("모든 계좌를 조회한다.")
+	void findAll() {
+		int size = accountRepository.findAll().size();
+		List<Account> accounts = accountService.findAll();
+		assertThat(accounts).hasSize(size);
 	}
 }
