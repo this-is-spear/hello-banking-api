@@ -39,19 +39,27 @@ public class AccountHistory extends BaseEntity {
 		@AttributeOverride(name = "amount", column = @Column(name = "money"))
 	})
 	private Money money;
+
+	@AttributeOverrides({
+		@AttributeOverride(name = "amount", column = @Column(name = "balance"))
+	})
+	private Money balance;
 	@Enumerated(EnumType.STRING)
 	private HistoryType type;
 
 	@Builder
 	public AccountHistory(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, HistoryType type,
-		Money money) {
+		Money money, Money balance) {
 		Objects.requireNonNull(fromAccountNumber);
 		Objects.requireNonNull(toAccountNumber);
 		Objects.requireNonNull(type);
 		Objects.requireNonNull(money);
+		Objects.requireNonNull(balance);
+
 		this.fromAccountNumber = fromAccountNumber;
 		this.toAccountNumber = toAccountNumber;
 		this.type = type;
 		this.money = money;
+		this.balance = balance;
 	}
 }
