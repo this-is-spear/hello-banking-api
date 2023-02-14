@@ -25,8 +25,6 @@ public class ConcurrencyManagerWithNamedLock implements ConcurrencyManager {
 		try {
 			getLock(namedLockName);
 			runnable.run();
-		} catch (Exception e) {
-			throw new ConcurrencyFailureException("사용자 요청 처리에 실패했습니다.");
 		} finally {
 			releaseLock(namedLockName);
 		}
