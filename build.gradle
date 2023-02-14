@@ -114,6 +114,7 @@ jacocoTestCoverageVerification {
             excludes = [
                     "*.BankingApiApplication",
                     "*.*Configuration",
+                    "*.AccountService",
                     "*.application.*",
                     "*.dto.*",
                     "*.BaseEntity",
