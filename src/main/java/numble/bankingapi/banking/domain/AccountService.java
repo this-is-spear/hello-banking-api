@@ -41,35 +41,35 @@ public class AccountService {
 
 	@Transactional
 	public void depositMoney(Account account, Money money) {
-		concurrencyManager.executeWithLock(account.getAccountNumber().getNumber(), () -> {
-			account.deposit(money);
-			accountRepository.save(account);
-		});
+		executeDepositWithLock(account, money);
 	}
 
 	@Transactional
 	public void withdrawMoney(Account account, Money money) {
+		executeWithdrawWithLock(account, money);
+	}
+
+	@Transactional
+	public void transferMoney(Account fromAccount, Account toAccount, Money money) {
+		executeWithdrawWithLock(fromAccount, money);
+		executeDepositWithLock(toAccount, money);
+	}
+
+	public List<Account> findAll() {
+		return accountRepository.findAll();
+	}
+
+	private void executeWithdrawWithLock(Account account, Money money) {
 		concurrencyManager.executeWithLock(account.getAccountNumber().getNumber(), () -> {
 			account.withdraw(money);
 			accountRepository.save(account);
 		});
 	}
 
-	@Transactional
-	public void transferMoney(Account fromAccount, Account toAccount, Money money) {
-		concurrencyManager.executeWithLock(fromAccount.getAccountNumber().getNumber(),
-			() -> {
-				fromAccount.withdraw(money);
-				accountRepository.save(fromAccount);
-			});
-		concurrencyManager.executeWithLock(toAccount.getAccountNumber().getNumber(),
-			() -> {
-				toAccount.deposit(money);
-				accountRepository.save(toAccount);
-			});
-	}
-
-	public List<Account> findAll() {
-		return accountRepository.findAll();
+	private void executeDepositWithLock(Account account, Money money) {
+		concurrencyManager.executeWithLock(account.getAccountNumber().getNumber(), () -> {
+			account.deposit(money);
+			accountRepository.save(account);
+		});
 	}
 }
