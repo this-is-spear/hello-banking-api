@@ -13,13 +13,13 @@ class MemberTest {
 	@Test
 	@DisplayName("사용자는 사용자 식별자(userId), 아이디(Id), 이름(name), 비밀번호(Password)를 가진다.")
 	void createdMember() {
-		String id = "rjsckdd12@gmail.com";
+		String email = "rjsckdd12@gmail.com";
 		String name = "this-is-spear";
 		String password = "password";
 
 		assertDoesNotThrow(
 			() -> Member.builder()
-				.id(id)
+				.email(email)
 				.name(name)
 				.password(password)
 				.build()
@@ -29,13 +29,13 @@ class MemberTest {
 	@ParameterizedTest
 	@NullAndEmptySource
 	@DisplayName("id 가 Null 이면 NullPointerException 이 발생한다.")
-	void createMember_idNotNull(String id) {
+	void createMember_idNotNull(String email) {
 		String name = "this-is-spear";
 		String password = "password";
 
 		assertThatThrownBy(
 			() -> Member.builder()
-				.id(id)
+				.email(email)
 				.name(name)
 				.password(password)
 				.build()
@@ -46,12 +46,12 @@ class MemberTest {
 	@NullAndEmptySource
 	@DisplayName("name 이 Null 이면 NullPointerException 이 발생한다.")
 	void createMember_nameNotNull(String name) {
-		String id = "rjsckdd12@gmail.com";
+		String email = "rjsckdd12@gmail.com";
 		String password = "password";
 
 		assertThatThrownBy(
 			() -> Member.builder()
-				.id(id)
+				.email(email)
 				.name(name)
 				.password(password)
 				.build()
@@ -62,12 +62,12 @@ class MemberTest {
 	@NullAndEmptySource
 	@DisplayName("password 가 Null 이면 NullPointerException 이 발생한다.")
 	void createMember_NotNull(String password) {
-		String id = "rjsckdd12@gmail.com";
+		String email = "rjsckdd12@gmail.com";
 		String name = "this-is-spear";
 
 		assertThatThrownBy(
 			() -> Member.builder()
-				.id(id)
+				.email(email)
 				.name(name)
 				.password(password)
 				.build()
