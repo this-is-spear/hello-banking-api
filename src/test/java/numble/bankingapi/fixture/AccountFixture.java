@@ -1,6 +1,5 @@
 package numble.bankingapi.fixture;
 
-import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.domain.Money;

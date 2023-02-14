@@ -21,7 +21,7 @@ import numble.bankingapi.common.BaseEntity;
 @Getter
 @Entity
 @Table(name = "Account")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper=false)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public final class Account extends BaseEntity {
 	@Id

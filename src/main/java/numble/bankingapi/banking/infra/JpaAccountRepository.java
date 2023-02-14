@@ -13,6 +13,7 @@ import numble.bankingapi.banking.domain.AccountRepository;
 public interface JpaAccountRepository extends JpaRepository<Account, Long>, AccountRepository {
 	@Override
 	Optional<Account> findById(Long id);
+
 	@Override
 	Optional<Account> findByAccountNumber(AccountNumber accountNumber);
 

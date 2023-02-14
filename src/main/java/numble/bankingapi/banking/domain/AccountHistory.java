@@ -8,7 +8,7 @@ import lombok.Getter;
 import numble.bankingapi.common.BaseEntity;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper=false)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class AccountHistory extends BaseEntity {
 	@EqualsAndHashCode.Include
 	private Long id;
