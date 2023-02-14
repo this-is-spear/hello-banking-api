@@ -27,19 +27,22 @@ public class AccountHistory extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@EqualsAndHashCode.Include
 	private Long id;
+	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "number", column = @Column(name = "fromAccountNumber"))
 	})
 	private AccountNumber fromAccountNumber;
+	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "number", column = @Column(name = "toAccountNumber"))
 	})
 	private AccountNumber toAccountNumber;
+	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "amount", column = @Column(name = "money"))
 	})
 	private Money money;
-
+	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "amount", column = @Column(name = "balance"))
 	})
