@@ -116,7 +116,7 @@ jacocoTestCoverageVerification {
                     "*.*Configuration",
                     "*.application.*",
                     "*.dto.*",
-                    "*.domain.*"
+                    "*.BaseEntity"
             ]
         }
     }

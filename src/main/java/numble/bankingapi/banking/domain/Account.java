@@ -1,6 +1,5 @@
 package numble.bankingapi.banking.domain;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import jakarta.persistence.AttributeOverride;
@@ -17,13 +16,14 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import numble.bankingapi.common.BaseEntity;
 
 @Getter
 @Entity
 @Table(name = "Account")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper=false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public final class Account {
+public final class Account extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
@@ -43,11 +43,9 @@ public final class Account {
 		@AttributeOverride(name = "amount", column = @Column(name = "balance"))
 	})
 	private Money balance;
-	@Column(name = "createdDate", nullable = false)
-	private LocalDateTime createdDate;
 
 	@Builder
-	public Account(Long userId, AccountNumber accountNumber, Money balance, LocalDateTime createdDate) {
+	public Account(Long userId, AccountNumber accountNumber, Money balance) {
 		Objects.requireNonNull(userId);
 		Objects.requireNonNull(accountNumber);
 		Objects.requireNonNull(balance);
@@ -55,7 +53,6 @@ public final class Account {
 		this.userId = userId;
 		this.accountNumber = accountNumber;
 		this.balance = balance;
-		this.createdDate = createdDate == null ? LocalDateTime.now() : createdDate;
 	}
 
 	public void deposit(Money money) {

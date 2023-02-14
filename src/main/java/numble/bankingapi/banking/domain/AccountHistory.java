@@ -1,26 +1,25 @@
 package numble.bankingapi.banking.domain;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import numble.bankingapi.common.BaseEntity;
 
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class AccountHistory {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper=false)
+public class AccountHistory extends BaseEntity {
 	@EqualsAndHashCode.Include
 	private Long id;
 	private AccountNumber fromAccountNumber;
 	private AccountNumber toAccountNumber;
 	private HistoryType type;
 	private Money money;
-	private LocalDateTime recordedDate;
 
 	@Builder
-	public AccountHistory(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, HistoryType type, Money money,
-		LocalDateTime recordedDate) {
+	public AccountHistory(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, HistoryType type,
+		Money money) {
 		Objects.requireNonNull(fromAccountNumber);
 		Objects.requireNonNull(toAccountNumber);
 		Objects.requireNonNull(type);
@@ -29,6 +28,5 @@ public class AccountHistory {
 		this.toAccountNumber = toAccountNumber;
 		this.type = type;
 		this.money = money;
-		this.recordedDate = recordedDate == null ? LocalDateTime.now() : recordedDate;
 	}
 }
