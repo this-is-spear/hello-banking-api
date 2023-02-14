@@ -115,6 +115,7 @@ jacocoTestCoverageVerification {
                     "*.BankingApiApplication",
                     "*.*Configuration",
                     "*.application.*",
+                    "*.dto.*",
                     "*.domain.*"
             ]
         }

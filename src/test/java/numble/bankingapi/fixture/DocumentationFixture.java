@@ -3,13 +3,13 @@ package numble.bankingapi.fixture;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import numble.bankingapi.banking.application.TargetResponse;
-import numble.bankingapi.banking.application.TargetResponses;
+import numble.bankingapi.banking.dto.TargetResponse;
+import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.domain.Money;
-import numble.bankingapi.banking.application.HistoryResponse;
-import numble.bankingapi.banking.application.HistoryResponses;
+import numble.bankingapi.banking.dto.HistoryResponse;
+import numble.bankingapi.banking.dto.HistoryResponses;
 
 public class DocumentationFixture {
 
