@@ -11,11 +11,16 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Money {
+	private static final int ZERO = 0;
 	private long amount;
 
 	public Money(long amount) {
 		validateAmount(amount);
 		this.amount = amount;
+	}
+
+	public static Money zero() {
+		return new Money(ZERO);
 	}
 
 	private void validateAmount(long amount) {

@@ -41,6 +41,14 @@ class AccountServiceTest {
 	}
 
 	@Test
+	@DisplayName("계좌를 개설한다.")
+	void save() {
+		assertDoesNotThrow(
+			() -> accountService.save(3L)
+		);
+	}
+
+	@Test
 	@DisplayName("계좌를 조회한다.")
 	void findById() {
 		// when

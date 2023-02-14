@@ -4,11 +4,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import numble.bankingapi.util.AccountNumberGenerator;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
 	private final AccountRepository accountRepository;
+
+	public Account save(Long userId) {
+		AccountNumber accountNumber;
+
+		do {
+			accountNumber = AccountNumberGenerator.generate();
+		} while (accountRepository.findByAccountNumber(accountNumber).isPresent());
+
+		return accountRepository.save(
+			Account.builder()
+				.accountNumber(accountNumber)
+				.balance(Money.zero())
+				.userId(userId)
+				.build()
+		);
+	}
 
 	public Account findById(Long id) {
 		return getAccountById(id);
