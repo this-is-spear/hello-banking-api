@@ -10,14 +10,55 @@ ifndef::snippets[]
 :snippets: ./build/generated-snippets
 endif::[]
 
-== Hello
+== Banking API
 
-=== Hello 출력
+=== 기록 조회
 
 ==== HTTP request
 
-include::{snippets}/hello/http-request.adoc[]
+include::{snippets}/history/http-request.adoc[]
 
 ==== HTTP response
 
-include::{snippets}/hello/http-response.adoc[]
+include::{snippets}/history/http-response.adoc[]
+
+=== 금액 입금
+
+==== HTTP request
+
+include::{snippets}/deposit/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/deposit/http-response.adoc[]
+
+=== 금액 출금
+
+==== HTTP request
+
+include::{snippets}/withdraw/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/withdraw/http-response.adoc[]
+
+=== 계좌 이체
+
+==== HTTP request
+
+include::{snippets}/transfer/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/transfer/http-response.adoc[]
+
+=== 이체 대상 확인
+
+==== HTTP request
+
+include::{snippets}/targets/http-request.adoc[]
+
+
+==== HTTP response
+
+include::{snippets}/targets/http-response.adoc[]
