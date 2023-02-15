@@ -6,13 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import numble.bankingapi.concurrency.ConcurrencyManager;
 import numble.bankingapi.util.AccountNumberGenerator;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
-	private final ConcurrencyManager concurrencyManager;
 	private final AccountRepository accountRepository;
 
 	public Account save(Long userId) {
@@ -60,16 +58,12 @@ public class AccountService {
 	}
 
 	private void executeWithdrawWithLock(Account account, Money money) {
-		concurrencyManager.executeWithLock(account.getAccountNumber().getNumber(), () -> {
-			account.withdraw(money);
-			accountRepository.save(account);
-		});
+		account.withdraw(money);
+		accountRepository.save(account);
 	}
 
 	private void executeDepositWithLock(Account account, Money money) {
-		concurrencyManager.executeWithLock(account.getAccountNumber().getNumber(), () -> {
-			account.deposit(money);
-			accountRepository.save(account);
-		});
+		account.deposit(money);
+		accountRepository.save(account);
 	}
 }
