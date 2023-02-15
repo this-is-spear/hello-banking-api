@@ -12,6 +12,7 @@ import numble.bankingapi.util.AccountNumberGenerator;
 @RequiredArgsConstructor
 public class AccountService {
 	private final AccountRepository accountRepository;
+	private final AccountHistoryRepository accountHistoryRepository;
 
 	public Account save(Long userId) {
 		AccountNumber accountNumber;
@@ -39,31 +40,70 @@ public class AccountService {
 
 	@Transactional
 	public void depositMoney(Account account, Money money) {
-		executeDepositWithLock(account, money);
+		account.deposit(money);
+		recordCompletionDepositMoney(account, money);
 	}
 
 	@Transactional
 	public void withdrawMoney(Account account, Money money) {
-		executeWithdrawWithLock(account, money);
+		account.withdraw(money);
+		recordCompletionWithdrawMoney(account, money);
 	}
 
 	@Transactional
 	public void transferMoney(Account fromAccount, Account toAccount, Money money) {
-		executeWithdrawWithLock(fromAccount, money);
-		executeDepositWithLock(toAccount, money);
+		fromAccount.withdraw(money);
+		toAccount.deposit(money);
+		recordCompletionTransferMoney(fromAccount, toAccount, money);
 	}
 
 	public List<Account> findAll() {
 		return accountRepository.findAll();
 	}
 
-	private void executeWithdrawWithLock(Account account, Money money) {
-		account.withdraw(money);
-		accountRepository.save(account);
+	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(AccountNumber accountNumber) {
+		return accountHistoryRepository.findByFromAccountNumber(accountNumber);
 	}
 
-	private void executeDepositWithLock(Account account, Money money) {
-		account.deposit(money);
-		accountRepository.save(account);
+	private void recordCompletionDepositMoney(Account fromAccount, Money money) {
+		accountHistoryRepository.save(
+			AccountHistory.builder()
+				.fromAccountNumber(fromAccount.getAccountNumber())
+				.toAccountNumber(fromAccount.getAccountNumber())
+				.type(HistoryType.DEPOSIT)
+				.money(money)
+				.balance(fromAccount.getBalance())
+				.build());
 	}
+
+	private void recordCompletionWithdrawMoney(Account fromAccount, Money money) {
+		accountHistoryRepository.save(
+			AccountHistory.builder()
+				.fromAccountNumber(fromAccount.getAccountNumber())
+				.toAccountNumber(fromAccount.getAccountNumber())
+				.type(HistoryType.WITHDRAW)
+				.money(money)
+				.balance(fromAccount.getBalance())
+				.build());
+	}
+
+	private void recordCompletionTransferMoney(Account fromAccount, Account toAccount, Money money) {
+		accountHistoryRepository.save(
+			AccountHistory.builder()
+				.fromAccountNumber(fromAccount.getAccountNumber())
+				.toAccountNumber(toAccount.getAccountNumber())
+				.type(HistoryType.WITHDRAW)
+				.money(money)
+				.balance(fromAccount.getBalance())
+				.build());
+		accountHistoryRepository.save(
+			AccountHistory.builder()
+				.fromAccountNumber(toAccount.getAccountNumber())
+				.toAccountNumber(fromAccount.getAccountNumber())
+				.type(HistoryType.DEPOSIT)
+				.money(money)
+				.balance(toAccount.getBalance())
+				.build());
+	}
+
 }

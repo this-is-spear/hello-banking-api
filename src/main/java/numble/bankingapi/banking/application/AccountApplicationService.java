@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.AccountHistory;
-import numble.bankingapi.banking.domain.AccountHistoryService;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.banking.domain.Money;
@@ -21,11 +20,11 @@ import numble.bankingapi.banking.dto.TransferCommand;
 @RequiredArgsConstructor
 public class AccountApplicationService {
 	private final AccountService accountService;
-	private final AccountHistoryService accountHistoryService;
 
 	public HistoryResponses getHistory(String accountNumber) {
-		return new HistoryResponses(accountHistoryService.findByFromAccountNumber(getAccountNumber(accountNumber))
-			.stream().map(this::getHistoryResponse).collect(Collectors.toList())
+		return new HistoryResponses(
+			accountService.findAccountHistoriesByFromAccountNumber(getAccountNumber(accountNumber))
+				.stream().map(this::getHistoryResponse).collect(Collectors.toList())
 		);
 	}
 
@@ -34,7 +33,6 @@ public class AccountApplicationService {
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
 
 		accountService.depositMoney(account, money);
-		accountHistoryService.recordCompletionDepositMoney(account, money);
 	}
 
 	public void withdraw(String number, Money money) {
@@ -42,7 +40,6 @@ public class AccountApplicationService {
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
 
 		accountService.withdrawMoney(account, money);
-		accountHistoryService.recordCompletionWithdrawMoney(account, money);
 	}
 
 	public void transfer(String accountNumber, TransferCommand command) {
@@ -54,7 +51,6 @@ public class AccountApplicationService {
 
 		Money money = command.money();
 		accountService.transferMoney(account, toAccount, money);
-		accountHistoryService.recordCompletionTransferMoney(account, toAccount, money);
 	}
 
 	public TargetResponses getTargets() {

@@ -22,7 +22,7 @@ class AccountHistoryServiceTest {
 	AccountHistoryRepository accountHistoryRepository;
 
 	@Autowired
-	AccountHistoryService accountHistoryService;
+	AccountService accountService;
 
 	@Test
 	@DisplayName("입금할 때 기록한다.")
@@ -33,7 +33,7 @@ class AccountHistoryServiceTest {
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
-		assertDoesNotThrow(() -> accountHistoryService.recordCompletionDepositMoney(account, 이만원));
+		assertDoesNotThrow(() -> accountService.depositMoney(account, 이만원));
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			account.getAccountNumber());
@@ -56,7 +56,7 @@ class AccountHistoryServiceTest {
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
-		assertDoesNotThrow(() -> accountHistoryService.recordCompletionWithdrawMoney(account, 이만원));
+		assertDoesNotThrow(() -> accountService.withdrawMoney(account, 이만원));
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			account.getAccountNumber());
@@ -85,7 +85,7 @@ class AccountHistoryServiceTest {
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
-		assertDoesNotThrow(() -> accountHistoryService.recordCompletionTransferMoney(fromAccount, toAccount, 이만원));
+		assertDoesNotThrow(() -> accountService.transferMoney(fromAccount, toAccount, 이만원));
 
 		AccountNumber fromAccountAccountNumber = fromAccount.getAccountNumber();
 		AccountNumber toAccountAccountNumber = toAccount.getAccountNumber();
@@ -130,7 +130,7 @@ class AccountHistoryServiceTest {
 			.balance(만원)
 			.type(HistoryType.DEPOSIT)
 			.build());
-		List<AccountHistory> histories = accountHistoryService.findByFromAccountNumber(계좌번호);
+		List<AccountHistory> histories = accountService.findAccountHistoriesByFromAccountNumber(계좌번호);
 		assertThat(histories).hasSize(2);
 	}
 }

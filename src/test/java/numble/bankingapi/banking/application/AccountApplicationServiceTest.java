@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.AccountHistory;
-import numble.bankingapi.banking.domain.AccountHistoryService;
 import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.dto.HistoryResponses;
@@ -26,8 +25,6 @@ import numble.bankingapi.banking.dto.TransferCommand;
 class AccountApplicationServiceTest {
 	@Mock
 	private AccountService accountService;
-	@Mock
-	private AccountHistoryService accountHistoryService;
 	@InjectMocks
 	private AccountApplicationService accountApplicationService;
 
@@ -49,7 +46,7 @@ class AccountApplicationServiceTest {
 			.type(HistoryType.WITHDRAW)
 			.build();
 
-		when(accountHistoryService.findByFromAccountNumber(계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
+		when(accountService.findAccountHistoriesByFromAccountNumber(계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
 		HistoryResponses responses = accountApplicationService.getHistory(계좌번호.getNumber());
 		assertThat(responses.historyResponses()).hasSize(2);
 		assertThat(responses.historyResponses().get(0).money()).isEqualTo(만원);
