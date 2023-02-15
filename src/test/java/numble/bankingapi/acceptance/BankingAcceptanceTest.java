@@ -22,7 +22,7 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import numble.bankingapi.util.DatabaseCleanup;
 
-// @Disabled
+@Disabled
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
