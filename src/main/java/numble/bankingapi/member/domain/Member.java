@@ -75,10 +75,6 @@ public class Member extends BaseEntity {
 		if (Objects.isNull(password) || password.isBlank()) {
 			throw InvalidFormatException.emptyPassword();
 		}
-
-		if (password.length() < 8 || password.length() > 20) {
-			throw InvalidFormatException.invalidPassword();
-		}
 	}
 
 	private void ensureName(String name) {

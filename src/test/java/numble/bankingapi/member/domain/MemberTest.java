@@ -1,5 +1,6 @@
 package numble.bankingapi.member.domain;
 
+import static numble.bankingapi.fixture.MemberFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,10 +12,6 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import numble.bankingapi.member.exception.InvalidFormatException;
 
 class MemberTest {
-
-	public static final String EMAIL = "rjsckdd12@gmail.com";
-	public static final String NAME = "this-is-spear";
-	public static final String PASSWORD = "password";
 
 	@Test
 	@DisplayName("사용자는 사용자 식별자(userId), 아이디(Id), 이름(name), 비밀번호(Password)를 가진다.")
