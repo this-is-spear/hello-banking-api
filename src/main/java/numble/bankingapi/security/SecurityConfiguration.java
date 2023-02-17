@@ -31,6 +31,8 @@ public class SecurityConfiguration {
 	@Primary
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.userDetailsService(userDetailsService);
+		http.csrf().disable();
+
 		http
 			.httpBasic(withDefaults())
 			.formLogin()
