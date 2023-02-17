@@ -58,7 +58,24 @@ include::{snippets}/transfer/http-response.adoc[]
 
 include::{snippets}/targets/http-request.adoc[]
 
-
 ==== HTTP response
 
 include::{snippets}/targets/http-response.adoc[]
+
+== Member API
+
+=== 회원가입
+
+==== HTTP request
+include::{snippets}/register/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/register/http-response.adoc[]
+
+=== 사용자 조회
+
+==== HTTP request
+include::{snippets}/me/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/me/http-response.adoc[]
