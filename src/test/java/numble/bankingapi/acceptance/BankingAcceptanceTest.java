@@ -18,7 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import numble.bankingapi.util.DatabaseCleanup;
 
@@ -30,9 +31,8 @@ public class BankingAcceptanceTest {
 
 	@Autowired
 	MockMvc mockMvc;
-
-	ObjectMapper objectMapper = new ObjectMapper();
-
+	@Autowired
+	ObjectMapper objectMapper;
 	@Autowired
 	private DatabaseCleanup databaseCleanup;
 
