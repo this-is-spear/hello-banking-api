@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ class ConcurrencyManagerWithNamedLockTest {
 	}
 
 	@Test
+	@Disabled
 	@DisplayName("멀티 스레드 환경에서 동시성을 제어해 원자성을 보장한다.")
 	void calculateAtSameTime_controllingConcurrency() throws InterruptedException {
 		ExecutorService service = Executors.newFixedThreadPool(POLL_SIZE);

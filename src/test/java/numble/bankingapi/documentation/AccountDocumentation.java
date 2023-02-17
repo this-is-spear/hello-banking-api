@@ -6,17 +6,15 @@ import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import numble.bankingapi.banking.dto.TransferCommand;
 
 public class AccountDocumentation extends DocumentationTemplate {
-
-	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@Test
 	void getHistory() throws Exception {
@@ -25,6 +23,8 @@ public class AccountDocumentation extends DocumentationTemplate {
 
 		mockMvc.perform(
 				get("/account/{accountNumber}/history", 계좌_번호)
+					.with(csrf())
+					.with(user("user").roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"history",
@@ -42,6 +42,8 @@ public class AccountDocumentation extends DocumentationTemplate {
 				get("/account/{accountNumber}/deposit", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
+					.with(csrf())
+					.with(user("user").roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"deposit",
@@ -59,6 +61,8 @@ public class AccountDocumentation extends DocumentationTemplate {
 				get("/account/{accountNumber}/withdraw", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
+					.with(csrf())
+					.with(user("user").roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"withdraw",
@@ -78,6 +82,8 @@ public class AccountDocumentation extends DocumentationTemplate {
 				get("/account/{accountNumber}/transfer", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(command))
+					.with(csrf())
+					.with(user("user").roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"transfer",
@@ -93,6 +99,7 @@ public class AccountDocumentation extends DocumentationTemplate {
 
 		mockMvc.perform(
 				get("/account/{accountNumber}/transfer/targets", 계좌_번호)
+					.with(user("user").roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"targets",
