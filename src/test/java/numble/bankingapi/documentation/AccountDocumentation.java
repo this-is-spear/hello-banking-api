@@ -39,7 +39,7 @@ public class AccountDocumentation extends DocumentationTemplate {
 		doNothing().when(accountApplicationService).deposit(계좌_번호, 이만원);
 
 		mockMvc.perform(
-				get("/account/{accountNumber}/deposit", 계좌_번호)
+				post("/account/{accountNumber}/deposit", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
 					.with(csrf())
@@ -58,7 +58,7 @@ public class AccountDocumentation extends DocumentationTemplate {
 		doNothing().when(accountApplicationService).withdraw(계좌_번호, 이만원);
 
 		mockMvc.perform(
-				get("/account/{accountNumber}/withdraw", 계좌_번호)
+				post("/account/{accountNumber}/withdraw", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
 					.with(csrf())
@@ -79,7 +79,7 @@ public class AccountDocumentation extends DocumentationTemplate {
 		doNothing().when(accountApplicationService).transfer(계좌_번호, command);
 
 		mockMvc.perform(
-				get("/account/{accountNumber}/transfer", 계좌_번호)
+				post("/account/{accountNumber}/transfer", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(command))
 					.with(csrf())
