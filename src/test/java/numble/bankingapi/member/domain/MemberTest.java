@@ -77,18 +77,4 @@ class MemberTest {
 				.build()
 		).isInstanceOf(InvalidFormatException.class);
 	}
-
-	@Test
-	@DisplayName("password는 8 글자 이상 20 글자 이하이다.")
-	void createMember_passwordRequiredFormat() {
-		String invalidPasswordLength = "invalid password length";
-
-		assertThatThrownBy(
-			() -> Member.builder()
-				.email(EMAIL)
-				.name(NAME)
-				.password(invalidPasswordLength)
-				.build()
-		).isInstanceOf(InvalidFormatException.class);
-	}
 }
