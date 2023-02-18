@@ -1,5 +1,5 @@
 package numble.bankingapi.concurrency;
 
 public interface ConcurrencyManager {
-	void executeWithLock(String namedLockName, Runnable runnable);
+	void executeWithLock(String lockName, Runnable runnable);
 }

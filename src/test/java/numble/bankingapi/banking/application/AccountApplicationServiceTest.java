@@ -25,6 +25,8 @@ import numble.bankingapi.banking.dto.TransferCommand;
 class AccountApplicationServiceTest {
 	@Mock
 	private AccountService accountService;
+	@Mock
+	private ConcurrencyFacade concurrencyFacade;
 	@InjectMocks
 	private AccountApplicationService accountApplicationService;
 
@@ -101,7 +103,7 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
-		doNothing().when(accountService).transferMoney(계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
+		doNothing().when(concurrencyFacade).transferWithLock(계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
 		accountApplicationService.transfer(계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
 	}
 

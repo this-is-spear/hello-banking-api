@@ -20,6 +20,7 @@ import numble.bankingapi.banking.dto.TransferCommand;
 @RequiredArgsConstructor
 public class AccountApplicationService {
 	private final AccountService accountService;
+	private final ConcurrencyFacade concurrencyFacade;
 
 	public HistoryResponses getHistory(String accountNumber) {
 		Account account = accountService.getAccountByAccountNumber(getAccountNumber(accountNumber));
@@ -48,7 +49,7 @@ public class AccountApplicationService {
 		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
 
 		Money money = command.amount();
-		accountService.transferMoney(fromAccountNumber, toAccountNumber, money);
+		concurrencyFacade.transferWithLock(fromAccountNumber, toAccountNumber, money);
 	}
 
 	public TargetResponses getTargets() {

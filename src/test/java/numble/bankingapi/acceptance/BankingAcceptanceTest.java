@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -182,7 +183,7 @@ public class BankingAcceptanceTest {
 
 	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
 		String username, String password) throws InterruptedException {
-		int 스레드_개수 = 1;
+		int 스레드_개수 = 3;
 		CountDownLatch latch = new CountDownLatch(times);
 
 		ExecutorService executorService = Executors.newFixedThreadPool(스레드_개수);
