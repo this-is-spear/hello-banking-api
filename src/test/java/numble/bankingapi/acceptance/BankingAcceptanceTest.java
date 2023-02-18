@@ -33,6 +33,13 @@ public class BankingAcceptanceTest {
 	private static final String 이메일 = "member@email.com";
 	private static final String 비밀번호 = "password";
 	private static final String AMOUNT = "$.balance.amount";
+	private static final long 천원 = 1_000L;
+	private static final long 삼천원 = 3_000L;
+	private static final long 오천원 = 5_000L;
+	private static final long 만원 = 10_000L;
+	private static final long 백만원 = 1_000_000L;
+	private static final String MEMBER = "member";
+	private static final String ADMIN = "admin";
 	@Autowired
 	MockMvc mockMvc;
 	@Autowired
@@ -59,9 +66,10 @@ public class BankingAcceptanceTest {
 	@Test
 	void deposit_and_withdraw_5000() throws Exception {
 		// given
-		String 나의계좌 = accountNumber.get("member");
+		long 입금할_돈 = 오천원;
+		long 출금할_돈 = 오천원;
+		String 나의계좌 = 계좌_정보_조회(MEMBER);
 
-		long 입금할_돈 = 5_000L;
 		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
 		계좌_입금.andExpect(status().isOk());
 
@@ -69,7 +77,6 @@ public class BankingAcceptanceTest {
 			jsonPath(AMOUNT).value(입금할_돈));
 
 		// when
-		long 출금할_돈 = 5_000L;
 		ResultActions 계좌_출금 = 계좌_출금_요청(나의계좌, 출금할_돈, 이메일, 비밀번호);
 		계좌_출금.andExpect(status().isOk());
 
@@ -88,27 +95,27 @@ public class BankingAcceptanceTest {
 	@Test
 	void transfer_5000() throws Exception {
 		// given
-		String 나의계좌 = accountNumber.get("member");
-		String 상대방계좌 = accountNumber.get("admin");
+		long 입금할_돈 = 만원;
+		long 출금할_돈 = 오천원;
+		String 나의계좌 = 계좌_정보_조회(MEMBER);
+		String 상대방계좌 = 계좌_정보_조회(ADMIN);
 
-		long depositMoney = 10_000L;
-		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, depositMoney, 이메일, 비밀번호);
+		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
 		계좌_입금.andExpect(status().isOk());
 
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(depositMoney));
+			jsonPath(AMOUNT).value(입금할_돈));
 
 		// when
-		long transferMoney = 5_000L;
-		ResultActions 계좌_이체 = 계좌_이체_요청(나의계좌, 상대방계좌, transferMoney, 이메일, 비밀번호);
+		ResultActions 계좌_이체 = 계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호);
 		계좌_이체.andExpect(status().isOk());
 
 		// then
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(depositMoney - transferMoney));
+			jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈));
 
 		계좌_조회_요청(상대방계좌, "admin@gmail.com", "password").andExpect(
-			jsonPath(AMOUNT).value(transferMoney));
+			jsonPath(AMOUNT).value(출금할_돈));
 	}
 
 	/**
@@ -121,19 +128,19 @@ public class BankingAcceptanceTest {
 	@Test
 	void transfer_failed() throws Exception {
 		// given
-		String 나의계좌 = accountNumber.get("member");
-		String 상대방계좌 = accountNumber.get("admin");
+		long 입금할_돈 = 삼천원;
+		long 출금할_돈 = 오천원;
+		String 나의계좌 = 계좌_정보_조회(MEMBER);
+		String 상대방계좌 = 계좌_정보_조회(ADMIN);
 
-		long depositMoney = 3_000L;
-		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, depositMoney, 이메일, 비밀번호);
+		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
 		계좌_입금.andExpect(status().isOk());
 
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(depositMoney));
+			jsonPath(AMOUNT).value(입금할_돈));
 
 		// when
-		long transferMoney = 5_000L;
-		ResultActions 계좌_이체 = 계좌_이체_요청(나의계좌, 상대방계좌, transferMoney, 이메일, 비밀번호);
+		ResultActions 계좌_이체 = 계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호);
 
 		// then
 		계좌_이체.andExpect(status().isBadRequest());
@@ -149,32 +156,36 @@ public class BankingAcceptanceTest {
 	@Test
 	void transfer_concurrency_200_times() throws Exception {
 		// given
-		String 나의계좌 = accountNumber.get("member");
-		String 상대방계좌 = accountNumber.get("admin");
+		long 입금할_돈 = 백만원;
+		long 출금할_돈 = 천원;
+		int 요청_횟수 = 200;
+		String 나의계좌 = 계좌_정보_조회(MEMBER);
+		String 상대방계좌 = 계좌_정보_조회(ADMIN);
 
-		long depositMoney = 1_000_000L;
-		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, depositMoney, 이메일, 비밀번호);
+		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
 		계좌_입금.andExpect(status().isOk());
 
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(depositMoney));
+			jsonPath(AMOUNT).value(입금할_돈));
 
 		// when
-		long transferMoney = 1_000L;
-		int times = 200;
-		transferManyTimes(나의계좌, 상대방계좌, transferMoney, times, 이메일, 비밀번호);
+		계좌_이체_여러번_요청(나의계좌, 상대방계좌, 출금할_돈, 요청_횟수, 이메일, 비밀번호);
 
 		// then
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(depositMoney - transferMoney * times));
+			jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈 * 요청_횟수));
 	}
 
-	private void transferManyTimes(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
+	private String 계좌_정보_조회(String member) {
+		return accountNumber.get(member);
+	}
+
+	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
 		String username, String password) throws InterruptedException {
-		int threads = 1;
+		int 스레드_개수 = 1;
 		CountDownLatch latch = new CountDownLatch(times);
 
-		ExecutorService executorService = Executors.newFixedThreadPool(threads);
+		ExecutorService executorService = Executors.newFixedThreadPool(스레드_개수);
 
 		for (int i = 0; i < times; i++) {
 			executorService.execute(() -> {
@@ -236,5 +247,4 @@ public class BankingAcceptanceTest {
 				.accept(MediaType.APPLICATION_JSON)
 		);
 	}
-
 }
