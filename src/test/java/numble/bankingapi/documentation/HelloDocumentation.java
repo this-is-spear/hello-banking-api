@@ -19,7 +19,6 @@ class HelloDocumentation extends DocumentationTemplate {
 			.with(csrf())
 			.with(anonymous());
 
-
 		mockMvc.perform(builder)
 			.andDo(MockMvcResultHandlers.print())
 			.andExpect(status().isOk())

@@ -28,7 +28,7 @@ public class DatabaseCleanup implements InitializingBean {
 		tableNames = new ArrayList<>();
 		try {
 			DatabaseMetaData metaData = dataSource.getConnection().getMetaData();
-			ResultSet tables = metaData.getTables(null, null, null, new String[]{"TABLE"});
+			ResultSet tables = metaData.getTables(null, null, null, new String[] {"TABLE"});
 			while (tables.next()) {
 				if (!tables.getString("TABLE_SCHEM").equals("INFORMATION_SCHEMA")) {
 					String tableName = tables.getString("TABLE_NAME");

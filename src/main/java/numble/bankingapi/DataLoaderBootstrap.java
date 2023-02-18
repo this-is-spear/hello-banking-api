@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DataLoaderBootstrap implements ApplicationListener<ContextRefreshedEvent> {
-    private DataLoader dataLoader;
+	private DataLoader dataLoader;
 
-    public DataLoaderBootstrap(DataLoader dataLoader) {
-        this.dataLoader = dataLoader;
-    }
+	public DataLoaderBootstrap(DataLoader dataLoader) {
+		this.dataLoader = dataLoader;
+	}
 
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        dataLoader.loadData();
-    }
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		dataLoader.loadData();
+	}
 }
