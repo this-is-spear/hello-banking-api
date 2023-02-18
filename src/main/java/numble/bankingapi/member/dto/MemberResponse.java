@@ -1,4 +1,4 @@
-package numble.bankingapi.member.ui;
+package numble.bankingapi.member.dto;
 
 public record MemberResponse(
 	Long id,

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import numble.bankingapi.member.application.MemberApplicationService;
+import numble.bankingapi.member.dto.MemberResponse;
 import numble.bankingapi.member.dto.RegisterCommand;
 
 @RestController
