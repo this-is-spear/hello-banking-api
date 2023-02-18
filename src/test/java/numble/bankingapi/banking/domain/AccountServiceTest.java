@@ -106,7 +106,7 @@ class AccountServiceTest {
 		Money 이체할_금액_만원 = 만원;
 
 		// when
-		accountService.transferMoney(사용자_계좌, 상대방_계좌, 이체할_금액_만원);
+		accountService.transferMoney(사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 이체할_금액_만원);
 
 		// then
 		assertAll(
@@ -124,7 +124,7 @@ class AccountServiceTest {
 
 		assertAll(
 			() -> assertThatThrownBy(
-				() -> accountService.transferMoney(사용자_계좌, 상대방_계좌, 이체할_금액_삼만원)
+				() -> accountService.transferMoney(사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 이체할_금액_삼만원)
 			).isInstanceOf(NotNegativeMoneyException.class),
 			() -> assertThat(이전_사용자_잔액_이만원).isEqualTo(이만원),
 			() -> assertThat(이전_상대방_잔액_만원).isEqualTo(삼만원)

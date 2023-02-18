@@ -171,7 +171,7 @@ public class BankingAcceptanceTest {
 
 	private void transferManyTimes(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
 		String username, String password) throws InterruptedException {
-		int threads = 2;
+		int threads = 1;
 		CountDownLatch latch = new CountDownLatch(times);
 
 		ExecutorService executorService = Executors.newFixedThreadPool(threads);

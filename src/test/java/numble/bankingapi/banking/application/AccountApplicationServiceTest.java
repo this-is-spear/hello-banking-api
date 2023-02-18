@@ -101,9 +101,7 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
-		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		when(accountService.getAccountByAccountNumber(상대방_계좌번호)).thenReturn(상대방_계좌);
-		doNothing().when(accountService).transferMoney(계좌, 상대방_계좌, 만원);
+		doNothing().when(accountService).transferMoney(계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
 		accountApplicationService.transfer(계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
 	}
 

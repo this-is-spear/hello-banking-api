@@ -47,11 +47,8 @@ public class AccountApplicationService {
 		AccountNumber fromAccountNumber = getAccountNumber(accountNumber);
 		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
 
-		Account account = accountService.getAccountByAccountNumber(fromAccountNumber);
-		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
-
 		Money money = command.amount();
-		accountService.transferMoney(account, toAccount, money);
+		accountService.transferMoney(fromAccountNumber, toAccountNumber, money);
 	}
 
 	public TargetResponses getTargets() {

@@ -3,6 +3,7 @@ package numble.bankingapi.banking.domain;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -50,8 +51,11 @@ public class AccountService {
 		recordCompletionWithdrawMoney(account, money);
 	}
 
-	@Transactional
-	public void transferMoney(Account fromAccount, Account toAccount, Money money) {
+	@Transactional(isolation = Isolation.REPEATABLE_READ)
+	public void transferMoney(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, Money money) {
+		Account fromAccount = getAccountByAccountNumber(fromAccountNumber);
+		Account toAccount = getAccountByAccountNumber(toAccountNumber);
+
 		fromAccount.withdraw(money);
 		toAccount.deposit(money);
 		recordCompletionTransferMoney(fromAccount, toAccount, money);
