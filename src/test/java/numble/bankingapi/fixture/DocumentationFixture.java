@@ -17,6 +17,7 @@ public class DocumentationFixture {
 
 	public static final String 계좌_번호 = AccountNumberGenerator.generate().getNumber();
 	public static final HistoryResponses 계좌_내역 = new HistoryResponses(
+		이만원,
 		List.of(
 			new HistoryResponse(HistoryType.DEPOSIT, 이만원, new AccountNumber(계좌_번호),
 				AccountNumberGenerator.generate(), LocalDateTime.of(2022, 2, 13, 12, 10)),
