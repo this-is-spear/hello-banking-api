@@ -22,26 +22,23 @@ public class AccountApplicationService {
 	private final AccountService accountService;
 	private final ConcurrencyFacade concurrencyFacade;
 
-	public HistoryResponses getHistory(String accountNumber) {
-		Account account = accountService.getAccountByAccountNumber(getAccountNumber(accountNumber));
+	public HistoryResponses getHistory(String stringAccountNumber) {
+		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
+		Account account = accountService.getAccountByAccountNumber(accountNumber);
 		return new HistoryResponses(account.getBalance(),
-			accountService.findAccountHistoriesByFromAccountNumber(getAccountNumber(accountNumber))
+			accountService.findAccountHistoriesByFromAccountNumber(accountNumber)
 				.stream().map(this::getHistoryResponse).collect(Collectors.toList())
 		);
 	}
 
 	public void deposit(String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
-
-		accountService.depositMoney(account, money);
+		accountService.depositMoney(accountNumber, money);
 	}
 
 	public void withdraw(String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
-
-		accountService.withdrawMoney(account, money);
+		accountService.withdrawMoney(accountNumber, money);
 	}
 
 	public void transfer(String accountNumber, TransferCommand command) {

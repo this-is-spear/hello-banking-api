@@ -69,8 +69,7 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
-		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		doNothing().when(accountService).depositMoney(계좌, 만원);
+		doNothing().when(accountService).depositMoney(계좌.getAccountNumber(), 만원);
 		accountApplicationService.deposit(계좌번호.getNumber(), 만원);
 	}
 
@@ -83,8 +82,7 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
-		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		doNothing().when(accountService).withdrawMoney(계좌, 만원);
+		doNothing().when(accountService).withdrawMoney(계좌.getAccountNumber(), 만원);
 		accountApplicationService.withdraw(계좌번호.getNumber(), 만원);
 	}
 

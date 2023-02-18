@@ -39,13 +39,15 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void depositMoney(Account account, Money money) {
+	public void depositMoney(AccountNumber accountNumber, Money money) {
+		Account account = getAccountByAccountNumber(accountNumber);
 		account.deposit(money);
 		recordCompletionDepositMoney(account, money);
 	}
 
 	@Transactional
-	public void withdrawMoney(Account account, Money money) {
+	public void withdrawMoney(AccountNumber accountNumber, Money money) {
+		Account account = getAccountByAccountNumber(accountNumber);
 		account.withdraw(money);
 		recordCompletionWithdrawMoney(account, money);
 	}
