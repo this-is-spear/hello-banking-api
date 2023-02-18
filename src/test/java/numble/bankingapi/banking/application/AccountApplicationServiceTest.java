@@ -45,7 +45,13 @@ class AccountApplicationServiceTest {
 			.money(만원)
 			.type(HistoryType.WITHDRAW)
 			.build();
+		Account 계좌 = Account.builder()
+			.accountNumber(계좌번호)
+			.balance(이만원)
+			.userId(2L)
+			.build();
 
+		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
 		when(accountService.findAccountHistoriesByFromAccountNumber(계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
 		HistoryResponses responses = accountApplicationService.getHistory(계좌번호.getNumber());
 		assertThat(responses.historyResponses()).hasSize(2);
