@@ -62,6 +62,13 @@ public class Member extends BaseEntity {
 		this.roles = List.of(RoleType.ROLE_MEMBER.name());
 	}
 
+	public Member(String email, String name, String password, List<String> roles) {
+		this.email = email;
+		this.name = name;
+		this.password = password;
+		this.roles = roles;
+	}
+
 	private void ensureEmail(String email) {
 		if (Objects.isNull(email) || email.isBlank()) {
 			throw InvalidFormatException.emptyEmail();
