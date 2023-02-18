@@ -22,7 +22,8 @@ public class AccountApplicationService {
 	private final AccountService accountService;
 
 	public HistoryResponses getHistory(String accountNumber) {
-		return new HistoryResponses(
+		Account account = accountService.getAccountByAccountNumber(getAccountNumber(accountNumber));
+		return new HistoryResponses(account.getBalance(),
 			accountService.findAccountHistoriesByFromAccountNumber(getAccountNumber(accountNumber))
 				.stream().map(this::getHistoryResponse).collect(Collectors.toList())
 		);
@@ -49,7 +50,7 @@ public class AccountApplicationService {
 		Account account = accountService.getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
 
-		Money money = command.money();
+		Money money = command.amount();
 		accountService.transferMoney(account, toAccount, money);
 	}
 
