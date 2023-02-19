@@ -31,6 +31,7 @@ import numble.bankingapi.util.DatabaseCleanup;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BankingAcceptanceTest {
 
+	private static final String 어드민이메일 = "admin@gmail.com";
 	private static final String 이메일 = "member@email.com";
 	private static final String 비밀번호 = "password";
 	private static final String AMOUNT = "$.balance.amount";
@@ -115,7 +116,7 @@ public class BankingAcceptanceTest {
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈));
 
-		계좌_조회_요청(상대방계좌, "admin@gmail.com", "password").andExpect(
+		계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(출금할_돈));
 	}
 
@@ -175,6 +176,9 @@ public class BankingAcceptanceTest {
 		// then
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈 * 요청_횟수));
+
+		계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(
+			jsonPath(AMOUNT).value(출금할_돈 * 요청_횟수));
 	}
 
 	/**
@@ -216,8 +220,8 @@ public class BankingAcceptanceTest {
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(0));
 
-		계좌_조회_요청(상대방계좌, 이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(요청_횟수 * 출금할_돈));
+		계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(
+			jsonPath(AMOUNT).value(출금할_돈 * 요청_횟수));
 
 		// when
 		CountDownLatch latch2 = new CountDownLatch(요청_횟수);
