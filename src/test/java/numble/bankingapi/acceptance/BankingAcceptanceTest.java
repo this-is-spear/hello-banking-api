@@ -192,17 +192,15 @@ public class BankingAcceptanceTest {
 		String 상대방계좌 = 계좌_정보_조회(ADMIN);
 		int 요청_횟수 = 200;
 		int 스레드_개수 = 3;
-		CountDownLatch latch = new CountDownLatch(요청_횟수);
 		ExecutorService executorService = Executors.newFixedThreadPool(스레드_개수);
 
-		for (int i = 0; i < 100; i++) {
-			// when
+		// when
+		for (int i = 0; i < 요청_횟수 / 2; i++) {
 			executorService.execute(
 				() -> {
 					try {
 						계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
 						계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호);
-						latch.countDown();
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
@@ -215,14 +213,12 @@ public class BankingAcceptanceTest {
 			jsonPath(AMOUNT).value(0));
 
 		// when
-		for (int i = 0; i < 100; i++) {
-			// when
+		for (int i = 0; i < 요청_횟수 / 2; i++) {
 			executorService.execute(
 				() -> {
 					try {
 						계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
-						계좌_출금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
-						latch.countDown();
+						계좌_출금_요청(나의계좌, 출금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
@@ -233,9 +229,6 @@ public class BankingAcceptanceTest {
 		// then
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(0));
-
-		latch.await();
-
 	}
 
 	private String 계좌_정보_조회(String member) {
