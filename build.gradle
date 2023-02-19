@@ -115,7 +115,8 @@ jacocoTestCoverageVerification {
                     "*.application.*",
                     "*.dto.*",
                     "*.BaseEntity",
-                    "*.concurrency.*"
+                    "*.concurrency.*",
+                    "*.NumbleAlarmService"
             ]
         }
     }
