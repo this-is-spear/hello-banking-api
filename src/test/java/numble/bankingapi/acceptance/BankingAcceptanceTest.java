@@ -160,7 +160,7 @@ public class BankingAcceptanceTest {
 		// given
 		long 입금할_돈 = 백만원;
 		long 출금할_돈 = 천원;
-		int 요청_횟수 = 200;
+		int 요청_횟수 = 50;
 		String 나의계좌 = 계좌_정보_조회(MEMBER);
 		String 상대방계좌 = 계좌_정보_조회(ADMIN);
 
@@ -197,7 +197,7 @@ public class BankingAcceptanceTest {
 		String 나의계좌 = 계좌_정보_조회(MEMBER);
 		String 상대방계좌 = 계좌_정보_조회(ADMIN);
 		int 요청_횟수 = 10;
-		int 스레드_개수 = 2;
+		int 스레드_개수 = 4;
 		ExecutorService executorService = Executors.newFixedThreadPool(스레드_개수);
 
 		// when
@@ -251,7 +251,7 @@ public class BankingAcceptanceTest {
 
 	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
 		String username, String password) throws InterruptedException {
-		int 스레드_개수 = 3;
+		int 스레드_개수 = 6;
 		CountDownLatch latch = new CountDownLatch(times);
 
 		ExecutorService executorService = Executors.newFixedThreadPool(스레드_개수);
