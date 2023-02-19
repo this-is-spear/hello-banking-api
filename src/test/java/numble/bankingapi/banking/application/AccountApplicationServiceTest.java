@@ -13,10 +13,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import numble.bankingapi.alarm.dto.AlarmMessage;
+import numble.bankingapi.alarm.dto.TaskStatus;
+import numble.bankingapi.alarm.dto.TaskType;
 import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.AccountHistory;
 import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.banking.domain.HistoryType;
+import numble.bankingapi.banking.domain.NotifyService;
 import numble.bankingapi.banking.dto.HistoryResponses;
 import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
@@ -27,6 +31,8 @@ class AccountApplicationServiceTest {
 	private AccountService accountService;
 	@Mock
 	private ConcurrencyFacade concurrencyFacade;
+	@Mock
+	private NotifyService notifyService;
 	@InjectMocks
 	private AccountApplicationService accountApplicationService;
 
@@ -70,6 +76,8 @@ class AccountApplicationServiceTest {
 			.build();
 
 		doNothing().when(accountService).depositMoney(계좌.getAccountNumber(), 만원);
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 		accountApplicationService.deposit(계좌번호.getNumber(), 만원);
 	}
 
@@ -83,6 +91,8 @@ class AccountApplicationServiceTest {
 			.build();
 
 		doNothing().when(accountService).withdrawMoney(계좌.getAccountNumber(), 만원);
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 		accountApplicationService.withdraw(계좌번호.getNumber(), 만원);
 	}
 
@@ -98,10 +108,19 @@ class AccountApplicationServiceTest {
 		Account 상대방_계좌 = Account.builder()
 			.accountNumber(상대방_계좌번호)
 			.balance(만원)
-			.userId(2L)
+			.userId(3L)
 			.build();
 
 		doNothing().when(concurrencyFacade).transferWithLock(계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
+
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(accountService.getAccountByAccountNumber(상대방_계좌.getAccountNumber())).thenReturn(상대방_계좌);
+
+		doNothing().when(notifyService)
+			.notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.TRANSFER));
+		doNothing().when(notifyService)
+			.notify(상대방_계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
+
 		accountApplicationService.transfer(계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
 	}
 

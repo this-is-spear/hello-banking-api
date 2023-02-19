@@ -5,11 +5,15 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import numble.bankingapi.alarm.dto.AlarmMessage;
+import numble.bankingapi.alarm.dto.TaskStatus;
+import numble.bankingapi.alarm.dto.TaskType;
 import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.AccountHistory;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.banking.domain.Money;
+import numble.bankingapi.banking.domain.NotifyService;
 import numble.bankingapi.banking.dto.HistoryResponse;
 import numble.bankingapi.banking.dto.HistoryResponses;
 import numble.bankingapi.banking.dto.TargetResponse;
@@ -21,6 +25,7 @@ import numble.bankingapi.banking.dto.TransferCommand;
 public class AccountApplicationService {
 	private final AccountService accountService;
 	private final ConcurrencyFacade concurrencyFacade;
+	private final NotifyService notifyService;
 
 	public HistoryResponses getHistory(String stringAccountNumber) {
 		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
@@ -34,11 +39,17 @@ public class AccountApplicationService {
 	public void deposit(String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
 		accountService.depositMoney(accountNumber, money);
+		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		notifyService.notify(account.getUserId(),
+			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
 
 	public void withdraw(String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
 		accountService.withdrawMoney(accountNumber, money);
+		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		notifyService.notify(account.getUserId(),
+			new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 	}
 
 	public void transfer(String accountNumber, TransferCommand command) {
@@ -47,6 +58,14 @@ public class AccountApplicationService {
 
 		Money money = command.amount();
 		concurrencyFacade.transferWithLock(fromAccountNumber, toAccountNumber, money);
+
+		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
+		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
+
+		notifyService.notify(fromAccount.getUserId(),
+			new AlarmMessage(TaskStatus.SUCCESS, TaskType.TRANSFER));
+		notifyService.notify(toAccount.getUserId(),
+			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
 
 	public TargetResponses getTargets() {
