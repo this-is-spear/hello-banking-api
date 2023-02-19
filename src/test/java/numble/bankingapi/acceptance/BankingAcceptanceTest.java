@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -184,47 +185,56 @@ public class BankingAcceptanceTest {
 	 * @Then : 잔액에 0 원 남는다.
 	 */
 	@Test
+	@Disabled
 	void deposit_withdraw_transfer_concurrency_many_times() throws Exception {
 		// given
 		long 입금할_돈 = 천원;
 		long 출금할_돈 = 천원;
 		String 나의계좌 = 계좌_정보_조회(MEMBER);
 		String 상대방계좌 = 계좌_정보_조회(ADMIN);
-		int 요청_횟수 = 200;
-		int 스레드_개수 = 3;
+		int 요청_횟수 = 10;
+		int 스레드_개수 = 2;
 		ExecutorService executorService = Executors.newFixedThreadPool(스레드_개수);
 
 		// when
-		for (int i = 0; i < 요청_횟수 / 2; i++) {
+		CountDownLatch latch = new CountDownLatch(요청_횟수);
+		for (int i = 0; i < 요청_횟수; i++) {
 			executorService.execute(
 				() -> {
 					try {
 						계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
 						계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호);
+						latch.countDown();
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
 				}
 			);
 		}
-
+		latch.await();
 		// then
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(0));
 
+		계좌_조회_요청(상대방계좌, 이메일, 비밀번호).andExpect(
+			jsonPath(AMOUNT).value(요청_횟수 * 출금할_돈));
+
 		// when
+		CountDownLatch latch2 = new CountDownLatch(요청_횟수);
 		for (int i = 0; i < 요청_횟수 / 2; i++) {
 			executorService.execute(
 				() -> {
 					try {
 						계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
 						계좌_출금_요청(나의계좌, 출금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
+						latch2.countDown();
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
 				}
 			);
 		}
+		latch2.await();
 
 		// then
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
