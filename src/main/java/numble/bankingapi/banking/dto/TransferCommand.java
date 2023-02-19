@@ -9,6 +9,6 @@ import numble.bankingapi.banking.domain.Money;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public record TransferCommand(
 	String toAccountNumber,
-	Money money
+	Money amount
 ) {
 }

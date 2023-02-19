@@ -20,37 +20,33 @@ import numble.bankingapi.banking.dto.TransferCommand;
 @RequiredArgsConstructor
 public class AccountApplicationService {
 	private final AccountService accountService;
+	private final ConcurrencyFacade concurrencyFacade;
 
-	public HistoryResponses getHistory(String accountNumber) {
-		return new HistoryResponses(
-			accountService.findAccountHistoriesByFromAccountNumber(getAccountNumber(accountNumber))
+	public HistoryResponses getHistory(String stringAccountNumber) {
+		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
+		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		return new HistoryResponses(account.getBalance(),
+			accountService.findAccountHistoriesByFromAccountNumber(accountNumber)
 				.stream().map(this::getHistoryResponse).collect(Collectors.toList())
 		);
 	}
 
 	public void deposit(String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
-
-		accountService.depositMoney(account, money);
+		accountService.depositMoney(accountNumber, money);
 	}
 
 	public void withdraw(String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
-
-		accountService.withdrawMoney(account, money);
+		accountService.withdrawMoney(accountNumber, money);
 	}
 
 	public void transfer(String accountNumber, TransferCommand command) {
 		AccountNumber fromAccountNumber = getAccountNumber(accountNumber);
 		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
 
-		Account account = accountService.getAccountByAccountNumber(fromAccountNumber);
-		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
-
-		Money money = command.money();
-		accountService.transferMoney(account, toAccount, money);
+		Money money = command.amount();
+		concurrencyFacade.transferWithLock(fromAccountNumber, toAccountNumber, money);
 	}
 
 	public TargetResponses getTargets() {

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberRepository;
+import numble.bankingapi.member.dto.MemberResponse;
 import numble.bankingapi.member.dto.RegisterCommand;
 import numble.bankingapi.member.exception.NotExistMemberException;
-import numble.bankingapi.member.ui.MemberResponse;
 
 @Service
 @RequiredArgsConstructor

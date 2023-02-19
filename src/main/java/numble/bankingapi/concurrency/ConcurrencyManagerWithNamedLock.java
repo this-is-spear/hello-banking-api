@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 @RequiredArgsConstructor
 public class ConcurrencyManagerWithNamedLock implements ConcurrencyManager {
 	private static final String GET_LOCK = "SELECT GET_LOCK(:userLockName, :timeoutSeconds)";
@@ -21,12 +20,12 @@ public class ConcurrencyManagerWithNamedLock implements ConcurrencyManager {
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	@Override
-	public void executeWithLock(String namedLockName, Runnable runnable) {
+	public void executeWithLock(String lockName, Runnable runnable) {
 		try {
-			getLock(namedLockName);
+			getLock(lockName);
 			runnable.run();
 		} finally {
-			releaseLock(namedLockName);
+			releaseLock(lockName);
 		}
 	}
 

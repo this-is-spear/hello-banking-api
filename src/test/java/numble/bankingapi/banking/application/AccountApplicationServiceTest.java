@@ -25,6 +25,8 @@ import numble.bankingapi.banking.dto.TransferCommand;
 class AccountApplicationServiceTest {
 	@Mock
 	private AccountService accountService;
+	@Mock
+	private ConcurrencyFacade concurrencyFacade;
 	@InjectMocks
 	private AccountApplicationService accountApplicationService;
 
@@ -45,7 +47,13 @@ class AccountApplicationServiceTest {
 			.money(만원)
 			.type(HistoryType.WITHDRAW)
 			.build();
+		Account 계좌 = Account.builder()
+			.accountNumber(계좌번호)
+			.balance(이만원)
+			.userId(2L)
+			.build();
 
+		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
 		when(accountService.findAccountHistoriesByFromAccountNumber(계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
 		HistoryResponses responses = accountApplicationService.getHistory(계좌번호.getNumber());
 		assertThat(responses.historyResponses()).hasSize(2);
@@ -61,8 +69,7 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
-		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		doNothing().when(accountService).depositMoney(계좌, 만원);
+		doNothing().when(accountService).depositMoney(계좌.getAccountNumber(), 만원);
 		accountApplicationService.deposit(계좌번호.getNumber(), 만원);
 	}
 
@@ -75,8 +82,7 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
-		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		doNothing().when(accountService).withdrawMoney(계좌, 만원);
+		doNothing().when(accountService).withdrawMoney(계좌.getAccountNumber(), 만원);
 		accountApplicationService.withdraw(계좌번호.getNumber(), 만원);
 	}
 
@@ -95,9 +101,7 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
-		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		when(accountService.getAccountByAccountNumber(상대방_계좌번호)).thenReturn(상대방_계좌);
-		doNothing().when(accountService).transferMoney(계좌, 상대방_계좌, 만원);
+		doNothing().when(concurrencyFacade).transferWithLock(계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
 		accountApplicationService.transfer(계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
 	}
 

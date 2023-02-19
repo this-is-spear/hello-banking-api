@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import numble.bankingapi.member.domain.Member;
-import numble.bankingapi.member.ui.MemberResponse;
+import numble.bankingapi.member.dto.MemberResponse;
 
 public class MemberDocumentation extends DocumentationTemplate {
 

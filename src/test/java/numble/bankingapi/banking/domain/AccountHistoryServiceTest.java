@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ class AccountHistoryServiceTest {
 
 	@Autowired
 	AccountHistoryRepository accountHistoryRepository;
+	@Autowired
+	AccountRepository accountRepository;
 
 	@Autowired
 	AccountService accountService;
@@ -32,8 +35,9 @@ class AccountHistoryServiceTest {
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
+		accountRepository.save(account);
 
-		assertDoesNotThrow(() -> accountService.depositMoney(account, 이만원));
+		assertDoesNotThrow(() -> accountService.depositMoney(account.getAccountNumber(), 이만원));
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			account.getAccountNumber());
@@ -55,8 +59,9 @@ class AccountHistoryServiceTest {
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
+		accountRepository.save(account);
 
-		assertDoesNotThrow(() -> accountService.withdrawMoney(account, 이만원));
+		assertDoesNotThrow(() -> accountService.withdrawMoney(account.getAccountNumber(), 이만원));
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			account.getAccountNumber());
@@ -85,7 +90,11 @@ class AccountHistoryServiceTest {
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
-		assertDoesNotThrow(() -> accountService.transferMoney(fromAccount, toAccount, 이만원));
+		accountRepository.save(fromAccount);
+		accountRepository.save(toAccount);
+
+		assertDoesNotThrow(
+			() -> accountService.transferMoney(fromAccount.getAccountNumber(), toAccount.getAccountNumber(), 이만원));
 
 		AccountNumber fromAccountAccountNumber = fromAccount.getAccountNumber();
 		AccountNumber toAccountAccountNumber = toAccount.getAccountNumber();

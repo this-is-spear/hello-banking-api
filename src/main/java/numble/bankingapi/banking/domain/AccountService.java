@@ -39,19 +39,24 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void depositMoney(Account account, Money money) {
+	public void depositMoney(AccountNumber accountNumber, Money money) {
+		Account account = getAccountByAccountNumber(accountNumber);
 		account.deposit(money);
 		recordCompletionDepositMoney(account, money);
 	}
 
 	@Transactional
-	public void withdrawMoney(Account account, Money money) {
+	public void withdrawMoney(AccountNumber accountNumber, Money money) {
+		Account account = getAccountByAccountNumber(accountNumber);
 		account.withdraw(money);
 		recordCompletionWithdrawMoney(account, money);
 	}
 
 	@Transactional
-	public void transferMoney(Account fromAccount, Account toAccount, Money money) {
+	public void transferMoney(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, Money money) {
+		Account fromAccount = getAccountByAccountNumber(fromAccountNumber);
+		Account toAccount = getAccountByAccountNumber(toAccountNumber);
+
 		fromAccount.withdraw(money);
 		toAccount.deposit(money);
 		recordCompletionTransferMoney(fromAccount, toAccount, money);
@@ -105,5 +110,4 @@ public class AccountService {
 				.balance(toAccount.getBalance())
 				.build());
 	}
-
 }
