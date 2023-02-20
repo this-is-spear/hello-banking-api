@@ -34,9 +34,9 @@ public class SecurityConfiguration {
 			.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers("/members/register").permitAll()
 				.requestMatchers("/hello").permitAll()
-				.requestMatchers("/members/me").authenticated()
 				.requestMatchers("/docs/**").permitAll()
 				.requestMatchers("/account/**").authenticated()
+				.requestMatchers("/members/**").authenticated()
 			);
 
 		return http.build();
