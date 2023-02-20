@@ -35,6 +35,8 @@ public class DataLoader {
 		HashMap<String, String> hashMap = new HashMap<>();
 		hashMap.put("admin", adminAccount.getAccountNumber().getNumber());
 		hashMap.put("member", memberAccount.getAccountNumber().getNumber());
+		hashMap.put("adminId", String.valueOf(admin.getId()));
+		hashMap.put("memberId", String.valueOf(member.getId()));
 		return hashMap;
 	}
 }
