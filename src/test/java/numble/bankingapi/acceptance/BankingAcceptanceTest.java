@@ -10,53 +10,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import numble.bankingapi.DataLoader;
-import numble.bankingapi.util.DatabaseCleanup;
-
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BankingAcceptanceTest {
-
-	private static final String 어드민이메일 = "admin@gmail.com";
-	private static final String 이메일 = "member@email.com";
-	private static final String 비밀번호 = "password";
-	private static final String AMOUNT = "$.balance.amount";
-	private static final long 천원 = 1_000L;
-	private static final long 삼천원 = 3_000L;
-	private static final long 오천원 = 5_000L;
-	private static final long 만원 = 10_000L;
-	private static final long 백만원 = 1_000_000L;
-	private static final String MEMBER = "member";
-	private static final String ADMIN = "admin";
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	ObjectMapper objectMapper;
-	@Autowired
-	private DatabaseCleanup databaseCleanup;
-	@Autowired
-	private DataLoader dataLoader;
-	private Map<String, String> accountNumber;
-
-	@BeforeEach
-	public void setUp() {
-		databaseCleanup.execute();
-		accountNumber = dataLoader.loadData();
-	}
+class BankingAcceptanceTest extends AcceptanceTest {
 
 	/**
 	 * 사용자는 5천원을 입금하고 5천원을 출금하면 잔액이 0원 남는다.
@@ -246,7 +205,7 @@ public class BankingAcceptanceTest {
 	}
 
 	private String 계좌_정보_조회(String member) {
-		return accountNumber.get(member);
+		return loadData.get(member);
 	}
 
 	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,

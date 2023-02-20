@@ -4,46 +4,14 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import numble.bankingapi.DataLoader;
-import numble.bankingapi.util.DatabaseCleanup;
-
 @Disabled
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class FriendAcceptanceTest {
-	private static final String 어드민이메일 = "admin@gmail.com";
-	private static final String 이메일 = "member@email.com";
-	private static final String 비밀번호 = "password";
-	private static final String ADMIN_ID = "adminId";
-	private static final String MEMBER_ID = "memberId";
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	private DatabaseCleanup databaseCleanup;
-	@Autowired
-	private DataLoader dataLoader;
-	Map<String, String> loadData;
-
-	@BeforeEach
-	public void setUp() {
-		databaseCleanup.execute();
-		loadData = dataLoader.loadData();
-	}
+class FriendAcceptanceTest extends AcceptanceTest {
 
 	/**
 	 * @Given : 친구 신청을 받은 사용자가
