@@ -26,7 +26,7 @@ import numble.bankingapi.member.domain.MemberRepository;
 @WebMvcTest
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc
-public class DocumentationTemplate {
+class DocumentationTemplate {
 	@MockBean
 	protected AccountApplicationService accountApplicationService;
 	@MockBean

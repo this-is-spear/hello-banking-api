@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.dto.MemberResponse;
 
-public class MemberDocumentation extends DocumentationTemplate {
+class MemberDocumentation extends DocumentationTemplate {
 
 	@Test
 	void register() throws Exception {

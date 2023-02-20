@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 
 import numble.bankingapi.banking.dto.TransferCommand;
 
-public class AccountDocumentation extends DocumentationTemplate {
+class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void getHistory() throws Exception {

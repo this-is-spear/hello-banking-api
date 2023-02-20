@@ -25,14 +25,14 @@ import numble.bankingapi.social.dto.FriendResponse;
 import numble.bankingapi.social.dto.FriendResponses;
 import numble.bankingapi.social.domain.SocialNetworkService;
 
-public class SocialDocumentation extends DocumentationTemplate {
+class SocialDocumentation extends DocumentationTemplate {
 
-	public static final String USERNAME = "member@gmail.com";
-	public static final String SOMEONE_USERNAME = "member@gmail.com";
-	public static final String PASSWORD = "password";
-	public static final UsernamePasswordAuthenticationToken MEMBER = new UsernamePasswordAuthenticationToken(USERNAME,
+	private static final String USERNAME = "member@gmail.com";
+	private static final String SOMEONE_USERNAME = "member@gmail.com";
+	private static final String PASSWORD = "password";
+	private static final UsernamePasswordAuthenticationToken MEMBER = new UsernamePasswordAuthenticationToken(USERNAME,
 		PASSWORD, List.of(new SimpleGrantedAuthority("MEMBER")));
-	public static final UsernamePasswordAuthenticationToken SOMEONE_USER = new UsernamePasswordAuthenticationToken(
+	private static final UsernamePasswordAuthenticationToken SOMEONE_USER = new UsernamePasswordAuthenticationToken(
 		SOMEONE_USERNAME,
 		PASSWORD, List.of(new SimpleGrantedAuthority("MEMBER")));
 	@MockBean
