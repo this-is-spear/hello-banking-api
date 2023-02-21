@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,7 +80,6 @@ class AccountApplicationServiceTest {
 		assertThat(responses.historyResponses().get(0).money()).isEqualTo(만원);
 	}
 
-
 	@Test
 	@DisplayName("계좌 사용기록을 반환할 때, 해당 사용자가 아니면 예외가 발생한다.")
 	void getHistory_accessInvalidMember() {
@@ -95,7 +93,6 @@ class AccountApplicationServiceTest {
 		).isInstanceOf(InvalidMemberException.class);
 	}
 
-
 	@Test
 	@DisplayName("계좌에 금액을 입금한다.")
 	void deposit() {
@@ -105,10 +102,32 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
-		doNothing().when(accountService).depositMoney(계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
+		doNothing().when(accountService).depositMoney(계좌.getAccountNumber(), 만원);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
-		accountApplicationService.deposit(계좌번호.getNumber(), 만원);
+		assertDoesNotThrow(
+			() -> accountApplicationService.deposit(EMAIL, 계좌번호.getNumber(), 만원)
+		);
+	}
+
+	@Test
+	@DisplayName("입금할 때, 해당 사용자가 아니면 예외가 발생한다.")
+	void deposit_accessInvalidMember() {
+		long 본인아님 = 231L;
+		Account 계좌 = Account.builder()
+			.accountNumber(계좌번호)
+			.balance(이만원)
+			.userId(2L)
+			.build();
+
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
+		assertThatThrownBy(
+			() -> accountApplicationService.deposit(EMAIL, 계좌번호.getNumber(), 만원)
+		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test

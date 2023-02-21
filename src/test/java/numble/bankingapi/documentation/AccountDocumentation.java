@@ -47,14 +47,17 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void deposit() throws Exception {
-		doNothing().when(accountApplicationService).deposit(계좌_번호, 이만원);
+		doNothing().when(accountApplicationService).deposit(USER.getUsername(), 계좌_번호, 이만원);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
 
 		mockMvc.perform(
 				post("/account/{accountNumber}/deposit", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
 					.with(csrf())
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"deposit",

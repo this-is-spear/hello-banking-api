@@ -46,11 +46,16 @@ public class AccountApplicationService {
 		);
 	}
 
-	public void deposit(String number, Money money) {
+	public void deposit(String principal, String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
-		accountService.depositMoney(accountNumber, money);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
-		notifyService.notify(account.getUserId(),
+		Member member = memberService.findByEmail(principal);
+		if (!member.getId().equals(account.getUserId())) {
+			throw new InvalidMemberException();
+		}
+
+		accountService.depositMoney(accountNumber, money);
+		notifyService.notify(member.getId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
 

@@ -34,7 +34,9 @@ public class AccountController {
 
 	@PostMapping("/{accountNumber}/deposit")
 	public ResponseEntity<Void> depositMoney(@PathVariable String accountNumber, @RequestBody Money money) {
-		accountApplicationService.deposit(accountNumber, money);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User principal = (User)authentication.getPrincipal();
+		accountApplicationService.deposit(principal.getUsername(), accountNumber, money);
 		return ResponseEntity.ok().build();
 	}
 
