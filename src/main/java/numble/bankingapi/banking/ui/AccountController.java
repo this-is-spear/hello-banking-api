@@ -1,6 +1,9 @@
 package numble.bankingapi.banking.ui;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +27,9 @@ public class AccountController {
 
 	@GetMapping("/{accountNumber}/history")
 	public ResponseEntity<HistoryResponses> getHistory(@PathVariable String accountNumber) {
-		return ResponseEntity.ok(accountApplicationService.getHistory(accountNumber));
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User principal = (User)authentication.getPrincipal();
+		return ResponseEntity.ok(accountApplicationService.getHistory(principal.getUsername(), accountNumber));
 	}
 
 	@PostMapping("/{accountNumber}/deposit")

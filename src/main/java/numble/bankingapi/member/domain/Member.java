@@ -51,15 +51,21 @@ public class Member extends BaseEntity {
 	@Column(name = "role")
 	private List<String> roles;
 
-	@Builder
-	public Member(String email, String name, String password) {
+	public Member(Long id, String email, String name, String password, List<String> roles) {
 		ensureEmail(email);
 		ensurePassword(password);
 		ensureName(name);
+
+		this.id = id;
 		this.email = email;
 		this.name = name;
 		this.password = password;
-		this.roles = List.of(RoleType.ROLE_MEMBER.name());
+		this.roles = roles;
+	}
+
+	@Builder
+	public Member(String email, String name, String password) {
+		this(email, name, password, List.of(RoleType.ROLE_MEMBER.name()));
 	}
 
 	public Member(String email, String name, String password, List<String> roles) {

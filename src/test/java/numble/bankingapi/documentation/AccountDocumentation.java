@@ -9,8 +9,16 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import numble.bankingapi.banking.dto.TransferCommand;
 
@@ -18,13 +26,16 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void getHistory() throws Exception {
-		when(accountApplicationService.getHistory(계좌_번호))
+		when(accountApplicationService.getHistory(USER.getUsername(), 계좌_번호))
 			.thenReturn(계좌_내역);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
 
 		mockMvc.perform(
 				get("/account/{accountNumber}/history", 계좌_번호)
 					.with(csrf())
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"history",

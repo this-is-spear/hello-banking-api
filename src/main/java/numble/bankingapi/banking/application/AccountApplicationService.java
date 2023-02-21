@@ -19,17 +19,27 @@ import numble.bankingapi.banking.dto.HistoryResponses;
 import numble.bankingapi.banking.dto.TargetResponse;
 import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
+import numble.bankingapi.banking.exception.InvalidMemberException;
+import numble.bankingapi.member.domain.Member;
+import numble.bankingapi.member.domain.MemberService;
 
 @Service
 @RequiredArgsConstructor
 public class AccountApplicationService {
+	private final MemberService memberService;
 	private final AccountService accountService;
 	private final ConcurrencyFacade concurrencyFacade;
 	private final NotifyService notifyService;
 
-	public HistoryResponses getHistory(String stringAccountNumber) {
+	public HistoryResponses getHistory(String principal, String stringAccountNumber) {
 		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
+
+		Member member = memberService.findByEmail(principal);
+		if (!member.getId().equals(account.getUserId())) {
+			throw new InvalidMemberException();
+		}
+
 		return new HistoryResponses(account.getBalance(),
 			accountService.findAccountHistoriesByFromAccountNumber(accountNumber)
 				.stream().map(this::getHistoryResponse).collect(Collectors.toList())
