@@ -9,16 +9,11 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import numble.bankingapi.banking.dto.TransferCommand;
 
@@ -69,14 +64,17 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void withdraw() throws Exception {
-		doNothing().when(accountApplicationService).withdraw(계좌_번호, 이만원);
+		doNothing().when(accountApplicationService).withdraw(USER.getUsername(), 계좌_번호, 이만원);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
 
 		mockMvc.perform(
 				post("/account/{accountNumber}/withdraw", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
 					.with(csrf())
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"withdraw",

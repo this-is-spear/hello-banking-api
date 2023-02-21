@@ -42,7 +42,9 @@ public class AccountController {
 
 	@PostMapping("/{accountNumber}/withdraw")
 	public ResponseEntity<Void> withdrawMoney(@PathVariable String accountNumber, @RequestBody Money money) {
-		accountApplicationService.withdraw(accountNumber, money);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User principal = (User)authentication.getPrincipal();
+		accountApplicationService.withdraw(principal.getUsername(), accountNumber, money);
 		return ResponseEntity.ok().build();
 	}
 

@@ -140,10 +140,33 @@ class AccountApplicationServiceTest {
 			.build();
 
 		doNothing().when(accountService).withdrawMoney(계좌.getAccountNumber(), 만원);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
-		accountApplicationService.withdraw(계좌번호.getNumber(), 만원);
+		assertDoesNotThrow(
+			() -> accountApplicationService.withdraw(EMAIL, 계좌번호.getNumber(), 만원)
+		);
 	}
+
+	@Test
+	@DisplayName("입금할 때, 해당 사용자가 아니면 예외가 발생한다.")
+	void withdraw_accessInvalidMember() {
+		long 본인아님 = 231L;
+		Account 계좌 = Account.builder()
+			.accountNumber(계좌번호)
+			.balance(이만원)
+			.userId(2L)
+			.build();
+
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
+		assertThatThrownBy(
+			() -> accountApplicationService.withdraw(EMAIL, 계좌번호.getNumber(), 만원)
+		).isInstanceOf(InvalidMemberException.class);
+	}
+
 
 	@Test
 	@DisplayName("계좌 이체한다.")

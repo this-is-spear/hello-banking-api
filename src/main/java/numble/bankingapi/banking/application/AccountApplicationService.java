@@ -34,11 +34,7 @@ public class AccountApplicationService {
 	public HistoryResponses getHistory(String principal, String stringAccountNumber) {
 		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
-
-		Member member = memberService.findByEmail(principal);
-		if (!member.getId().equals(account.getUserId())) {
-			throw new InvalidMemberException();
-		}
+		validateMember(principal, account);
 
 		return new HistoryResponses(account.getBalance(),
 			accountService.findAccountHistoriesByFromAccountNumber(accountNumber)
@@ -49,20 +45,19 @@ public class AccountApplicationService {
 	public void deposit(String principal, String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
-		Member member = memberService.findByEmail(principal);
-		if (!member.getId().equals(account.getUserId())) {
-			throw new InvalidMemberException();
-		}
+		validateMember(principal, account);
 
 		accountService.depositMoney(accountNumber, money);
-		notifyService.notify(member.getId(),
+		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
 
-	public void withdraw(String number, Money money) {
+	public void withdraw(String principal, String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
-		accountService.withdrawMoney(accountNumber, money);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
+
+		accountService.withdrawMoney(accountNumber, money);
 		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 	}
@@ -87,6 +82,13 @@ public class AccountApplicationService {
 		return new TargetResponses(accountService.findAll()
 			.stream().map(this::getTargetResponse)
 			.collect(Collectors.toList()));
+	}
+
+	private void validateMember(String principal, Account account) {
+		Member member = memberService.findByEmail(principal);
+		if (!member.getId().equals(account.getUserId())) {
+			throw new InvalidMemberException();
+		}
 	}
 
 	private HistoryResponse getHistoryResponse(AccountHistory accountHistory) {
