@@ -86,16 +86,18 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void transfer() throws Exception {
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
 		TransferCommand command = new TransferCommand("123-23434-32-1111", 이만원);
-
-		doNothing().when(accountApplicationService).transfer(계좌_번호, command);
+		doNothing().when(accountApplicationService).transfer(USER.getUsername(), 계좌_번호, command);
 
 		mockMvc.perform(
 				post("/account/{accountNumber}/transfer", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(command))
 					.with(csrf())
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"transfer",

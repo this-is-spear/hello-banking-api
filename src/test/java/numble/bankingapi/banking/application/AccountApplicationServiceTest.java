@@ -32,6 +32,7 @@ import numble.bankingapi.member.domain.RoleType;
 
 @ExtendWith(MockitoExtension.class)
 class AccountApplicationServiceTest {
+	private static final long 상대방_ID = 3L;
 	private static final long 사용자_ID = 2L;
 	private static final String EMAIL = "member@email.com";
 	private static final AccountHistory 첫_번째_기록 = AccountHistory.builder()
@@ -99,7 +100,7 @@ class AccountApplicationServiceTest {
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
@@ -119,7 +120,7 @@ class AccountApplicationServiceTest {
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
@@ -136,7 +137,7 @@ class AccountApplicationServiceTest {
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
 		doNothing().when(accountService).withdrawMoney(계좌.getAccountNumber(), 만원);
@@ -150,13 +151,13 @@ class AccountApplicationServiceTest {
 	}
 
 	@Test
-	@DisplayName("입금할 때, 해당 사용자가 아니면 예외가 발생한다.")
+	@DisplayName("출금할 때, 해당 사용자가 아니면 예외가 발생한다.")
 	void withdraw_accessInvalidMember() {
 		long 본인아님 = 231L;
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
@@ -167,24 +168,24 @@ class AccountApplicationServiceTest {
 		).isInstanceOf(InvalidMemberException.class);
 	}
 
-
 	@Test
 	@DisplayName("계좌 이체한다.")
 	void transfer() {
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
 		Account 상대방_계좌 = Account.builder()
 			.accountNumber(상대방_계좌번호)
 			.balance(만원)
-			.userId(3L)
+			.userId(상대방_ID)
 			.build();
 
 		doNothing().when(concurrencyFacade).transferWithLock(계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
-
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		when(accountService.getAccountByAccountNumber(상대방_계좌.getAccountNumber())).thenReturn(상대방_계좌);
 
@@ -193,7 +194,34 @@ class AccountApplicationServiceTest {
 		doNothing().when(notifyService)
 			.notify(상대방_계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 
-		accountApplicationService.transfer(계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
+		accountApplicationService.transfer(EMAIL, 계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
+	}
+
+	@Test
+	@DisplayName("이체할 때, 해당 사용자가 아니면 예외가 발생한다.")
+	void transfer_accessInvalidMember() {
+		long 본인아님 = 231L;
+		Account 계좌 = Account.builder()
+			.accountNumber(계좌번호)
+			.balance(이만원)
+			.userId(사용자_ID)
+			.build();
+
+		Account 상대방_계좌 = Account.builder()
+			.accountNumber(상대방_계좌번호)
+			.balance(만원)
+			.userId(3L)
+			.build();
+
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(accountService.getAccountByAccountNumber(상대방_계좌.getAccountNumber())).thenReturn(상대방_계좌);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
+
+		assertThatThrownBy(
+			() -> accountApplicationService.transfer(EMAIL, 계좌번호.getNumber(),
+				new TransferCommand(상대방_계좌번호.getNumber(), 만원))
+		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test

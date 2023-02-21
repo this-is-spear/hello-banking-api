@@ -62,15 +62,15 @@ public class AccountApplicationService {
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 	}
 
-	public void transfer(String accountNumber, TransferCommand command) {
+	public void transfer(String principal, String accountNumber, TransferCommand command) {
 		AccountNumber fromAccountNumber = getAccountNumber(accountNumber);
 		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
+		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
+		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
+		validateMember(principal, fromAccount);
 
 		Money money = command.amount();
 		concurrencyFacade.transferWithLock(fromAccountNumber, toAccountNumber, money);
-
-		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
-		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
 
 		notifyService.notify(fromAccount.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.TRANSFER));

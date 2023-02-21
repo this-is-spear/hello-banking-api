@@ -51,7 +51,9 @@ public class AccountController {
 	@PostMapping("/{accountNumber}/transfer")
 	public ResponseEntity<Void> transferMoney(@PathVariable String accountNumber,
 		@RequestBody TransferCommand transferCommand) {
-		accountApplicationService.transfer(accountNumber, transferCommand);
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User principal = (User)authentication.getPrincipal();
+		accountApplicationService.transfer(principal.getUsername(), accountNumber, transferCommand);
 		return ResponseEntity.ok().build();
 	}
 
