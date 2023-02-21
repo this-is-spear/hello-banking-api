@@ -59,6 +59,8 @@ public class AccountController {
 
 	@GetMapping("/{accountNumber}/transfer/targets")
 	public ResponseEntity<TargetResponses> getTargets(@PathVariable String accountNumber) {
-		return ResponseEntity.ok(accountApplicationService.getTargets());
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User principal = (User)authentication.getPrincipal();
+		return ResponseEntity.ok(accountApplicationService.getTargets(principal.getUsername(), accountNumber));
 	}
 }

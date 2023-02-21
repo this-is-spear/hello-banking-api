@@ -239,8 +239,24 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
 		when(accountService.findAll()).thenReturn(List.of(계좌, 상대방_계좌));
-		TargetResponses responses = accountApplicationService.getTargets();
+		TargetResponses responses = assertDoesNotThrow(
+			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber()));
 		assertThat(responses.targets()).hasSize(2);
+	}
+
+	@Test
+	@DisplayName("계좌 이체할 상대방을 찾는다.")
+	void getTargets_accessInvalidMember() {
+		long 본인아님 = 231L;
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
+		assertThatThrownBy(
+			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber())
+		).isInstanceOf(InvalidMemberException.class);
 	}
 }

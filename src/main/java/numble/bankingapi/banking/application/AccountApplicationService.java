@@ -67,18 +67,16 @@ public class AccountApplicationService {
 		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
 		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
-		validateMember(principal, fromAccount);
-
-		Money money = command.amount();
-		concurrencyFacade.transferWithLock(fromAccountNumber, toAccountNumber, money);
-
 		notifyService.notify(fromAccount.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.TRANSFER));
 		notifyService.notify(toAccount.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
 
-	public TargetResponses getTargets() {
+	public TargetResponses getTargets(String principal, String stringAccountNumber) {
+		AccountNumber accountNumber = new AccountNumber(stringAccountNumber);
+		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 		return new TargetResponses(accountService.findAll()
 			.stream().map(this::getTargetResponse)
 			.collect(Collectors.toList()));
