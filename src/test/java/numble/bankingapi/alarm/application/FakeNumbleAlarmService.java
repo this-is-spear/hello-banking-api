@@ -1,7 +1,5 @@
 package numble.bankingapi.alarm.application;
 
-import org.springframework.stereotype.Service;
-
 import numble.bankingapi.alarm.domain.AlarmService;
 
 public class FakeNumbleAlarmService implements AlarmService {

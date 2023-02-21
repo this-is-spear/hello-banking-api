@@ -19,7 +19,7 @@ public class MemberService {
 		return memberRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 	}
 
-	public List<Member> findAllById(Iterable<Long> ids){
+	public List<Member> findAllById(Iterable<Long> ids) {
 		return memberRepository.findAllById(ids);
 	}
 }

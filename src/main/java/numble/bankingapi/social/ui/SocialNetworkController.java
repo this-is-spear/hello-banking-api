@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import numble.bankingapi.social.domain.SocialNetworkService;
 import numble.bankingapi.social.dto.AskedFriendResponses;
 import numble.bankingapi.social.dto.FriendResponses;
-import numble.bankingapi.social.domain.SocialNetworkService;
 
 @RestController
 @RequestMapping("members")
