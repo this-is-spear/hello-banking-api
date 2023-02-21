@@ -15,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -25,14 +27,18 @@ import numble.bankingapi.social.dto.FriendResponses;
 
 class SocialDocumentation extends DocumentationTemplate {
 
-	private static final String USERNAME = "member@gmail.com";
-	private static final String SOMEONE_USERNAME = "member@gmail.com";
+	private static final String USERNAME = "member@email.com";
+	private static final String SOMEONE_USERNAME = "member@email.com";
 	private static final String PASSWORD = "password";
-	private static final UsernamePasswordAuthenticationToken MEMBER = new UsernamePasswordAuthenticationToken(USERNAME,
-		PASSWORD, List.of(new SimpleGrantedAuthority("MEMBER")));
-	private static final UsernamePasswordAuthenticationToken SOMEONE_USER = new UsernamePasswordAuthenticationToken(
-		SOMEONE_USERNAME,
-		PASSWORD, List.of(new SimpleGrantedAuthority("MEMBER")));
+	private UserDetails MEMBER = new User("rjsckdd12@gmail.com", "password",
+		List.of(new SimpleGrantedAuthority("MEMBER")));
+	private UserDetails SOMEONE_MEMBER = new User("rjsckdd12@gmail.com", "password",
+		List.of(new SimpleGrantedAuthority("MEMBER")));
+	private UsernamePasswordAuthenticationToken MEMBER_TOKEN = new UsernamePasswordAuthenticationToken(MEMBER, PASSWORD,
+		List.of(new SimpleGrantedAuthority("MEMBER")));
+	private UsernamePasswordAuthenticationToken SOMEONE_MEMBER_TOKEN = new UsernamePasswordAuthenticationToken(
+		SOMEONE_MEMBER, PASSWORD,
+		List.of(new SimpleGrantedAuthority("MEMBER")));
 
 	@Test
 	@DisplayName("상대방에게 친구 요청을 보낸다.")
@@ -40,10 +46,10 @@ class SocialDocumentation extends DocumentationTemplate {
 		Long someoneId = 2L;
 
 		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(MEMBER);
+		securityContext.setAuthentication(MEMBER_TOKEN);
 
 		doNothing().when(socialNetworkService).askWantToBefriends(USERNAME, someoneId);
-		MockHttpServletRequestBuilder builder = post("/member/friends/{someoneId}", someoneId)
+		MockHttpServletRequestBuilder builder = post("/members/friends/{someoneId}", someoneId)
 			.with(user(USERNAME).password(PASSWORD))
 			.with(csrf());
 
@@ -66,10 +72,10 @@ class SocialDocumentation extends DocumentationTemplate {
 		Long requestId = 1L;
 
 		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(SOMEONE_USER);
+		securityContext.setAuthentication(SOMEONE_MEMBER_TOKEN);
 
 		doNothing().when(socialNetworkService).approvalRequest(SOMEONE_USERNAME, requestId);
-		MockHttpServletRequestBuilder builder = post("/member/friends/{requestId}/approval", requestId)
+		MockHttpServletRequestBuilder builder = post("/members/friends/{requestId}/approval", requestId)
 			.with(user(SOMEONE_USERNAME).password(PASSWORD))
 			.with(csrf());
 
@@ -92,10 +98,10 @@ class SocialDocumentation extends DocumentationTemplate {
 		Long requestId = 1L;
 
 		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(SOMEONE_USER);
+		securityContext.setAuthentication(SOMEONE_MEMBER_TOKEN);
 
 		doNothing().when(socialNetworkService).rejectRequest(SOMEONE_USERNAME, requestId);
-		MockHttpServletRequestBuilder builder = post("/member/friends/{requestId}/rejected", requestId)
+		MockHttpServletRequestBuilder builder = post("/members/friends/{requestId}/rejected", requestId)
 			.with(user(SOMEONE_USERNAME).password(PASSWORD))
 			.with(csrf());
 
@@ -121,10 +127,10 @@ class SocialDocumentation extends DocumentationTemplate {
 				new FriendResponse(11L, "name113", "member14@email.com"))
 		);
 
-		securityContext.setAuthentication(SOMEONE_USER);
+		securityContext.setAuthentication(SOMEONE_MEMBER_TOKEN);
 
 		when(socialNetworkService.findFriends(SOMEONE_USERNAME)).thenReturn(friendResponses);
-		MockHttpServletRequestBuilder builder = get("/member/friends")
+		MockHttpServletRequestBuilder builder = get("/members/friends")
 			.with(user(SOMEONE_USERNAME).password(PASSWORD))
 			.with(csrf());
 
@@ -144,7 +150,7 @@ class SocialDocumentation extends DocumentationTemplate {
 	@DisplayName("자신에게 온 친구 요청 목록을 확인한다.")
 	void findRequestWandToBeFriend() throws Exception {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(SOMEONE_USER);
+		securityContext.setAuthentication(SOMEONE_MEMBER_TOKEN);
 
 		AskedFriendResponses askedFriendResponses = new AskedFriendResponses(
 			List.of(new AskedFriendResponse(2L, 13L, "name", "member@gmail.com"),
@@ -152,7 +158,7 @@ class SocialDocumentation extends DocumentationTemplate {
 		);
 
 		when(socialNetworkService.findRequestWandToBeFriend(SOMEONE_USERNAME)).thenReturn(askedFriendResponses);
-		MockHttpServletRequestBuilder builder = get("/member/friends/requests")
+		MockHttpServletRequestBuilder builder = get("/members/friends/requests")
 			.with(user(SOMEONE_USERNAME).password(PASSWORD))
 			.with(csrf());
 
