@@ -57,6 +57,10 @@ public class AccountService {
 		Account fromAccount = getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = getAccountByAccountNumber(toAccountNumber);
 
+		if (fromAccount.equals(toAccount)) {
+			throw new IllegalArgumentException();
+		}
+
 		fromAccount.withdraw(money);
 		toAccount.deposit(money);
 		recordCompletionTransferMoney(fromAccount, toAccount, money);

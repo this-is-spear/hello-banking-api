@@ -132,6 +132,14 @@ class AccountServiceTest {
 	}
 
 	@Test
+	@DisplayName("사용자는 같은 계좌에 이체할 수 없다.")
+	void transferMoney_notTransferSameAccount() {
+		assertThatThrownBy(
+			() -> accountService.transferMoney(사용자_계좌.getAccountNumber(), 사용자_계좌.getAccountNumber(), 삼만원)
+		).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
 	@DisplayName("계좌 번호로 계좌를 조회할 수 있다.")
 	void getAccountByAccountNumber() {
 		assertDoesNotThrow(
