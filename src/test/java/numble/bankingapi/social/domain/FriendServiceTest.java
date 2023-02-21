@@ -83,7 +83,7 @@ class FriendServiceTest {
 		askedFriendHistoryRepository.save(askedFriendHistory);
 
 		assertThatThrownBy(
-			() -> friendService.saveAskedFriendHistory(askedFriendHistory)
+			() -> friendService.saveAskedFriendHistory(new AskedFriendHistory(나의_ID, 상대방의_ID, notRejected))
 		).isInstanceOf(IllegalArgumentException.class);
 	}
 
