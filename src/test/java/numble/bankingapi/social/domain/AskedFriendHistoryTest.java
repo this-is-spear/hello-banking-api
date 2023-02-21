@@ -3,6 +3,7 @@ package numble.bankingapi.social.domain;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,8 +12,14 @@ import org.junit.jupiter.params.provider.NullSource;
 
 class AskedFriendHistoryTest {
 
-	private static final AskedFriendHistory 대기중인_요청 = new AskedFriendHistory(2L, 3L, ApprovalStatus.WAITING);
-	private static final AskedFriendHistory 거절된_요청 = new AskedFriendHistory(2L, 3L, ApprovalStatus.REJECTED);
+	private AskedFriendHistory 대기중인_요청;
+	private AskedFriendHistory 거절된_요청;
+
+	@BeforeEach
+	void setUp() {
+		대기중인_요청 = new AskedFriendHistory(2L, 3L, ApprovalStatus.WAITING);
+		거절된_요청 = new AskedFriendHistory(2L, 3L, ApprovalStatus.REJECTED);
+	}
 
 	@ParameterizedTest
 	@EnumSource(ApprovalStatus.class)

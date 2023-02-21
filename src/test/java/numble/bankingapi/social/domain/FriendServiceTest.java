@@ -101,42 +101,4 @@ class FriendServiceTest {
 		);
 		assertThat(histories).hasSize((int)count);
 	}
-
-	@Test
-	@DisplayName("친구 요청 정보를 승낙한다.")
-	void approveAskedFriend() {
-		AskedFriendHistory 대기중인_요청 = askedFriendHistoryRepository.save(
-			new AskedFriendHistory(상대방의_ID, 나의_ID, ApprovalStatus.WAITING));
-		assertDoesNotThrow(
-			() -> friendService.approvedAskedFriend(대기중인_요청.getId())
-		);
-	}
-
-	@Test
-	@DisplayName("친구 요청 정보가 존재하지 않으면 예외가 발생한다.")
-	void approveAskedFriend_notEmpty() {
-		long 존재하지않는_요청 = 999L;
-		assertThatThrownBy(
-			() -> friendService.approvedAskedFriend(존재하지않는_요청)
-		).isInstanceOf(IllegalArgumentException.class);
-	}
-
-	@Test
-	@DisplayName("친구 요청 정보를 절한다.")
-	void rejectAskedFriend() {
-		AskedFriendHistory 대기중인_요청 = askedFriendHistoryRepository.save(
-			new AskedFriendHistory(상대방의_ID, 나의_ID, ApprovalStatus.WAITING));
-		assertDoesNotThrow(
-			() -> friendService.rejectAskedFriend(대기중인_요청.getId())
-		);
-	}
-
-	@Test
-	@DisplayName("친구 요청 정보가 존재하지 않으면 예외가 발생한다.")
-	void rejectAskedFriend_notEmpty() {
-		long 존재하지않는_요청 = 999L;
-		assertThatThrownBy(
-			() -> friendService.rejectAskedFriend(존재하지않는_요청)
-		).isInstanceOf(IllegalArgumentException.class);
-	}
 }

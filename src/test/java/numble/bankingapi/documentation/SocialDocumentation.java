@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -23,7 +22,6 @@ import numble.bankingapi.social.dto.AskedFriendResponse;
 import numble.bankingapi.social.dto.AskedFriendResponses;
 import numble.bankingapi.social.dto.FriendResponse;
 import numble.bankingapi.social.dto.FriendResponses;
-import numble.bankingapi.social.domain.SocialNetworkService;
 
 class SocialDocumentation extends DocumentationTemplate {
 
@@ -35,8 +33,6 @@ class SocialDocumentation extends DocumentationTemplate {
 	private static final UsernamePasswordAuthenticationToken SOMEONE_USER = new UsernamePasswordAuthenticationToken(
 		SOMEONE_USERNAME,
 		PASSWORD, List.of(new SimpleGrantedAuthority("MEMBER")));
-	@MockBean
-	private SocialNetworkService socialNetworkService;
 
 	@Test
 	@DisplayName("상대방에게 친구 요청을 보낸다.")

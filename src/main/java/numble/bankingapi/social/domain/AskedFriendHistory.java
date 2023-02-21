@@ -37,6 +37,10 @@ public class AskedFriendHistory {
 		this.status = status;
 	}
 
+	public AskedFriendHistory(Long fromMemberId, Long toMemberId) {
+		this(fromMemberId, toMemberId, ApprovalStatus.WAITING);
+	}
+
 	private void validateFromMemberId(Long fromMemberId) {
 		if (fromMemberId == null) {
 			throw new NullPointerException();

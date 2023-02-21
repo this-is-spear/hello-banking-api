@@ -1,5 +1,6 @@
 package numble.bankingapi.member.infra;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,10 @@ public interface JpaMemberRepository extends JpaRepository<Member, Long>, Member
 
 	@Override
 	Optional<Member> findByEmail(String email);
+
+	@Override
+	Optional<Member> findById(Long aLong);
+
+	@Override
+	List<Member> findAllById(Iterable<Long> longs);
 }

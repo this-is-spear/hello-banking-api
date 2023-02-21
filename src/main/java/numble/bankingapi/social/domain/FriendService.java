@@ -26,6 +26,11 @@ public class FriendService {
 		return askedFriendHistoryRepository.findByToMemberIdAndStatus(memberId, ApprovalStatus.WAITING);
 	}
 
+	public AskedFriendHistory findFriendHistoryById(Long askedFriendHistoryId) {
+		return askedFriendHistoryRepository.findById(askedFriendHistoryId)
+			.orElseThrow(IllegalArgumentException::new);
+	}
+
 	@Transactional
 	public void saveAskedFriendHistory(AskedFriendHistory askedFriendHistory) {
 		final var fromMemberId = askedFriendHistory.getFromMemberId();
@@ -48,15 +53,4 @@ public class FriendService {
 				foundAskedFriendHistory.getStatus())).isPresent();
 	}
 
-	public void approvedAskedFriend(Long askedFriendHistoryId) {
-		AskedFriendHistory askedFriendHistory = askedFriendHistoryRepository.findById(askedFriendHistoryId)
-			.orElseThrow(IllegalArgumentException::new);
-		askedFriendHistory.approve();
-	}
-
-	public void rejectAskedFriend(Long askedFriendHistoryId) {
-		AskedFriendHistory askedFriendHistory = askedFriendHistoryRepository.findById(askedFriendHistoryId)
-			.orElseThrow(IllegalArgumentException::new);
-		askedFriendHistory.reject();
-	}
 }
