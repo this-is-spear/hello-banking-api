@@ -1,9 +1,28 @@
 package numble.bankingapi.social.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AskedFriendHistory {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Column(name = "fromMemberId", nullable = false)
 	private Long fromMemberId;
+	@Column(name = "toMemberId", nullable = false)
 	private Long toMemberId;
+	@Enumerated(EnumType.STRING)
 	private ApprovalStatus status;
 
 	public AskedFriendHistory(Long fromMemberId, Long toMemberId, ApprovalStatus status) {

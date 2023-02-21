@@ -1,8 +1,11 @@
 package numble.bankingapi.social.domain;
 
+import org.springframework.stereotype.Service;
+
 import numble.bankingapi.social.dto.AskedFriendResponses;
 import numble.bankingapi.social.dto.FriendResponses;
 
+@Service
 public class SocialNetworkService {
 	public void askWantToBefriends(String principal, Long someoneId) {
 
