@@ -32,7 +32,7 @@ class AcceptanceTest {
 	protected static final String 이메일 = "member@email.com";
 	protected static final String MEMBER = "member";
 	protected static final String MEMBER_ID = "memberId";
-	protected static final String 어드민이메일 = "admin@gmail.com";
+	protected static final String 어드민이메일 = "admin@email.com";
 	protected static final String ADMIN = "admin";
 	protected static final String ADMIN_ID = "adminId";
 	protected static final String 비밀번호 = "password";

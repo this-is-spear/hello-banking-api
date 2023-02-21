@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.UnsupportedEncodingException;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -16,8 +15,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import numble.bankingapi.social.dto.AskedFriendResponses;
 
-@Disabled
 class FriendAcceptanceTest extends AcceptanceTest {
+
+	public static final String FROM_USER_ID = "$.askedFriendResponses..fromUserId";
 
 	/**
 	 * @Given : 친구 신청을 받은 사용자가
@@ -38,7 +38,7 @@ class FriendAcceptanceTest extends AcceptanceTest {
 		// given : action 상대방
 		ResultActions 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
 		친구_신청_목록_조회.andExpect(status().isOk());
-		친구_신청_목록_조회.andExpect(jsonPath("$..userId").value(memberId));
+		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 
 		Long requestId = getRequestId(memberId, 친구_신청_목록_조회);
 
@@ -49,7 +49,7 @@ class FriendAcceptanceTest extends AcceptanceTest {
 		// then : action 상대방
 		ResultActions 친구_목록_조회 = 친구_목록_조회(어드민이메일, 비밀번호);
 		친구_목록_조회.andExpect(status().isOk());
-		친구_목록_조회.andExpect(jsonPath("$..userId").value(memberId));
+		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 	}
 
 	/**
@@ -70,7 +70,7 @@ class FriendAcceptanceTest extends AcceptanceTest {
 		// given : action 상대방
 		ResultActions 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
 		친구_신청_목록_조회.andExpect(status().isOk());
-		친구_신청_목록_조회.andExpect(jsonPath("$..userId", memberId).exists());
+		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 
 		Long requestId = getRequestId(memberId, 친구_신청_목록_조회);
 
@@ -79,9 +79,9 @@ class FriendAcceptanceTest extends AcceptanceTest {
 		친구_승인.andExpect(status().isOk());
 
 		// then : action 상대방
-		ResultActions 친구_목록_조회 = 친구_목록_조회(어드민이메일, 비밀번호);
+		ResultActions 친구_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
 		친구_목록_조회.andExpect(status().isOk());
-		친구_목록_조회.andExpect(jsonPath("$..userId", memberId).doesNotExist());
+		친구_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).doesNotExist());
 	}
 
 	/**
@@ -91,7 +91,7 @@ class FriendAcceptanceTest extends AcceptanceTest {
 	 */
 	@Test
 	@DisplayName("거절한 사용자에게 다시 친구 신청을 보낼 수 있다.")
-	void reject() throws Exception {
+	void reject_requestAgain() throws Exception {
 		// given : action 사용자
 		Long memberId = Long.parseLong(loadData.get(MEMBER_ID));
 		Long adminId = Long.parseLong(loadData.get(ADMIN_ID));
@@ -101,7 +101,7 @@ class FriendAcceptanceTest extends AcceptanceTest {
 		// given : action 상대방
 		ResultActions 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
 		친구_신청_목록_조회.andExpect(status().isOk());
-		친구_신청_목록_조회.andExpect(jsonPath("$..userId", memberId).exists());
+		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 
 		Long requestId = getRequestId(memberId, 친구_신청_목록_조회);
 
@@ -116,12 +116,12 @@ class FriendAcceptanceTest extends AcceptanceTest {
 		// then : action 상대방
 		ResultActions 친구_목록_조회 = 친구_목록_조회(어드민이메일, 비밀번호);
 		친구_목록_조회.andExpect(status().isOk());
-		친구_목록_조회.andExpect(jsonPath("$..userId").value(memberId));
+		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 	}
 
 	private ResultActions 친구_목록_조회(String username, String password) throws Exception {
 		return mockMvc.perform(
-			get("/member/friends/requests")
+			get("/members/friends")
 				.accept(MediaType.APPLICATION_JSON)
 				.with(user(username).password(password).roles("MEMBER"))
 		);
@@ -129,21 +129,21 @@ class FriendAcceptanceTest extends AcceptanceTest {
 
 	private ResultActions 친구_추가_승인(Long requestId, String username, String password) throws Exception {
 		return mockMvc.perform(
-			post("/member/friends/{requestId}/approval", requestId)
+			post("/members/friends/{requestId}/approval", requestId)
 				.with(user(username).password(password).roles("MEMBER"))
 		);
 	}
 
 	private ResultActions 친구_추가_거절(Long requestId, String username, String password) throws Exception {
 		return mockMvc.perform(
-			post("/member/friends/{requestId}/rejected", requestId)
+			post("/members/friends/{requestId}/rejected", requestId)
 				.with(user(username).password(password).roles("MEMBER"))
 		);
 	}
 
 	private ResultActions 친구_신청_목록_조회(String username, String password) throws Exception {
 		return mockMvc.perform(
-			get("/member/friends/requests")
+			get("/members/friends/requests")
 				.accept(MediaType.APPLICATION_JSON)
 				.with(user(username).password(password).roles("MEMBER"))
 		);
@@ -151,16 +151,15 @@ class FriendAcceptanceTest extends AcceptanceTest {
 
 	private ResultActions 친구_신청(Long userId, String username, String password) throws Exception {
 		return mockMvc.perform(
-			post("/member/friends/{userId}", userId)
+			post("/members/friends/{userId}", userId)
 				.with(user(username).password(password).roles("MEMBER"))
 		);
 	}
 
-	private Long getRequestId(Long memberId, ResultActions 친구_신청_목록_조회) throws
-		JsonProcessingException,
-		UnsupportedEncodingException {
+	private Long getRequestId(Long memberId, ResultActions resultActions) throws
+		JsonProcessingException, UnsupportedEncodingException {
 		AskedFriendResponses friendResponses = objectMapper.readValue(
-			친구_신청_목록_조회.andReturn().getResponse().getContentAsString(), AskedFriendResponses.class);
+			resultActions.andReturn().getResponse().getContentAsString(), AskedFriendResponses.class);
 
 		return friendResponses.askedFriendResponses()
 			.stream()

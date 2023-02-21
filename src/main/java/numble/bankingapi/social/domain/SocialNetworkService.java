@@ -3,6 +3,7 @@ package numble.bankingapi.social.domain;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import numble.bankingapi.member.domain.Member;
@@ -19,6 +20,7 @@ public class SocialNetworkService {
 	private final FriendService friendService;
 	private final MemberService memberService;
 
+	@Transactional
 	public void askWantToBefriends(String principal, Long toMemberId) {
 		Member fromMember = getMember(principal);
 		Member toMember = memberService.findById(toMemberId);
@@ -26,6 +28,7 @@ public class SocialNetworkService {
 		friendService.saveAskedFriendHistory(waitingAskedFriend);
 	}
 
+	@Transactional
 	public void approvalRequest(String principal, Long requestId) {
 		Member toMember = getMember(principal);
 		AskedFriendHistory askedFriendHistory = friendService.findFriendHistoryById(requestId);
@@ -38,6 +41,7 @@ public class SocialNetworkService {
 		makeFriend(askedFriendHistory);
 	}
 
+	@Transactional
 	public void rejectRequest(String principal, Long requestId) {
 		Member toMember = getMember(principal);
 		AskedFriendHistory askedFriendHistory = friendService.findFriendHistoryById(requestId);
@@ -95,6 +99,7 @@ public class SocialNetworkService {
 		return memberService.findByEmail(principal);
 	}
 
+	@Transactional
 	private void makeFriend(AskedFriendHistory askedFriendHistory) {
 		friendService.saveFriend(new Friend(askedFriendHistory.getFromMemberId(), askedFriendHistory.getToMemberId()));
 		friendService.saveFriend(new Friend(askedFriendHistory.getToMemberId(), askedFriendHistory.getFromMemberId()));
