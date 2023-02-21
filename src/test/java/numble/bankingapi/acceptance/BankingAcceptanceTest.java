@@ -16,6 +16,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 class BankingAcceptanceTest extends AcceptanceTest {
+	private static final String AMOUNT = "$.balance.amount";
+	private static final String ADMIN = "admin";
+	private static final String MEMBER = "member";
+	private static final long 천원 = 1_000L;
+	private static final long 삼천원 = 3_000L;
+	private static final long 오천원 = 5_000L;
+	private static final long 만원 = 10_000L;
+	private static final long 백만원 = 1_000_000L;
 
 	/**
 	 * 사용자는 5천원을 입금하고 5천원을 출금하면 잔액이 0원 남는다.

@@ -17,7 +17,9 @@ import numble.bankingapi.social.dto.AskedFriendResponses;
 
 class FriendAcceptanceTest extends AcceptanceTest {
 
-	public static final String FROM_USER_ID = "$.askedFriendResponses..fromUserId";
+	private static final String FROM_USER_ID = "$.askedFriendResponses..fromUserId";
+	private static final String MEMBER_ID = "memberId";
+	private static final String ADMIN_ID = "adminId";
 
 	/**
 	 * @Given : 친구 신청을 받은 사용자가
