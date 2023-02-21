@@ -22,11 +22,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import numble.bankingapi.banking.application.AccountApplicationService;
 import numble.bankingapi.member.application.MemberApplicationService;
 import numble.bankingapi.member.domain.MemberRepository;
+import numble.bankingapi.social.domain.SocialNetworkService;
 
 @WebMvcTest
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureMockMvc
-public class DocumentationTemplate {
+class DocumentationTemplate {
+	@MockBean
+	protected SocialNetworkService socialNetworkService;
 	@MockBean
 	protected AccountApplicationService accountApplicationService;
 	@MockBean

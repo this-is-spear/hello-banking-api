@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
