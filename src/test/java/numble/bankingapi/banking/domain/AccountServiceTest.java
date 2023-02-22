@@ -3,9 +3,9 @@ package numble.bankingapi.banking.domain;
 import static numble.bankingapi.fixture.AccountFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,6 @@ import numble.bankingapi.banking.exception.InvalidMemberException;
 import numble.bankingapi.banking.exception.NotNegativeMoneyException;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberRepository;
-import numble.bankingapi.member.domain.RoleType;
 
 @Transactional
 @SpringBootTest
@@ -32,10 +31,14 @@ class AccountServiceTest {
 	Account 사용자_계좌;
 	Account 상대방_계좌;
 	Member 사용자;
+	Member 사용자의_친구1;
+	Member 사용자의_친구2;
 
 	@BeforeEach
 	void setUp() {
 		사용자 = memberRepository.findByEmail("member@email.com").get();
+		사용자의_친구1 = memberRepository.save(new Member("member_friend1@email.com", "friend1", "password"));
+		사용자의_친구2 = memberRepository.save(new Member("member_friend2@email.com", "friend1", "password"));
 
 		사용자_계좌 = accountRepository.save(
 			Account.builder()
@@ -47,7 +50,39 @@ class AccountServiceTest {
 
 		상대방_계좌 = accountRepository.save(
 			Account.builder()
-				.userId(3123L)
+				.userId(1233L)
+				.accountNumber(상대방_계좌번호)
+				.balance(삼만원)
+				.build()
+		);
+
+		accountRepository.save(
+			Account.builder()
+				.userId(사용자의_친구1.getId())
+				.accountNumber(상대방_계좌번호)
+				.balance(삼만원)
+				.build()
+		);
+
+		accountRepository.save(
+			Account.builder()
+				.userId(사용자의_친구2.getId())
+				.accountNumber(상대방_계좌번호)
+				.balance(삼만원)
+				.build()
+		);
+
+		accountRepository.save(
+			Account.builder()
+				.userId(사용자의_친구2.getId())
+				.accountNumber(상대방_계좌번호)
+				.balance(삼만원)
+				.build()
+		);
+
+		accountRepository.save(
+			Account.builder()
+				.userId(사용자의_친구2.getId())
 				.accountNumber(상대방_계좌번호)
 				.balance(삼만원)
 				.build()
@@ -196,5 +231,15 @@ class AccountServiceTest {
 		int size = accountRepository.findAll().size();
 		List<Account> accounts = accountService.findAll();
 		assertThat(accounts).hasSize(size);
+	}
+
+	@Test
+	@DisplayName("친구들의 계좌를 조회한다.")
+	void getFriendAccounts() {
+		var accounts = assertDoesNotThrow(
+			() -> accountService.getFriendAccounts(List.of(사용자의_친구1.getId(), 사용자의_친구2.getId()))
+		);
+
+		assertThat(accounts).hasSize(4);
 	}
 }

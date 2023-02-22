@@ -20,6 +20,7 @@ import numble.bankingapi.banking.dto.TargetResponse;
 import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.banking.exception.InvalidMemberException;
+import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberService;
 import numble.bankingapi.social.domain.Friend;
 import numble.bankingapi.social.domain.FriendService;
@@ -90,10 +91,16 @@ public class AccountApplicationService {
 			.map(Friend::getToMemberId)
 			.toList();
 
-		var friendAccounts = accountService.getFriendAccounts(friendIds);
-		var targetResponseList = memberService.findAllById(friendIds).stream()
-			.map(friend -> new TargetResponse(friend.getName(), friend.getEmail(), friendAccounts.get(friend.getId())))
-			.collect(Collectors.toList());
+		var targetList = memberService.findAllById(friendIds);
+		var targetResponseList = accountService.getFriendAccounts(friendIds)
+			.stream()
+			.map(friendAccount -> {
+				Member friend = targetList.stream()
+					.filter(target -> target.getId().equals(friendAccount.getUserId()))
+					.findFirst()
+					.orElseThrow(IllegalArgumentException::new);
+				return new TargetResponse(friend.getName(), friend.getEmail(), friendAccount.getAccountNumber());
+			}).collect(Collectors.toList());
 
 		return new TargetResponses(targetResponseList);
 	}

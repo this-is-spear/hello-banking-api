@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +19,6 @@ import numble.bankingapi.alarm.dto.TaskStatus;
 import numble.bankingapi.alarm.dto.TaskType;
 import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.AccountHistory;
-import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.domain.NotifyService;
@@ -137,9 +135,7 @@ class AccountApplicationServiceTest {
 		when(memberService.findByEmail(EMAIL)).thenReturn(사용자);
 		when(friendService.findFriends(사용자_ID)).thenReturn(List.of(new Friend(사용자_ID, 상대방_ID)));
 		when(memberService.findAllById(List.of(상대방_ID))).thenReturn(List.of(상대방));
-		HashMap<Long, AccountNumber> data = new HashMap<>();
-		data.put(상대방_ID, 상대방_계좌번호);
-		when(accountService.getFriendAccounts(List.of(상대방_ID))).thenReturn(data);
+		when(accountService.getFriendAccounts(List.of(상대방_ID))).thenReturn(List.of(상대방_계좌));
 
 		TargetResponses responses = assertDoesNotThrow(
 			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber()));

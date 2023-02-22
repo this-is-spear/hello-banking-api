@@ -2,6 +2,7 @@ package numble.bankingapi.banking.domain;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -94,10 +95,10 @@ public class AccountService {
 		return accountHistoryRepository.findByFromAccountNumber(accountNumber);
 	}
 
-	public Map<Long, AccountNumber> getFriendAccounts(List<Long> id) {
-		return accountRepository.findAllByUserIdIn(id)
+	public List<Account> getFriendAccounts(List<Long> friendIds) {
+		return accountRepository.findAllByUserIdIn(friendIds)
 			.stream()
-			.collect(Collectors.toMap(Account::getUserId, Account::getAccountNumber));
+			.toList();
 	}
 
 	private void recordCompletionDepositMoney(Account fromAccount, Money money) {
