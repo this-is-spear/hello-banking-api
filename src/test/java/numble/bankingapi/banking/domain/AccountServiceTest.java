@@ -3,6 +3,7 @@ package numble.bankingapi.banking.domain;
 import static numble.bankingapi.fixture.AccountFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ import numble.bankingapi.banking.exception.InvalidMemberException;
 import numble.bankingapi.banking.exception.NotNegativeMoneyException;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberRepository;
+import numble.bankingapi.member.domain.RoleType;
 
 @Transactional
 @SpringBootTest
@@ -45,7 +47,7 @@ class AccountServiceTest {
 
 		상대방_계좌 = accountRepository.save(
 			Account.builder()
-				.userId(1L)
+				.userId(3123L)
 				.accountNumber(상대방_계좌번호)
 				.balance(삼만원)
 				.build()
@@ -84,6 +86,14 @@ class AccountServiceTest {
 	}
 
 	@Test
+	@DisplayName("입금할 때, 해당 사용자가 아니면 예외가 발생한다.")
+	void deposit_accessInvalidMember() {
+		assertThatThrownBy(
+			() -> accountService.depositMoney(사용자.getEmail(), 상대방_계좌.getAccountNumber(), 만원)
+		).isInstanceOf(InvalidMemberException.class);
+	}
+
+	@Test
 	@DisplayName("계좌에 출금하다.")
 	void withDrawMoney() {
 		Money 계좌_잔액_이만원 = 사용자_계좌.getBalance();
@@ -97,13 +107,19 @@ class AccountServiceTest {
 	}
 
 	@Test
-	@DisplayName("계좌에 들어있는 돈보마 많이 출금하게 되면 NotNegativeMoneyException 예외가 발생한다.")
+	@DisplayName("계좌에 들어있는 돈보다 많이 출금하게 되면 NotNegativeMoneyException 예외가 발생한다.")
 	void withDrawMoney_() {
-		Money 출금할_금액_삼만원 = 삼만원;
-
 		assertThatThrownBy(
-			() -> accountService.withdrawMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 출금할_금액_삼만원)
+			() -> accountService.withdrawMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 삼만원)
 		).isInstanceOf(NotNegativeMoneyException.class);
+	}
+
+	@Test
+	@DisplayName("출금할 때, 해당 사용자가 아니면 예외가 발생한다.")
+	void withdraw_accessInvalidMember() {
+		assertThatThrownBy(
+			() -> accountService.withdrawMoney(사용자.getEmail(), 상대방_계좌.getAccountNumber(), 만원)
+		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test
@@ -164,6 +180,14 @@ class AccountServiceTest {
 		assertDoesNotThrow(
 			() -> accountService.getAccountByAccountNumber(계좌번호)
 		);
+	}
+
+	@Test
+	@DisplayName("계좌 사용기록을 반환할 때, 해당 사용자가 아니면 예외가 발생한다.")
+	void getHistory_accessInvalidMember() {
+		assertThatThrownBy(
+			() -> accountService.findAccountHistoriesByFromAccountNumber(사용자.getEmail(), 상대방_계좌.getAccountNumber())
+		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test

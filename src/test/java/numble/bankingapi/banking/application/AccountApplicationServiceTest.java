@@ -80,19 +80,6 @@ class AccountApplicationServiceTest {
 	}
 
 	@Test
-	@DisplayName("계좌 사용기록을 반환할 때, 해당 사용자가 아니면 예외가 발생한다.")
-	void getHistory_accessInvalidMember() {
-		long 본인아님 = 231L;
-		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		when(memberService.findByEmail(EMAIL)).thenReturn(
-			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
-
-		assertThatThrownBy(
-			() -> accountApplicationService.getHistory(EMAIL, 계좌번호.getNumber())
-		).isInstanceOf(InvalidMemberException.class);
-	}
-
-	@Test
 	@DisplayName("계좌에 금액을 입금한다.")
 	void deposit() {
 		Account 계좌 = Account.builder()
@@ -110,24 +97,6 @@ class AccountApplicationServiceTest {
 	}
 
 	@Test
-	@DisplayName("입금할 때, 해당 사용자가 아니면 예외가 발생한다.")
-	void deposit_accessInvalidMember() {
-		long 본인아님 = 231L;
-		Account 계좌 = Account.builder()
-			.accountNumber(계좌번호)
-			.balance(이만원)
-			.userId(사용자_ID)
-			.build();
-
-		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
-		when(memberService.findByEmail(EMAIL)).thenReturn(
-			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
-		assertThatThrownBy(
-			() -> accountApplicationService.deposit(EMAIL, 계좌번호.getNumber(), 만원)
-		).isInstanceOf(InvalidMemberException.class);
-	}
-
-	@Test
 	@DisplayName("계좌에 금액을 출금한다.")
 	void withdraw() {
 		Account 계좌 = Account.builder()
@@ -142,24 +111,6 @@ class AccountApplicationServiceTest {
 		assertDoesNotThrow(
 			() -> accountApplicationService.withdraw(EMAIL, 계좌번호.getNumber(), 만원)
 		);
-	}
-
-	@Test
-	@DisplayName("출금할 때, 해당 사용자가 아니면 예외가 발생한다.")
-	void withdraw_accessInvalidMember() {
-		long 본인아님 = 231L;
-		Account 계좌 = Account.builder()
-			.accountNumber(계좌번호)
-			.balance(이만원)
-			.userId(사용자_ID)
-			.build();
-
-		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
-		when(memberService.findByEmail(EMAIL)).thenReturn(
-			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
-		assertThatThrownBy(
-			() -> accountApplicationService.withdraw(EMAIL, 계좌번호.getNumber(), 만원)
-		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test
