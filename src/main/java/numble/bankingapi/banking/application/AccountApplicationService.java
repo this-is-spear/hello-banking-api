@@ -45,7 +45,7 @@ public class AccountApplicationService {
 		AccountNumber accountNumber = getAccountNumber(number);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
 
-		accountService.depositMoney(principal, accountNumber, money);
+		concurrencyFacade.depositWithLock(principal, accountNumber, money);
 		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
@@ -54,7 +54,7 @@ public class AccountApplicationService {
 		AccountNumber accountNumber = getAccountNumber(number);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
 
-		accountService.withdrawMoney(principal, accountNumber, money);
+		concurrencyFacade.withdrawWithLock(principal, accountNumber, money);
 		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 	}
