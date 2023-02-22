@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import numble.bankingapi.banking.exception.InvalidMemberException;
 import numble.bankingapi.banking.exception.NotNegativeMoneyException;
+import numble.bankingapi.member.domain.Member;
+import numble.bankingapi.member.domain.MemberRepository;
 
 @Transactional
 @SpringBootTest
@@ -21,15 +24,20 @@ class AccountServiceTest {
 	@Autowired
 	private AccountRepository accountRepository;
 	@Autowired
+	private MemberRepository memberRepository;
+	@Autowired
 	private AccountService accountService;
 	Account 사용자_계좌;
 	Account 상대방_계좌;
+	Member 사용자;
 
 	@BeforeEach
 	void setUp() {
+		사용자 = memberRepository.findByEmail("member@email.com").get();
+
 		사용자_계좌 = accountRepository.save(
 			Account.builder()
-				.userId(2L)
+				.userId(사용자.getId())
 				.accountNumber(계좌번호)
 				.balance(이만원)
 				.build()
@@ -106,7 +114,7 @@ class AccountServiceTest {
 		Money 이체할_금액_만원 = 만원;
 
 		// when
-		accountService.transferMoney(사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 이체할_금액_만원);
+		accountService.transferMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 이체할_금액_만원);
 
 		// then
 		assertAll(
@@ -124,7 +132,8 @@ class AccountServiceTest {
 
 		assertAll(
 			() -> assertThatThrownBy(
-				() -> accountService.transferMoney(사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 이체할_금액_삼만원)
+				() -> accountService.transferMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(),
+					이체할_금액_삼만원)
 			).isInstanceOf(NotNegativeMoneyException.class),
 			() -> assertThat(이전_사용자_잔액_이만원).isEqualTo(이만원),
 			() -> assertThat(이전_상대방_잔액_만원).isEqualTo(삼만원)
@@ -135,8 +144,18 @@ class AccountServiceTest {
 	@DisplayName("사용자는 같은 계좌에 이체할 수 없다.")
 	void transferMoney_notTransferSameAccount() {
 		assertThatThrownBy(
-			() -> accountService.transferMoney(사용자_계좌.getAccountNumber(), 사용자_계좌.getAccountNumber(), 삼만원)
+			() -> accountService.transferMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 사용자_계좌.getAccountNumber(),
+				삼만원)
 		).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	@DisplayName("이체할 때, 해당 사용자가 아니면 예외가 발생한다.")
+	void transfer_accessInvalidMember() {
+		assertThatThrownBy(
+			() -> accountService.transferMoney(사용자.getEmail(), 상대방_계좌.getAccountNumber(), 사용자_계좌.getAccountNumber(),
+				삼만원)
+		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test

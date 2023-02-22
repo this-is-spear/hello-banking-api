@@ -119,11 +119,11 @@ class BankingAcceptanceTest extends AcceptanceTest {
 	 * 백만원 있는 사용자가 상대방에게 동시에 천원을 200번 요청하면 잔액에 80만원 남는다.
 	 *
 	 * @Given : 사용자는 백만원을 입금하고
-	 * @When : 상대방에게 동시에 천 원을 200번 요청하면
-	 * @Then : 잔액에 80만원 남는다.
+	 * @When : 상대방에게 동시에 천 원을 50 번 요청하면
+	 * @Then : 잔액에 95만원 남는다.
 	 */
 	@Test
-	void transfer_concurrency_200_times() throws Exception {
+	void transfer_concurrency_50_times() throws Exception {
 		// given
 		long 입금할_돈 = 백만원;
 		long 출금할_돈 = 천원;

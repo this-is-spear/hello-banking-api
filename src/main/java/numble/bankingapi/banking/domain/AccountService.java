@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import numble.bankingapi.banking.exception.InvalidMemberException;
+import numble.bankingapi.member.domain.Member;
+import numble.bankingapi.member.domain.MemberRepository;
 import numble.bankingapi.util.AccountNumberGenerator;
 
 @Service
@@ -13,6 +16,7 @@ import numble.bankingapi.util.AccountNumberGenerator;
 public class AccountService {
 	private final AccountRepository accountRepository;
 	private final AccountHistoryRepository accountHistoryRepository;
+	private final MemberRepository memberRepository;
 
 	public Account save(Long userId) {
 		AccountNumber accountNumber;
@@ -53,9 +57,10 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void transferMoney(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, Money money) {
+	public void transferMoney(String principal, AccountNumber fromAccountNumber, AccountNumber toAccountNumber, Money money) {
 		Account fromAccount = getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = getAccountByAccountNumber(toAccountNumber);
+		validateMember(principal, fromAccount);
 
 		if (fromAccount.equals(toAccount)) {
 			throw new IllegalArgumentException();
@@ -64,6 +69,14 @@ public class AccountService {
 		fromAccount.withdraw(money);
 		toAccount.deposit(money);
 		recordCompletionTransferMoney(fromAccount, toAccount, money);
+	}
+
+	private void validateMember(String principal, Account account) {
+		Member member = memberRepository.findByEmail(principal).orElseThrow(InvalidMemberException::new);
+
+		if (!member.getId().equals(account.getUserId())) {
+			throw new InvalidMemberException();
+		}
 	}
 
 	public List<Account> findAll() {

@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import numble.bankingapi.member.domain.Member;
+import numble.bankingapi.member.domain.MemberRepository;
 import numble.bankingapi.util.AccountNumberGenerator;
 
 @Transactional
@@ -22,6 +24,8 @@ class AccountHistoryServiceTest {
 	AccountHistoryRepository accountHistoryRepository;
 	@Autowired
 	AccountRepository accountRepository;
+	@Autowired
+	MemberRepository memberRepository;
 
 	@Autowired
 	AccountService accountService;
@@ -77,14 +81,16 @@ class AccountHistoryServiceTest {
 	@Test
 	@DisplayName("이체할 때 기록한다.")
 	void transfer() {
+		String principal = "member@email.com";
+		Member member = memberRepository.findByEmail(principal).get();
 		Account fromAccount = Account.builder()
-			.userId(2L)
+			.userId(member.getId())
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
 		Account toAccount = Account.builder()
-			.userId(2L)
+			.userId(999L)
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
@@ -93,7 +99,7 @@ class AccountHistoryServiceTest {
 		accountRepository.save(toAccount);
 
 		assertDoesNotThrow(
-			() -> accountService.transferMoney(fromAccount.getAccountNumber(), toAccount.getAccountNumber(), 이만원));
+			() -> accountService.transferMoney(principal,fromAccount.getAccountNumber(), toAccount.getAccountNumber(), 이만원));
 
 		AccountNumber fromAccountAccountNumber = fromAccount.getAccountNumber();
 		AccountNumber toAccountAccountNumber = toAccount.getAccountNumber();

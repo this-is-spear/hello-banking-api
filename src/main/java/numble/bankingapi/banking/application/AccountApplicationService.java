@@ -65,6 +65,10 @@ public class AccountApplicationService {
 	public void transfer(String principal, String accountNumber, TransferCommand command) {
 		AccountNumber fromAccountNumber = getAccountNumber(accountNumber);
 		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
+		Money money = command.amount();
+
+		concurrencyFacade.transferWithLock(principal, fromAccountNumber, toAccountNumber, money);
+
 		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
 		notifyService.notify(fromAccount.getUserId(),
