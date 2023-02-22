@@ -62,6 +62,11 @@ class AccountApplicationServiceTest {
 		.balance(이만원)
 		.userId(사용자_ID)
 		.build();
+	private static final Account 상대방_계좌 = Account.builder()
+		.accountNumber(상대방_계좌번호)
+		.balance(만원)
+		.userId(상대방_ID)
+		.build();
 	@Mock
 	private FriendService friendService;
 	@Mock
@@ -92,13 +97,7 @@ class AccountApplicationServiceTest {
 	@Test
 	@DisplayName("계좌에 금액을 입금한다.")
 	void deposit() {
-		Account 계좌 = Account.builder()
-			.accountNumber(계좌번호)
-			.balance(이만원)
-			.userId(사용자_ID)
-			.build();
-
-		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 		assertDoesNotThrow(
 			() -> accountApplicationService.deposit(EMAIL, 계좌번호.getNumber(), 만원)
@@ -108,14 +107,8 @@ class AccountApplicationServiceTest {
 	@Test
 	@DisplayName("계좌에 금액을 출금한다.")
 	void withdraw() {
-		Account 계좌 = Account.builder()
-			.accountNumber(계좌번호)
-			.balance(이만원)
-			.userId(사용자_ID)
-			.build();
-
-		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
-		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
+		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
+		doNothing().when(notifyService).notify(사용자_ID, new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 		assertDoesNotThrow(
 			() -> accountApplicationService.withdraw(EMAIL, 계좌번호.getNumber(), 만원)
 		);
@@ -124,18 +117,6 @@ class AccountApplicationServiceTest {
 	@Test
 	@DisplayName("계좌 이체한다.")
 	void transfer() {
-		Account 계좌 = Account.builder()
-			.accountNumber(계좌번호)
-			.balance(이만원)
-			.userId(사용자_ID)
-			.build();
-
-		Account 상대방_계좌 = Account.builder()
-			.accountNumber(상대방_계좌번호)
-			.balance(만원)
-			.userId(상대방_ID)
-			.build();
-
 		doNothing().when(concurrencyFacade)
 			.transferWithLock(EMAIL, 계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
@@ -152,19 +133,7 @@ class AccountApplicationServiceTest {
 	@Test
 	@DisplayName("계좌 이체할 상대방을 찾는다.")
 	void getTargets() {
-		Account 계좌 = Account.builder()
-			.accountNumber(계좌번호)
-			.balance(이만원)
-			.userId(사용자_ID)
-			.build();
-
-		Account 상대방_계좌 = Account.builder()
-			.accountNumber(상대방_계좌번호)
-			.balance(만원)
-			.userId(상대방_ID)
-			.build();
-
-		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
 		when(memberService.findByEmail(EMAIL)).thenReturn(사용자);
 		when(friendService.findFriends(사용자_ID)).thenReturn(List.of(new Friend(사용자_ID, 상대방_ID)));
 		when(memberService.findAllById(List.of(상대방_ID))).thenReturn(List.of(상대방));
