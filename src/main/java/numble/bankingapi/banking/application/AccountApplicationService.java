@@ -95,7 +95,7 @@ public class AccountApplicationService {
 	}
 
 	private TargetResponse getTargetResponse(Account account) {
-		return new TargetResponse(account.getAccountNumber());
+		return new TargetResponse("", "", account.getAccountNumber());
 	}
 
 	private AccountNumber getAccountNumber(String accountNumber) {

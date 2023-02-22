@@ -7,6 +7,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.junit.jupiter.api.Test;
@@ -18,8 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import numble.bankingapi.banking.dto.TransferCommand;
 
 class AccountDocumentation extends DocumentationTemplate {
-
-	private static final String ACCOUNT_NUMBER = "123-23434-32-1111";
 
 	@Test
 	void getHistory() throws Exception {
@@ -91,7 +90,7 @@ class AccountDocumentation extends DocumentationTemplate {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		securityContext.setAuthentication(
 			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
-		TransferCommand command = new TransferCommand(ACCOUNT_NUMBER, 이만원);
+		TransferCommand command = new TransferCommand(계좌_번호, 이만원);
 		doNothing().when(accountApplicationService).transfer(USER.getUsername(), 계좌_번호, command);
 
 		mockMvc.perform(
@@ -111,15 +110,15 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void getTargets() throws Exception {
-		when(accountApplicationService.getTargets(USER.getUsername(), ACCOUNT_NUMBER)).thenReturn(타겟목록);
+		when(accountApplicationService.getTargets(USER.getUsername(), 계좌_번호)).thenReturn(타겟목록);
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		securityContext.setAuthentication(
 			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
-		TransferCommand command = new TransferCommand(ACCOUNT_NUMBER, 이만원);
 		mockMvc.perform(
 				get("/account/{accountNumber}/transfer/targets", 계좌_번호)
 					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
+			.andDo(print())
 			.andDo(document(
 				"targets",
 				getDocumentRequest(),
