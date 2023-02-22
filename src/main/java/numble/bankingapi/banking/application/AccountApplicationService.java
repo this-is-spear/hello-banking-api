@@ -20,13 +20,15 @@ import numble.bankingapi.banking.dto.TargetResponse;
 import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.banking.exception.InvalidMemberException;
-import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberService;
+import numble.bankingapi.social.domain.Friend;
+import numble.bankingapi.social.domain.FriendService;
 
 @Service
 @RequiredArgsConstructor
 public class AccountApplicationService {
 	private final MemberService memberService;
+	private final FriendService friendService;
 	private final AccountService accountService;
 	private final ConcurrencyFacade concurrencyFacade;
 	private final NotifyService notifyService;
@@ -75,27 +77,31 @@ public class AccountApplicationService {
 	}
 
 	public TargetResponses getTargets(String principal, String stringAccountNumber) {
-		AccountNumber accountNumber = new AccountNumber(stringAccountNumber);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		var accountNumber = new AccountNumber(stringAccountNumber);
+		var account = accountService.getAccountByAccountNumber(accountNumber);
 
-		Member member = memberService.findByEmail(principal);
+		var member = memberService.findByEmail(principal);
 		if (!member.getId().equals(account.getUserId())) {
 			throw new InvalidMemberException();
 		}
 
-		return new TargetResponses(accountService.findAll()
-			.stream().map(this::getTargetResponse)
-			.collect(Collectors.toList()));
+		var friendIds = friendService.findFriends(member.getId())
+			.stream()
+			.map(Friend::getToMemberId)
+			.toList();
+
+		var friendAccounts = accountService.getFriendAccounts(friendIds);
+		var targetResponseList = memberService.findAllById(friendIds).stream()
+			.map(friend -> new TargetResponse(friend.getName(), friend.getEmail(), friendAccounts.get(friend.getId())))
+			.collect(Collectors.toList());
+
+		return new TargetResponses(targetResponseList);
 	}
 
 	private HistoryResponse getHistoryResponse(AccountHistory accountHistory) {
 		return new HistoryResponse(accountHistory.getType(), accountHistory.getMoney(),
 			accountHistory.getFromAccountNumber(), accountHistory.getToAccountNumber(),
 			accountHistory.getCreatedDate());
-	}
-
-	private TargetResponse getTargetResponse(Account account) {
-		return new TargetResponse("", "", account.getAccountNumber());
 	}
 
 	private AccountNumber getAccountNumber(String accountNumber) {

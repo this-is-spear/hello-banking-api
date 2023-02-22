@@ -1,6 +1,8 @@
 package numble.bankingapi.banking.domain;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +53,7 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void withdrawMoney(String principal,AccountNumber accountNumber, Money money) {
+	public void withdrawMoney(String principal, AccountNumber accountNumber, Money money) {
 		Account account = getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 		account.withdraw(money);
@@ -90,6 +92,12 @@ public class AccountService {
 		Account account = getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 		return accountHistoryRepository.findByFromAccountNumber(accountNumber);
+	}
+
+	public Map<Long, AccountNumber> getFriendAccounts(List<Long> id) {
+		return accountRepository.findAllByUserId(id)
+			.stream()
+			.collect(Collectors.toMap(Account::getUserId, Account::getAccountNumber));
 	}
 
 	private void recordCompletionDepositMoney(Account fromAccount, Money money) {

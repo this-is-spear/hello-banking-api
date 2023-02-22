@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,7 @@ import numble.bankingapi.alarm.dto.TaskStatus;
 import numble.bankingapi.alarm.dto.TaskType;
 import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.AccountHistory;
+import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.domain.NotifyService;
@@ -29,12 +31,18 @@ import numble.bankingapi.banking.exception.InvalidMemberException;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberService;
 import numble.bankingapi.member.domain.RoleType;
+import numble.bankingapi.social.domain.Friend;
+import numble.bankingapi.social.domain.FriendService;
 
 @ExtendWith(MockitoExtension.class)
 class AccountApplicationServiceTest {
 	private static final long 상대방_ID = 3L;
 	private static final long 사용자_ID = 2L;
 	private static final String EMAIL = "member@email.com";
+	private static final Member 상대방 = new Member(상대방_ID, "email@email.com", "상대방", "pass",
+		List.of(RoleType.ROLE_MEMBER.name()));
+	private static final Member 사용자 = new Member(사용자_ID, EMAIL, "name", "password",
+		List.of(RoleType.ROLE_MEMBER.name()));
 	private static final AccountHistory 첫_번째_기록 = AccountHistory.builder()
 		.fromAccountNumber(계좌번호)
 		.toAccountNumber(계좌번호)
@@ -54,6 +62,8 @@ class AccountApplicationServiceTest {
 		.balance(이만원)
 		.userId(사용자_ID)
 		.build();
+	@Mock
+	private FriendService friendService;
 	@Mock
 	private AccountService accountService;
 	@Mock
@@ -145,31 +155,33 @@ class AccountApplicationServiceTest {
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
 		Account 상대방_계좌 = Account.builder()
 			.accountNumber(상대방_계좌번호)
 			.balance(만원)
-			.userId(2L)
+			.userId(상대방_ID)
 			.build();
 
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
-		when(memberService.findByEmail(EMAIL)).thenReturn(
-			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
-		when(accountService.findAll()).thenReturn(List.of(계좌, 상대방_계좌));
+		when(memberService.findByEmail(EMAIL)).thenReturn(사용자);
+		when(friendService.findFriends(사용자_ID)).thenReturn(List.of(new Friend(사용자_ID, 상대방_ID)));
+		when(memberService.findAllById(List.of(상대방_ID))).thenReturn(List.of(상대방));
+		HashMap<Long, AccountNumber> data = new HashMap<>();
+		data.put(상대방_ID, 상대방_계좌번호);
+		when(accountService.getFriendAccounts(List.of(상대방_ID))).thenReturn(data);
+
 		TargetResponses responses = assertDoesNotThrow(
 			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber()));
-		assertThat(responses.targets()).hasSize(2);
+		assertThat(responses.targets()).hasSize(1);
 	}
 
 	@Test
-	@DisplayName("계좌 이체할 상대방을 찾는다.")
+	@DisplayName("계좌 이체할 상대방을 찾을 때, 본인이 아니면 InvalidMemberException 예외가 발생한다.")
 	void getTargets_accessInvalidMember() {
-		long 본인아님 = 231L;
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
-		when(memberService.findByEmail(EMAIL)).thenReturn(
-			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
+		when(memberService.findByEmail(EMAIL)).thenReturn(상대방);
 		assertThatThrownBy(
 			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber())
 		).isInstanceOf(InvalidMemberException.class);

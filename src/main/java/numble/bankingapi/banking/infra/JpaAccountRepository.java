@@ -26,5 +26,5 @@ public interface JpaAccountRepository extends JpaRepository<Account, Long>, Acco
 	@Override
 	List<Account> findAll();
 
-	List<Account> findByUserId(Long memberId);
+	List<Account> findAllByUserId(List<Long> userId);
 }
