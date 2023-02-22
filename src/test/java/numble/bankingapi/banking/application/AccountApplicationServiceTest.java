@@ -69,9 +69,7 @@ class AccountApplicationServiceTest {
 	@DisplayName("계좌 사용기록을 반환한다.")
 	void getHistory() {
 		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		when(memberService.findByEmail(EMAIL)).thenReturn(
-			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
-		when(accountService.findAccountHistoriesByFromAccountNumber(계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
+		when(accountService.findAccountHistoriesByFromAccountNumber(EMAIL, 계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
 
 		HistoryResponses responses = assertDoesNotThrow(
 			() -> accountApplicationService.getHistory(EMAIL, 계좌번호.getNumber())

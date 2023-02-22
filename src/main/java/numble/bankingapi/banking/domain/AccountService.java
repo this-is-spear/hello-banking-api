@@ -57,7 +57,8 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void transferMoney(String principal, AccountNumber fromAccountNumber, AccountNumber toAccountNumber, Money money) {
+	public void transferMoney(String principal, AccountNumber fromAccountNumber, AccountNumber toAccountNumber,
+		Money money) {
 		Account fromAccount = getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = getAccountByAccountNumber(toAccountNumber);
 		validateMember(principal, fromAccount);
@@ -83,7 +84,9 @@ public class AccountService {
 		return accountRepository.findAll();
 	}
 
-	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(AccountNumber accountNumber) {
+	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(String principal, AccountNumber accountNumber) {
+		Account account = getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 		return accountHistoryRepository.findByFromAccountNumber(accountNumber);
 	}
 

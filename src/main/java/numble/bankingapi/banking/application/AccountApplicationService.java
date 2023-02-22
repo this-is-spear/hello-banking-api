@@ -34,10 +34,9 @@ public class AccountApplicationService {
 	public HistoryResponses getHistory(String principal, String stringAccountNumber) {
 		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
-		validateMember(principal, account);
 
 		return new HistoryResponses(account.getBalance(),
-			accountService.findAccountHistoriesByFromAccountNumber(accountNumber)
+			accountService.findAccountHistoriesByFromAccountNumber(principal, accountNumber)
 				.stream().map(this::getHistoryResponse).collect(Collectors.toList())
 		);
 	}
