@@ -49,23 +49,16 @@ class AccountHistoryServiceTest {
 	@Test
 	@DisplayName("입금할 때 기록한다.")
 	void deposit() {
-		Account account = Account.builder()
-			.userId(2L)
-			.balance(이만원)
-			.accountNumber(AccountNumberGenerator.generate())
-			.build();
-		accountRepository.save(account);
-
-		assertDoesNotThrow(() -> accountService.depositMoney(account.getAccountNumber(), 이만원));
+		assertDoesNotThrow(() -> accountService.depositMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 이만원));
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
-			account.getAccountNumber());
+			사용자_계좌.getAccountNumber());
 		AccountHistory accountHistory = accountHistories.get(accountHistories.size() - 1);
 
 		assertAll(
 			() -> assertThat(accountHistory.getType()).isEqualTo(HistoryType.DEPOSIT),
 			() -> assertThat(accountHistory.getMoney()).isEqualTo(이만원),
-			() -> assertThat(accountHistory.getToAccountNumber()).isEqualTo(account.getAccountNumber()),
+			() -> assertThat(accountHistory.getToAccountNumber()).isEqualTo(사용자_계좌.getAccountNumber()),
 			() -> assertThat(accountHistory.getBalance()).isEqualTo(이만원.plus(이만원))
 		);
 	}
@@ -113,7 +106,8 @@ class AccountHistoryServiceTest {
 		accountRepository.save(toAccount);
 
 		assertDoesNotThrow(
-			() -> accountService.transferMoney(사용자.getEmail(), fromAccount.getAccountNumber(), toAccount.getAccountNumber(),
+			() -> accountService.transferMoney(사용자.getEmail(), fromAccount.getAccountNumber(),
+				toAccount.getAccountNumber(),
 				이만원));
 
 		AccountNumber fromAccountAccountNumber = fromAccount.getAccountNumber();

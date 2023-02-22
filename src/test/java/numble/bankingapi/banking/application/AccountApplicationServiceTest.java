@@ -102,9 +102,7 @@ class AccountApplicationServiceTest {
 			.build();
 
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
-		when(memberService.findByEmail(EMAIL)).thenReturn(
-			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
-		doNothing().when(accountService).depositMoney(계좌.getAccountNumber(), 만원);
+		doNothing().when(accountService).depositMoney(EMAIL, 계좌.getAccountNumber(), 만원);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 		assertDoesNotThrow(
 			() -> accountApplicationService.deposit(EMAIL, 계좌번호.getNumber(), 만원)
@@ -181,7 +179,8 @@ class AccountApplicationServiceTest {
 			.userId(상대방_ID)
 			.build();
 
-		doNothing().when(concurrencyFacade).transferWithLock(EMAIL, 계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
+		doNothing().when(concurrencyFacade)
+			.transferWithLock(EMAIL, 계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		when(accountService.getAccountByAccountNumber(상대방_계좌.getAccountNumber())).thenReturn(상대방_계좌);
 

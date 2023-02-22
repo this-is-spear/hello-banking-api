@@ -43,8 +43,9 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void depositMoney(AccountNumber accountNumber, Money money) {
+	public void depositMoney(String principal, AccountNumber accountNumber, Money money) {
 		Account account = getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 		account.deposit(money);
 		recordCompletionDepositMoney(account, money);
 	}
