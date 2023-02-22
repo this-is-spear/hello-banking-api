@@ -77,17 +77,15 @@ public class AccountApplicationService {
 	public TargetResponses getTargets(String principal, String stringAccountNumber) {
 		AccountNumber accountNumber = new AccountNumber(stringAccountNumber);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
-		validateMember(principal, account);
-		return new TargetResponses(accountService.findAll()
-			.stream().map(this::getTargetResponse)
-			.collect(Collectors.toList()));
-	}
 
-	private void validateMember(String principal, Account account) {
 		Member member = memberService.findByEmail(principal);
 		if (!member.getId().equals(account.getUserId())) {
 			throw new InvalidMemberException();
 		}
+
+		return new TargetResponses(accountService.findAll()
+			.stream().map(this::getTargetResponse)
+			.collect(Collectors.toList()));
 	}
 
 	private HistoryResponse getHistoryResponse(AccountHistory accountHistory) {
