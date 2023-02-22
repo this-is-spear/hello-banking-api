@@ -6,12 +6,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import numble.bankingapi.member.domain.Member;
+import numble.bankingapi.member.domain.MemberRepository;
 import numble.bankingapi.util.AccountNumberGenerator;
 
 @Transactional
@@ -22,30 +25,40 @@ class AccountHistoryServiceTest {
 	AccountHistoryRepository accountHistoryRepository;
 	@Autowired
 	AccountRepository accountRepository;
+	@Autowired
+	MemberRepository memberRepository;
 
 	@Autowired
 	AccountService accountService;
+	Member 사용자;
+	Account 사용자_계좌;
+
+	@BeforeEach
+	void setUp() {
+		사용자 = memberRepository.findByEmail("member@email.com").get();
+		사용자_계좌 = accountRepository.save(
+			Account.builder()
+				.userId(사용자.getId())
+				.accountNumber(계좌번호)
+				.balance(이만원)
+				.build()
+		);
+
+	}
 
 	@Test
 	@DisplayName("입금할 때 기록한다.")
 	void deposit() {
-		Account account = Account.builder()
-			.userId(2L)
-			.balance(이만원)
-			.accountNumber(AccountNumberGenerator.generate())
-			.build();
-		accountRepository.save(account);
-
-		assertDoesNotThrow(() -> accountService.depositMoney(account.getAccountNumber(), 이만원));
+		assertDoesNotThrow(() -> accountService.depositMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 이만원));
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
-			account.getAccountNumber());
+			사용자_계좌.getAccountNumber());
 		AccountHistory accountHistory = accountHistories.get(accountHistories.size() - 1);
 
 		assertAll(
 			() -> assertThat(accountHistory.getType()).isEqualTo(HistoryType.DEPOSIT),
 			() -> assertThat(accountHistory.getMoney()).isEqualTo(이만원),
-			() -> assertThat(accountHistory.getToAccountNumber()).isEqualTo(account.getAccountNumber()),
+			() -> assertThat(accountHistory.getToAccountNumber()).isEqualTo(사용자_계좌.getAccountNumber()),
 			() -> assertThat(accountHistory.getBalance()).isEqualTo(이만원.plus(이만원))
 		);
 	}
@@ -54,13 +67,13 @@ class AccountHistoryServiceTest {
 	@DisplayName("출금할 때 기록한다.")
 	void withdraw() {
 		Account account = Account.builder()
-			.userId(2L)
+			.userId(사용자.getId())
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 		accountRepository.save(account);
 
-		assertDoesNotThrow(() -> accountService.withdrawMoney(account.getAccountNumber(), 이만원));
+		assertDoesNotThrow(() -> accountService.withdrawMoney(사용자.getEmail(), account.getAccountNumber(), 이만원));
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			account.getAccountNumber());
@@ -78,13 +91,13 @@ class AccountHistoryServiceTest {
 	@DisplayName("이체할 때 기록한다.")
 	void transfer() {
 		Account fromAccount = Account.builder()
-			.userId(2L)
+			.userId(사용자.getId())
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
 		Account toAccount = Account.builder()
-			.userId(2L)
+			.userId(999L)
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
@@ -93,7 +106,9 @@ class AccountHistoryServiceTest {
 		accountRepository.save(toAccount);
 
 		assertDoesNotThrow(
-			() -> accountService.transferMoney(fromAccount.getAccountNumber(), toAccount.getAccountNumber(), 이만원));
+			() -> accountService.transferMoney(사용자.getEmail(), fromAccount.getAccountNumber(),
+				toAccount.getAccountNumber(),
+				이만원));
 
 		AccountNumber fromAccountAccountNumber = fromAccount.getAccountNumber();
 		AccountNumber toAccountAccountNumber = toAccount.getAccountNumber();
@@ -124,7 +139,7 @@ class AccountHistoryServiceTest {
 	@DisplayName("계좌 번호로 기록을 찾는다.")
 	void findByFromAccountNumber() {
 		accountHistoryRepository.save(AccountHistory.builder()
-			.fromAccountNumber(계좌번호)
+			.fromAccountNumber(사용자_계좌.getAccountNumber())
 			.toAccountNumber(상대방_계좌번호)
 			.money(만원)
 			.balance(만원)
@@ -132,13 +147,13 @@ class AccountHistoryServiceTest {
 			.build());
 
 		accountHistoryRepository.save(AccountHistory.builder()
-			.fromAccountNumber(계좌번호)
+			.fromAccountNumber(사용자_계좌.getAccountNumber())
 			.toAccountNumber(상대방_계좌번호)
 			.money(만원)
 			.balance(만원)
 			.type(HistoryType.DEPOSIT)
 			.build());
-		List<AccountHistory> histories = accountService.findAccountHistoriesByFromAccountNumber(계좌번호);
+		List<AccountHistory> histories = accountService.findAccountHistoriesByFromAccountNumber(사용자.getEmail(), 계좌번호);
 		assertThat(histories).hasSize(2);
 	}
 }

@@ -19,56 +19,70 @@ import numble.bankingapi.banking.dto.HistoryResponses;
 import numble.bankingapi.banking.dto.TargetResponse;
 import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
+import numble.bankingapi.banking.exception.InvalidMemberException;
+import numble.bankingapi.member.domain.Member;
+import numble.bankingapi.member.domain.MemberService;
 
 @Service
 @RequiredArgsConstructor
 public class AccountApplicationService {
+	private final MemberService memberService;
 	private final AccountService accountService;
 	private final ConcurrencyFacade concurrencyFacade;
 	private final NotifyService notifyService;
 
-	public HistoryResponses getHistory(String stringAccountNumber) {
+	public HistoryResponses getHistory(String principal, String stringAccountNumber) {
 		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
+
 		return new HistoryResponses(account.getBalance(),
-			accountService.findAccountHistoriesByFromAccountNumber(accountNumber)
+			accountService.findAccountHistoriesByFromAccountNumber(principal, accountNumber)
 				.stream().map(this::getHistoryResponse).collect(Collectors.toList())
 		);
 	}
 
-	public void deposit(String number, Money money) {
+	public void deposit(String principal, String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
-		accountService.depositMoney(accountNumber, money);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
+
+		concurrencyFacade.depositWithLock(principal, accountNumber, money);
 		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
 
-	public void withdraw(String number, Money money) {
+	public void withdraw(String principal, String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
-		accountService.withdrawMoney(accountNumber, money);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
+
+		concurrencyFacade.withdrawWithLock(principal, accountNumber, money);
 		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 	}
 
-	public void transfer(String accountNumber, TransferCommand command) {
+	public void transfer(String principal, String accountNumber, TransferCommand command) {
 		AccountNumber fromAccountNumber = getAccountNumber(accountNumber);
 		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
-
 		Money money = command.amount();
-		concurrencyFacade.transferWithLock(fromAccountNumber, toAccountNumber, money);
+
+		concurrencyFacade.transferWithLock(principal, fromAccountNumber, toAccountNumber, money);
 
 		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
-
 		notifyService.notify(fromAccount.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.TRANSFER));
 		notifyService.notify(toAccount.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
 
-	public TargetResponses getTargets() {
+	public TargetResponses getTargets(String principal, String stringAccountNumber) {
+		AccountNumber accountNumber = new AccountNumber(stringAccountNumber);
+		Account account = accountService.getAccountByAccountNumber(accountNumber);
+
+		Member member = memberService.findByEmail(principal);
+		if (!member.getId().equals(account.getUserId())) {
+			throw new InvalidMemberException();
+		}
+
 		return new TargetResponses(accountService.findAll()
 			.stream().map(this::getTargetResponse)
 			.collect(Collectors.toList()));

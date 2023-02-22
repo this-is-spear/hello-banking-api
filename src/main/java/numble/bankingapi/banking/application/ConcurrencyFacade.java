@@ -14,10 +14,25 @@ public class ConcurrencyFacade {
 	private final ConcurrencyManager concurrencyManager;
 	private final AccountService accountService;
 
-	public void transferWithLock(AccountNumber accountNumber, AccountNumber toAccountNumber, Money amount) {
+	public void transferWithLock(String principal, AccountNumber accountNumber, AccountNumber toAccountNumber,
+		Money amount) {
 		concurrencyManager.executeWithLock(
 			accountNumber.getNumber(),
-			() -> accountService.transferMoney(accountNumber, toAccountNumber, amount)
+			() -> accountService.transferMoney(principal, accountNumber, toAccountNumber, amount)
+		);
+	}
+
+	public void depositWithLock(String principal, AccountNumber accountNumber, Money amount) {
+		concurrencyManager.executeWithLock(
+			accountNumber.getNumber(),
+			() -> accountService.depositMoney(principal, accountNumber, amount)
+		);
+	}
+
+	public void withdrawWithLock(String principal, AccountNumber accountNumber, Money amount) {
+		concurrencyManager.executeWithLock(
+			accountNumber.getNumber(),
+			() -> accountService.withdrawMoney(principal, accountNumber, amount)
 		);
 	}
 }

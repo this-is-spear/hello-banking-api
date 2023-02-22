@@ -2,6 +2,7 @@ package numble.bankingapi.banking.application;
 
 import static numble.bankingapi.fixture.AccountFixture.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -24,44 +25,56 @@ import numble.bankingapi.banking.domain.NotifyService;
 import numble.bankingapi.banking.dto.HistoryResponses;
 import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
+import numble.bankingapi.banking.exception.InvalidMemberException;
+import numble.bankingapi.member.domain.Member;
+import numble.bankingapi.member.domain.MemberService;
+import numble.bankingapi.member.domain.RoleType;
 
 @ExtendWith(MockitoExtension.class)
 class AccountApplicationServiceTest {
+	private static final long 상대방_ID = 3L;
+	private static final long 사용자_ID = 2L;
+	private static final String EMAIL = "member@email.com";
+	private static final AccountHistory 첫_번째_기록 = AccountHistory.builder()
+		.fromAccountNumber(계좌번호)
+		.toAccountNumber(계좌번호)
+		.balance(이만원)
+		.money(만원)
+		.type(HistoryType.DEPOSIT)
+		.build();
+	private static final AccountHistory 두_번째_기록 = AccountHistory.builder()
+		.fromAccountNumber(계좌번호)
+		.toAccountNumber(상대방_계좌번호)
+		.balance(만원)
+		.money(만원)
+		.type(HistoryType.WITHDRAW)
+		.build();
+	private static final Account 계좌 = Account.builder()
+		.accountNumber(계좌번호)
+		.balance(이만원)
+		.userId(사용자_ID)
+		.build();
 	@Mock
 	private AccountService accountService;
 	@Mock
 	private ConcurrencyFacade concurrencyFacade;
 	@Mock
 	private NotifyService notifyService;
+	@Mock
+	private MemberService memberService;
 	@InjectMocks
 	private AccountApplicationService accountApplicationService;
 
 	@Test
 	@DisplayName("계좌 사용기록을 반환한다.")
 	void getHistory() {
-		AccountHistory 첫_번째_기록 = AccountHistory.builder()
-			.fromAccountNumber(계좌번호)
-			.toAccountNumber(계좌번호)
-			.balance(이만원)
-			.money(만원)
-			.type(HistoryType.DEPOSIT)
-			.build();
-		AccountHistory 두_번째_기록 = AccountHistory.builder()
-			.fromAccountNumber(계좌번호)
-			.toAccountNumber(상대방_계좌번호)
-			.balance(만원)
-			.money(만원)
-			.type(HistoryType.WITHDRAW)
-			.build();
-		Account 계좌 = Account.builder()
-			.accountNumber(계좌번호)
-			.balance(이만원)
-			.userId(2L)
-			.build();
-
 		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		when(accountService.findAccountHistoriesByFromAccountNumber(계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
-		HistoryResponses responses = accountApplicationService.getHistory(계좌번호.getNumber());
+		when(accountService.findAccountHistoriesByFromAccountNumber(EMAIL, 계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
+
+		HistoryResponses responses = assertDoesNotThrow(
+			() -> accountApplicationService.getHistory(EMAIL, 계좌번호.getNumber())
+		);
+
 		assertThat(responses.historyResponses()).hasSize(2);
 		assertThat(responses.historyResponses().get(0).money()).isEqualTo(만원);
 	}
@@ -72,13 +85,14 @@ class AccountApplicationServiceTest {
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
-		doNothing().when(accountService).depositMoney(계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
-		accountApplicationService.deposit(계좌번호.getNumber(), 만원);
+		assertDoesNotThrow(
+			() -> accountApplicationService.deposit(EMAIL, 계좌번호.getNumber(), 만원)
+		);
 	}
 
 	@Test
@@ -87,13 +101,14 @@ class AccountApplicationServiceTest {
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
-		doNothing().when(accountService).withdrawMoney(계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
-		accountApplicationService.withdraw(계좌번호.getNumber(), 만원);
+		assertDoesNotThrow(
+			() -> accountApplicationService.withdraw(EMAIL, 계좌번호.getNumber(), 만원)
+		);
 	}
 
 	@Test
@@ -102,17 +117,17 @@ class AccountApplicationServiceTest {
 		Account 계좌 = Account.builder()
 			.accountNumber(계좌번호)
 			.balance(이만원)
-			.userId(2L)
+			.userId(사용자_ID)
 			.build();
 
 		Account 상대방_계좌 = Account.builder()
 			.accountNumber(상대방_계좌번호)
 			.balance(만원)
-			.userId(3L)
+			.userId(상대방_ID)
 			.build();
 
-		doNothing().when(concurrencyFacade).transferWithLock(계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
-
+		doNothing().when(concurrencyFacade)
+			.transferWithLock(EMAIL, 계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		when(accountService.getAccountByAccountNumber(상대방_계좌.getAccountNumber())).thenReturn(상대방_계좌);
 
@@ -121,7 +136,7 @@ class AccountApplicationServiceTest {
 		doNothing().when(notifyService)
 			.notify(상대방_계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 
-		accountApplicationService.transfer(계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
+		accountApplicationService.transfer(EMAIL, 계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
 	}
 
 	@Test
@@ -139,8 +154,24 @@ class AccountApplicationServiceTest {
 			.userId(2L)
 			.build();
 
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
 		when(accountService.findAll()).thenReturn(List.of(계좌, 상대방_계좌));
-		TargetResponses responses = accountApplicationService.getTargets();
+		TargetResponses responses = assertDoesNotThrow(
+			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber()));
 		assertThat(responses.targets()).hasSize(2);
+	}
+
+	@Test
+	@DisplayName("계좌 이체할 상대방을 찾는다.")
+	void getTargets_accessInvalidMember() {
+		long 본인아님 = 231L;
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(memberService.findByEmail(EMAIL)).thenReturn(
+			new Member(본인아님, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
+		assertThatThrownBy(
+			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber())
+		).isInstanceOf(InvalidMemberException.class);
 	}
 }

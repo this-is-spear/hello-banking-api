@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import numble.bankingapi.banking.exception.InvalidMemberException;
+import numble.bankingapi.member.domain.Member;
+import numble.bankingapi.member.domain.MemberRepository;
 import numble.bankingapi.util.AccountNumberGenerator;
 
 @Service
@@ -13,6 +16,7 @@ import numble.bankingapi.util.AccountNumberGenerator;
 public class AccountService {
 	private final AccountRepository accountRepository;
 	private final AccountHistoryRepository accountHistoryRepository;
+	private final MemberRepository memberRepository;
 
 	public Account save(Long userId) {
 		AccountNumber accountNumber;
@@ -39,23 +43,27 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void depositMoney(AccountNumber accountNumber, Money money) {
+	public void depositMoney(String principal, AccountNumber accountNumber, Money money) {
 		Account account = getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 		account.deposit(money);
 		recordCompletionDepositMoney(account, money);
 	}
 
 	@Transactional
-	public void withdrawMoney(AccountNumber accountNumber, Money money) {
+	public void withdrawMoney(String principal,AccountNumber accountNumber, Money money) {
 		Account account = getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 		account.withdraw(money);
 		recordCompletionWithdrawMoney(account, money);
 	}
 
 	@Transactional
-	public void transferMoney(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, Money money) {
+	public void transferMoney(String principal, AccountNumber fromAccountNumber, AccountNumber toAccountNumber,
+		Money money) {
 		Account fromAccount = getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = getAccountByAccountNumber(toAccountNumber);
+		validateMember(principal, fromAccount);
 
 		if (fromAccount.equals(toAccount)) {
 			throw new IllegalArgumentException();
@@ -66,11 +74,21 @@ public class AccountService {
 		recordCompletionTransferMoney(fromAccount, toAccount, money);
 	}
 
+	private void validateMember(String principal, Account account) {
+		Member member = memberRepository.findByEmail(principal).orElseThrow(InvalidMemberException::new);
+
+		if (!member.getId().equals(account.getUserId())) {
+			throw new InvalidMemberException();
+		}
+	}
+
 	public List<Account> findAll() {
 		return accountRepository.findAll();
 	}
 
-	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(AccountNumber accountNumber) {
+	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(String principal, AccountNumber accountNumber) {
+		Account account = getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 		return accountHistoryRepository.findByFromAccountNumber(accountNumber);
 	}
 

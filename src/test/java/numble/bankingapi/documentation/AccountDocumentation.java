@@ -11,20 +11,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import numble.bankingapi.banking.dto.TransferCommand;
 
 class AccountDocumentation extends DocumentationTemplate {
 
+	private static final String ACCOUNT_NUMBER = "123-23434-32-1111";
+
 	@Test
 	void getHistory() throws Exception {
-		when(accountApplicationService.getHistory(계좌_번호))
+		when(accountApplicationService.getHistory(USER.getUsername(), 계좌_번호))
 			.thenReturn(계좌_내역);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
 
 		mockMvc.perform(
 				get("/account/{accountNumber}/history", 계좌_번호)
 					.with(csrf())
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"history",
@@ -36,14 +44,17 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void deposit() throws Exception {
-		doNothing().when(accountApplicationService).deposit(계좌_번호, 이만원);
+		doNothing().when(accountApplicationService).deposit(USER.getUsername(), 계좌_번호, 이만원);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
 
 		mockMvc.perform(
 				post("/account/{accountNumber}/deposit", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
 					.with(csrf())
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"deposit",
@@ -55,14 +66,17 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void withdraw() throws Exception {
-		doNothing().when(accountApplicationService).withdraw(계좌_번호, 이만원);
+		doNothing().when(accountApplicationService).withdraw(USER.getUsername(), 계좌_번호, 이만원);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
 
 		mockMvc.perform(
 				post("/account/{accountNumber}/withdraw", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
 					.with(csrf())
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"withdraw",
@@ -74,16 +88,18 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void transfer() throws Exception {
-		TransferCommand command = new TransferCommand("123-23434-32-1111", 이만원);
-
-		doNothing().when(accountApplicationService).transfer(계좌_번호, command);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
+		TransferCommand command = new TransferCommand(ACCOUNT_NUMBER, 이만원);
+		doNothing().when(accountApplicationService).transfer(USER.getUsername(), 계좌_번호, command);
 
 		mockMvc.perform(
 				post("/account/{accountNumber}/transfer", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(command))
 					.with(csrf())
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"transfer",
@@ -95,11 +111,14 @@ class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
 	void getTargets() throws Exception {
-		when(accountApplicationService.getTargets()).thenReturn(타겟목록);
-
+		when(accountApplicationService.getTargets(USER.getUsername(), ACCOUNT_NUMBER)).thenReturn(타겟목록);
+		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(
+			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
+		TransferCommand command = new TransferCommand(ACCOUNT_NUMBER, 이만원);
 		mockMvc.perform(
 				get("/account/{accountNumber}/transfer/targets", 계좌_번호)
-					.with(user("user").roles("MEMBER"))
+					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"targets",
