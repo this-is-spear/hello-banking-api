@@ -90,7 +90,7 @@ class AccountServiceTest {
 		Money 출금할_금액_만원 = 만원;
 
 		// when
-		accountService.withdrawMoney(사용자_계좌.getAccountNumber(), 출금할_금액_만원);
+		accountService.withdrawMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 출금할_금액_만원);
 
 		// then
 		assertThat(사용자_계좌.getBalance()).isEqualTo(계좌_잔액_이만원.minus(출금할_금액_만원));
@@ -102,7 +102,7 @@ class AccountServiceTest {
 		Money 출금할_금액_삼만원 = 삼만원;
 
 		assertThatThrownBy(
-			() -> accountService.withdrawMoney(사용자_계좌.getAccountNumber(), 출금할_금액_삼만원)
+			() -> accountService.withdrawMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 출금할_금액_삼만원)
 		).isInstanceOf(NotNegativeMoneyException.class);
 	}
 

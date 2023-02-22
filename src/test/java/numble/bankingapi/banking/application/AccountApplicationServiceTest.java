@@ -136,9 +136,7 @@ class AccountApplicationServiceTest {
 			.userId(사용자_ID)
 			.build();
 
-		doNothing().when(accountService).withdrawMoney(계좌.getAccountNumber(), 만원);
-		when(memberService.findByEmail(EMAIL)).thenReturn(
-			new Member(사용자_ID, EMAIL, "name", "password", List.of(RoleType.ROLE_MEMBER.name())));
+		doNothing().when(accountService).withdrawMoney(EMAIL, 계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 		assertDoesNotThrow(

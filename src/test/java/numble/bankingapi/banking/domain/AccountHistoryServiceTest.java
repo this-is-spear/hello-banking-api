@@ -67,13 +67,13 @@ class AccountHistoryServiceTest {
 	@DisplayName("출금할 때 기록한다.")
 	void withdraw() {
 		Account account = Account.builder()
-			.userId(2L)
+			.userId(사용자.getId())
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 		accountRepository.save(account);
 
-		assertDoesNotThrow(() -> accountService.withdrawMoney(account.getAccountNumber(), 이만원));
+		assertDoesNotThrow(() -> accountService.withdrawMoney(사용자.getEmail(), account.getAccountNumber(), 이만원));
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			account.getAccountNumber());

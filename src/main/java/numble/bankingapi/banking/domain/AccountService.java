@@ -51,8 +51,9 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void withdrawMoney(AccountNumber accountNumber, Money money) {
+	public void withdrawMoney(String principal,AccountNumber accountNumber, Money money) {
 		Account account = getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 		account.withdraw(money);
 		recordCompletionWithdrawMoney(account, money);
 	}

@@ -53,9 +53,8 @@ public class AccountApplicationService {
 	public void withdraw(String principal, String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
-		validateMember(principal, account);
 
-		accountService.withdrawMoney(accountNumber, money);
+		accountService.withdrawMoney(principal, accountNumber, money);
 		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 	}
