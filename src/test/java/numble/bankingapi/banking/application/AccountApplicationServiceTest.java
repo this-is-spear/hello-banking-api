@@ -89,7 +89,6 @@ class AccountApplicationServiceTest {
 			.build();
 
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
-		doNothing().when(accountService).depositMoney(EMAIL, 계좌.getAccountNumber(), 만원);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 		assertDoesNotThrow(
 			() -> accountApplicationService.deposit(EMAIL, 계좌번호.getNumber(), 만원)
@@ -105,7 +104,6 @@ class AccountApplicationServiceTest {
 			.userId(사용자_ID)
 			.build();
 
-		doNothing().when(accountService).withdrawMoney(EMAIL, 계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 		assertDoesNotThrow(
