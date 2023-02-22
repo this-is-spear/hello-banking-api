@@ -95,7 +95,7 @@ public class AccountService {
 	}
 
 	public Map<Long, AccountNumber> getFriendAccounts(List<Long> id) {
-		return accountRepository.findAllByUserId(id)
+		return accountRepository.findAllByUserIdIn(id)
 			.stream()
 			.collect(Collectors.toMap(Account::getUserId, Account::getAccountNumber));
 	}
