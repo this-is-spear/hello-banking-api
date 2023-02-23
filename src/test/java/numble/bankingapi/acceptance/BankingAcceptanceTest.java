@@ -148,7 +148,6 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			jsonPath(AMOUNT).value(출금할_돈 * 요청_횟수));
 	}
 
-
 	private String 계좌_정보_조회(String member) {
 		return loadData.get(member);
 	}

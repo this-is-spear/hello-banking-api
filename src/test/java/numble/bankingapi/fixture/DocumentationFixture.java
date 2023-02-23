@@ -32,8 +32,8 @@ public class DocumentationFixture {
 		));
 
 	public static final TargetResponses 타겟목록 = new TargetResponses(List.of(
-		new TargetResponse(AccountNumberGenerator.generate()),
-		new TargetResponse(AccountNumberGenerator.generate()),
-		new TargetResponse(AccountNumberGenerator.generate())
+		new TargetResponse("name1", "member1@email.com", AccountNumberGenerator.generate()),
+		new TargetResponse("name2", "member2@email.com", AccountNumberGenerator.generate()),
+		new TargetResponse("name3", "member3@email.com", AccountNumberGenerator.generate())
 	));
 }

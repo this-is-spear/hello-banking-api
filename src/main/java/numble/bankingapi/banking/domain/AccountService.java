@@ -51,7 +51,7 @@ public class AccountService {
 	}
 
 	@Transactional
-	public void withdrawMoney(String principal,AccountNumber accountNumber, Money money) {
+	public void withdrawMoney(String principal, AccountNumber accountNumber, Money money) {
 		Account account = getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 		account.withdraw(money);
@@ -90,6 +90,12 @@ public class AccountService {
 		Account account = getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 		return accountHistoryRepository.findByFromAccountNumber(accountNumber);
+	}
+
+	public List<Account> getFriendAccounts(List<Long> friendIds) {
+		return accountRepository.findAllByUserIdIn(friendIds)
+			.stream()
+			.toList();
 	}
 
 	private void recordCompletionDepositMoney(Account fromAccount, Money money) {

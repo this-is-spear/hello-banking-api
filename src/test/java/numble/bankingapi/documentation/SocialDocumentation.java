@@ -5,6 +5,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
@@ -18,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import numble.bankingapi.social.dto.AskedFriendResponse;
 import numble.bankingapi.social.dto.AskedFriendResponses;
@@ -28,7 +28,7 @@ import numble.bankingapi.social.dto.FriendResponses;
 class SocialDocumentation extends DocumentationTemplate {
 
 	private static final String USERNAME = "member@email.com";
-	private static final String SOMEONE_USERNAME = "member@email.com";
+	private static final String SOMEONE_USERNAME = "rjsckdd12@gmail.com";
 	private static final String PASSWORD = "password";
 	private UserDetails MEMBER = new User("rjsckdd12@gmail.com", "password",
 		List.of(new SimpleGrantedAuthority("MEMBER")));
@@ -54,7 +54,7 @@ class SocialDocumentation extends DocumentationTemplate {
 			.with(csrf());
 
 		mockMvc.perform(builder)
-			.andDo(MockMvcResultHandlers.print())
+			.andDo(print())
 			.andExpect(status().isOk())
 			.andDo(
 				document(
@@ -80,7 +80,7 @@ class SocialDocumentation extends DocumentationTemplate {
 			.with(csrf());
 
 		mockMvc.perform(builder)
-			.andDo(MockMvcResultHandlers.print())
+			.andDo(print())
 			.andExpect(status().isOk())
 			.andDo(
 				document(
@@ -106,7 +106,7 @@ class SocialDocumentation extends DocumentationTemplate {
 			.with(csrf());
 
 		mockMvc.perform(builder)
-			.andDo(MockMvcResultHandlers.print())
+			.andDo(print())
 			.andExpect(status().isOk())
 			.andDo(
 				document(
@@ -122,12 +122,12 @@ class SocialDocumentation extends DocumentationTemplate {
 	@DisplayName("자신의 친구 목록을 조회한다.")
 	void findFriends() throws Exception {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
+		securityContext.setAuthentication(SOMEONE_MEMBER_TOKEN);
+
 		FriendResponses friendResponses = new FriendResponses(
 			List.of(new FriendResponse(4L, "name", "member@email.com"),
 				new FriendResponse(11L, "name113", "member14@email.com"))
 		);
-
-		securityContext.setAuthentication(SOMEONE_MEMBER_TOKEN);
 
 		when(socialNetworkService.findFriends(SOMEONE_USERNAME)).thenReturn(friendResponses);
 		MockHttpServletRequestBuilder builder = get("/members/friends")
@@ -135,7 +135,7 @@ class SocialDocumentation extends DocumentationTemplate {
 			.with(csrf());
 
 		mockMvc.perform(builder)
-			.andDo(MockMvcResultHandlers.print())
+			.andDo(print())
 			.andExpect(status().isOk())
 			.andDo(
 				document(
@@ -163,7 +163,7 @@ class SocialDocumentation extends DocumentationTemplate {
 			.with(csrf());
 
 		mockMvc.perform(builder)
-			.andDo(MockMvcResultHandlers.print())
+			.andDo(print())
 			.andExpect(status().isOk())
 			.andDo(
 				document(

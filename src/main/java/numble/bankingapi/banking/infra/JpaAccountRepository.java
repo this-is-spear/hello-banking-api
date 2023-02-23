@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import jakarta.persistence.LockModeType;
 import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.AccountRepository;
@@ -26,5 +25,7 @@ public interface JpaAccountRepository extends JpaRepository<Account, Long>, Acco
 	@Override
 	List<Account> findAll();
 
-	List<Account> findByUserId(Long memberId);
+	@Query("select a from Account a where a.userId in :userId")
+	List<Account> findAllByUserIdIn(List<Long> userId);
+
 }
