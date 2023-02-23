@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +17,7 @@ import numble.bankingapi.banking.exception.InvalidMemberException;
 import numble.bankingapi.banking.exception.NotNegativeMoneyException;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberRepository;
+import numble.bankingapi.util.AccountNumberGenerator;
 
 @Transactional
 @SpringBootTest
@@ -43,7 +43,7 @@ class AccountServiceTest {
 		사용자_계좌 = accountRepository.save(
 			Account.builder()
 				.userId(사용자.getId())
-				.accountNumber(계좌번호)
+				.accountNumber(AccountNumberGenerator.generate())
 				.balance(이만원)
 				.build()
 		);
@@ -51,7 +51,7 @@ class AccountServiceTest {
 		상대방_계좌 = accountRepository.save(
 			Account.builder()
 				.userId(1233L)
-				.accountNumber(상대방_계좌번호)
+				.accountNumber(AccountNumberGenerator.generate())
 				.balance(삼만원)
 				.build()
 		);
@@ -59,7 +59,7 @@ class AccountServiceTest {
 		accountRepository.save(
 			Account.builder()
 				.userId(사용자의_친구1.getId())
-				.accountNumber(상대방_계좌번호)
+				.accountNumber(AccountNumberGenerator.generate())
 				.balance(삼만원)
 				.build()
 		);
@@ -67,7 +67,7 @@ class AccountServiceTest {
 		accountRepository.save(
 			Account.builder()
 				.userId(사용자의_친구2.getId())
-				.accountNumber(상대방_계좌번호)
+				.accountNumber(AccountNumberGenerator.generate())
 				.balance(삼만원)
 				.build()
 		);
@@ -75,7 +75,7 @@ class AccountServiceTest {
 		accountRepository.save(
 			Account.builder()
 				.userId(사용자의_친구2.getId())
-				.accountNumber(상대방_계좌번호)
+				.accountNumber(AccountNumberGenerator.generate())
 				.balance(삼만원)
 				.build()
 		);
@@ -83,7 +83,7 @@ class AccountServiceTest {
 		accountRepository.save(
 			Account.builder()
 				.userId(사용자의_친구2.getId())
-				.accountNumber(상대방_계좌번호)
+				.accountNumber(AccountNumberGenerator.generate())
 				.balance(삼만원)
 				.build()
 		);
@@ -213,7 +213,7 @@ class AccountServiceTest {
 	@DisplayName("계좌 번호로 계좌를 조회할 수 있다.")
 	void getAccountByAccountNumber() {
 		assertDoesNotThrow(
-			() -> accountService.getAccountByAccountNumber(계좌번호)
+			() -> accountService.getAccountByAccountNumber(사용자_계좌.getAccountNumber())
 		);
 	}
 

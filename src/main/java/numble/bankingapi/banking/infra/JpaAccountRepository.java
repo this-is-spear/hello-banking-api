@@ -20,7 +20,7 @@ public interface JpaAccountRepository extends JpaRepository<Account, Long>, Acco
 	Optional<Account> findById(Long id);
 
 	@Override
-	Optional<Account> findByAccountNumber(AccountNumber accountNumber);
+	Optional<Account>  findByAccountNumber(AccountNumber accountNumber);
 
 	@Override
 	<S extends Account> S save(S entity);
