@@ -1,9 +1,8 @@
 package numble.bankingapi.banking.ui;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,41 +25,36 @@ public class AccountController {
 	private final AccountApplicationService accountApplicationService;
 
 	@GetMapping("/{accountNumber}/history")
-	public ResponseEntity<HistoryResponses> getHistory(@PathVariable String accountNumber) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
+	public ResponseEntity<HistoryResponses> getHistory(@AuthenticationPrincipal UserDetails principal,
+		@PathVariable String accountNumber) {
 		return ResponseEntity.ok(accountApplicationService.getHistory(principal.getUsername(), accountNumber));
 	}
 
 	@PostMapping("/{accountNumber}/deposit")
-	public ResponseEntity<Void> depositMoney(@PathVariable String accountNumber, @RequestBody Money money) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
+	public ResponseEntity<Void> depositMoney(@AuthenticationPrincipal UserDetails principal,
+		@PathVariable String accountNumber, @RequestBody Money money) {
 		accountApplicationService.deposit(principal.getUsername(), accountNumber, money);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/{accountNumber}/withdraw")
-	public ResponseEntity<Void> withdrawMoney(@PathVariable String accountNumber, @RequestBody Money money) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
+	public ResponseEntity<Void> withdrawMoney(@AuthenticationPrincipal UserDetails principal,
+		@PathVariable String accountNumber, @RequestBody Money money) {
 		accountApplicationService.withdraw(principal.getUsername(), accountNumber, money);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/{accountNumber}/transfer")
-	public ResponseEntity<Void> transferMoney(@PathVariable String accountNumber,
+	public ResponseEntity<Void> transferMoney(@AuthenticationPrincipal UserDetails principal,
+		@PathVariable String accountNumber,
 		@RequestBody TransferCommand transferCommand) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
 		accountApplicationService.transfer(principal.getUsername(), accountNumber, transferCommand);
 		return ResponseEntity.ok().build();
 	}
 
 	@GetMapping("/{accountNumber}/transfer/targets")
-	public ResponseEntity<TargetResponses> getTargets(@PathVariable String accountNumber) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
+	public ResponseEntity<TargetResponses> getTargets(@AuthenticationPrincipal UserDetails principal,
+		@PathVariable String accountNumber) {
 		return ResponseEntity.ok(accountApplicationService.getTargets(principal.getUsername(), accountNumber));
 	}
 }
