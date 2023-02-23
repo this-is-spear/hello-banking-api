@@ -32,9 +32,10 @@ public class SecurityConfiguration {
 			.successHandler((request, response, authentication) -> response.sendRedirect("/hello"))
 			.and()
 			.authorizeHttpRequests((authorize) -> authorize
-				.requestMatchers("/members/register").permitAll()
 				.requestMatchers("/hello").permitAll()
-				.requestMatchers("/docs/**").permitAll()
+				.requestMatchers("/docs/index.html").permitAll()
+				.requestMatchers("/members/register").anonymous()
+				.requestMatchers("/login").anonymous()
 				.requestMatchers("/account/**").authenticated()
 				.requestMatchers("/members/**").authenticated()
 			);

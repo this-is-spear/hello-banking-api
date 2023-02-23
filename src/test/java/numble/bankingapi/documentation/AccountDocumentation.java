@@ -17,17 +17,15 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import numble.bankingapi.banking.dto.TransferCommand;
+import numble.bankingapi.util.WithMockMember;
 
 class AccountDocumentation extends DocumentationTemplate {
 
 	@Test
+	@WithMockMember
 	void getHistory() throws Exception {
 		when(accountApplicationService.getHistory(USER.getUsername(), 계좌_번호))
 			.thenReturn(계좌_내역);
-		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(
-			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
-
 		mockMvc.perform(
 				get("/account/{accountNumber}/history", 계좌_번호)
 					.with(csrf())
@@ -42,12 +40,9 @@ class AccountDocumentation extends DocumentationTemplate {
 	}
 
 	@Test
+	@WithMockMember
 	void deposit() throws Exception {
 		doNothing().when(accountApplicationService).deposit(USER.getUsername(), 계좌_번호, 이만원);
-		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(
-			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
-
 		mockMvc.perform(
 				post("/account/{accountNumber}/deposit", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
@@ -64,12 +59,9 @@ class AccountDocumentation extends DocumentationTemplate {
 	}
 
 	@Test
+	@WithMockMember
 	void withdraw() throws Exception {
 		doNothing().when(accountApplicationService).withdraw(USER.getUsername(), 계좌_번호, 이만원);
-		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(
-			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
-
 		mockMvc.perform(
 				post("/account/{accountNumber}/withdraw", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
@@ -86,6 +78,7 @@ class AccountDocumentation extends DocumentationTemplate {
 	}
 
 	@Test
+	@WithMockMember
 	void transfer() throws Exception {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		securityContext.setAuthentication(
@@ -109,6 +102,7 @@ class AccountDocumentation extends DocumentationTemplate {
 	}
 
 	@Test
+	@WithMockMember
 	void getTargets() throws Exception {
 		when(accountApplicationService.getTargets(USER.getUsername(), 계좌_번호)).thenReturn(타겟목록);
 		SecurityContext securityContext = SecurityContextHolder.getContext();

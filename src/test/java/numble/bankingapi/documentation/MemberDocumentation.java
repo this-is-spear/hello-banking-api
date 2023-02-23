@@ -9,27 +9,22 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.dto.MemberResponse;
+import numble.bankingapi.util.WithMockMember;
 
 class MemberDocumentation extends DocumentationTemplate {
 
 	@Test
+	@WithMockMember
 	void register() throws Exception {
 		String email = "rjsckdd12@gmail.com";
 		String name = "tis";
@@ -45,7 +40,6 @@ class MemberDocumentation extends DocumentationTemplate {
 
 		MockHttpServletRequestBuilder builder = post("/members/register")
 			.with(csrf())
-			.with(anonymous())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(params));
 
@@ -63,15 +57,10 @@ class MemberDocumentation extends DocumentationTemplate {
 	}
 
 	@Test
+	@WithMockMember
 	void me() throws Exception {
-		UserDetails user = new User("rjsckdd12@gmail.com", "password",
-			List.of(new SimpleGrantedAuthority("ROLE_MEMBER")));
-		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(
-			new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities()));
-
-		when(memberApplicationService.getMember(user.getUsername()))
-			.thenReturn(new MemberResponse(2L, user.getUsername()));
+		when(memberApplicationService.getMember(USER.getUsername()))
+			.thenReturn(new MemberResponse(2L, USER.getUsername()));
 
 		MockHttpServletRequestBuilder builder = get("/members/me")
 			.with(csrf());

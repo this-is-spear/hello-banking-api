@@ -1,16 +1,13 @@
 package numble.bankingapi.documentation;
 
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
-
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
 import org.springframework.restdocs.operation.preprocess.OperationResponsePreprocessor;
@@ -18,8 +15,6 @@ import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,6 +25,7 @@ import numble.bankingapi.social.domain.SocialNetworkService;
 
 @WebMvcTest
 @ExtendWith(RestDocumentationExtension.class)
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 class DocumentationTemplate {
 	@MockBean
@@ -41,21 +37,11 @@ class DocumentationTemplate {
 	@MockBean
 	protected MemberRepository memberRepository;
 	@Autowired
-	private WebApplicationContext context;
-	@Autowired
 	protected MockMvc mockMvc;
 	@Autowired
 	protected ObjectMapper objectMapper;
 	protected static final User USER = new User("member@email.com", "password",
 		List.of(new SimpleGrantedAuthority("ROLE_MEMBER")));
-
-	@BeforeEach
-	public void setup(RestDocumentationContextProvider restDocumentation) {
-		mockMvc = MockMvcBuilders
-			.webAppContextSetup(context)
-			.apply(documentationConfiguration(restDocumentation))
-			.build();
-	}
 
 	protected OperationRequestPreprocessor getDocumentRequest() {
 		return Preprocessors.preprocessRequest(
