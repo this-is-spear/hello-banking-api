@@ -148,7 +148,6 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			jsonPath(AMOUNT).value(출금할_돈 * 요청_횟수));
 	}
 
-
 	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
 		String username, String password) throws InterruptedException {
 		int 스레드_개수 = 6;

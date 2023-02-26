@@ -8,8 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 
-import numble.bankingapi.util.generator.AccountNumberGenerator;
-
 class AccountNumberGeneratorTest {
 
 	@RepeatedTest(100)
