@@ -1,4 +1,4 @@
-package numble.bankingapi;
+package numble.bankingapi.util.data;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +13,7 @@ import numble.bankingapi.banking.domain.Money;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberRepository;
 import numble.bankingapi.member.domain.RoleType;
-import numble.bankingapi.util.AccountNumberGenerator;
+import numble.bankingapi.util.generator.AccountNumberGenerator;
 
 @Component
 @RequiredArgsConstructor

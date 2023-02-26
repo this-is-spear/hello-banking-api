@@ -10,6 +10,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,7 @@ import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.util.WithMockMember;
 
 class AccountDocumentation extends DocumentationTemplate {
+	private static final String IDEMPOTENT_KEY = "Idempotency-Key";
 
 	@Test
 	@WithMockMember
@@ -47,6 +50,7 @@ class AccountDocumentation extends DocumentationTemplate {
 				post("/account/{accountNumber}/deposit", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
+					.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 					.with(csrf())
 					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
@@ -66,6 +70,7 @@ class AccountDocumentation extends DocumentationTemplate {
 				post("/account/{accountNumber}/withdraw", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
+					.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 					.with(csrf())
 					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
@@ -90,6 +95,7 @@ class AccountDocumentation extends DocumentationTemplate {
 				post("/account/{accountNumber}/transfer", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(command))
+					.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 					.with(csrf())
 					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())

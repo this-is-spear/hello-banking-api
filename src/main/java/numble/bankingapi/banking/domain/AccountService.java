@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import numble.bankingapi.banking.exception.InvalidMemberException;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberRepository;
-import numble.bankingapi.util.AccountNumberGenerator;
+import numble.bankingapi.util.generator.AccountNumberGenerator;
 
 @Service
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package numble.bankingapi.security;
+package numble.bankingapi.util.config;
 
 import static org.springframework.security.config.Customizer.*;
 

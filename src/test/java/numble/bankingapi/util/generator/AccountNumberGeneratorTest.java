@@ -1,4 +1,4 @@
-package numble.bankingapi.util;
+package numble.bankingapi.util.generator;
 
 import static org.assertj.core.api.Assertions.*;
 

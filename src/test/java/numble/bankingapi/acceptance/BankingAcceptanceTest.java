@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,12 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 class BankingAcceptanceTest extends AcceptanceTest {
+	private static final String IDEMPOTENT_KEY = "Idempotency-Key";
 	private static final String AMOUNT = "$.balance.amount";
 	private static final String ADMIN = "admin";
-	private static final String MEMBER = "member";
 	private static final long 천원 = 1_000L;
 	private static final long 삼천원 = 3_000L;
-	private static final long 오천원 = 5_000L;
 	private static final long 만원 = 10_000L;
 	private static final long 백만원 = 1_000_000L;
 
@@ -148,10 +148,6 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			jsonPath(AMOUNT).value(출금할_돈 * 요청_횟수));
 	}
 
-	private String 계좌_정보_조회(String member) {
-		return loadData.get(member);
-	}
-
 	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
 		String username, String password) throws InterruptedException {
 		int 스레드_개수 = 6;
@@ -182,6 +178,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			post("/account/{accountNumber}/transfer", fromAccountNumber)
 				.with(user(username).password(password).roles("MEMBER"))
 				.contentType(MediaType.APPLICATION_JSON)
+				.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 				.content(objectMapper.writeValueAsString(transferParams))
 		).andDo(print());
 	}
@@ -195,6 +192,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			post("/account/{accountNumber}/deposit", accountNumber)
 				.with(user(username).password(password).roles("MEMBER"))
 				.contentType(MediaType.APPLICATION_JSON)
+				.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 				.content(objectMapper.writeValueAsString(depositParams))
 		).andDo(print());
 	}
@@ -208,6 +206,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			post("/account/{accountNumber}/withdraw", accountNumber)
 				.with(user(username).password(password).roles("MEMBER"))
 				.contentType(MediaType.APPLICATION_JSON)
+				.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 				.content(objectMapper.writeValueAsString(depositParams))
 		).andDo(print());
 	}
