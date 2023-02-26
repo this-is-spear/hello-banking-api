@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -57,5 +58,23 @@ class PathMatcherInterceptorTest {
 		);
 		assertThat(actual).isTrue();
 		verify(handlerInterceptor, atLeast(1)).preHandle(request, response, handler);
+	}
+
+	@Test
+	void includePathPattern() {
+		doNothing().when(customPathContainer).includePathPattern("/account", HttpMethod.POST);
+		assertDoesNotThrow(
+			() -> pathMatcherInterceptor.includePathPattern("/account", HttpMethod.POST)
+		);
+		verify(customPathContainer, times(1)).includePathPattern("/account", HttpMethod.POST);
+	}
+
+	@Test
+	void excludePathPattern() {
+		doNothing().when(customPathContainer).excludePathPattern("/account", HttpMethod.GET);
+		assertDoesNotThrow(
+			() -> pathMatcherInterceptor.excludePathPattern("/account", HttpMethod.GET)
+		);
+		verify(customPathContainer, times(1)).excludePathPattern("/account", HttpMethod.GET);
 	}
 }
