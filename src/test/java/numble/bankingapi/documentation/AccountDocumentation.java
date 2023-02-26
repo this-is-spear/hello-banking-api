@@ -22,7 +22,7 @@ import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.util.WithMockMember;
 
 class AccountDocumentation extends DocumentationTemplate {
-	private static final String IDEMPOTENT_KEY = "idempotent-key";
+	private static final String IDEMPOTENT_KEY = "Idempotency-Key";
 
 	@Test
 	@WithMockMember

@@ -26,7 +26,7 @@ import numble.bankingapi.idempotent.domain.IdempotentRequestHistoryService;
 
 @ExtendWith(MockitoExtension.class)
 class IdempotentRequestInterceptorTest {
-	private static final String IDEMPOTENT_KEY = "idempotent-key";
+	private static final String IDEMPOTENT_KEY = "Idempotency-Key";
 	private static final String IDEMPOTENT_KEY_VALUE = "SADF2K123S123DJ";
 	private static final TransferCommand COMMAND = new TransferCommand("123-234-1231-34", new Money(10_000L));
 	private ObjectMapper objectMapper = new ObjectMapper();

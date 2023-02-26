@@ -18,7 +18,7 @@ import numble.bankingapi.idempotent.domain.IdempotentRequestHistoryService;
 @Component
 @RequiredArgsConstructor
 public class IdempotentRequestInterceptor implements HandlerInterceptor {
-	private static final String IDEMPOTENT_KEY = "idempotent-key";
+	private static final String IDEMPOTENT_KEY = "Idempotency-Key";
 	private final IdempotentRequestHistoryService idempotentRequestHistoryService;
 
 	@Override

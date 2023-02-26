@@ -17,7 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 class BankingAcceptanceTest extends AcceptanceTest {
-	private static final String IDEMPOTENT_KEY = "idempotent-key";
+	private static final String IDEMPOTENT_KEY = "Idempotency-Key";
 	private static final String AMOUNT = "$.balance.amount";
 	private static final String ADMIN = "admin";
 	private static final String MEMBER = "member";
