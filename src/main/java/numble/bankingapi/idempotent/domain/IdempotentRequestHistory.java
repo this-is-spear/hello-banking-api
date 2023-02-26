@@ -8,16 +8,16 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import numble.bankingapi.common.BaseEntity;
 
 @Entity
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class IdempotentRequestHistory {
+public class IdempotentRequestHistory extends BaseEntity {
 	@Id
 	@Column(name = "id")
 	@EqualsAndHashCode.Include
