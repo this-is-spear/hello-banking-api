@@ -1,4 +1,4 @@
-package numble.bankingapi.util;
+package numble.bankingapi.util.matcher;
 
 import java.util.ArrayList;
 import java.util.List;

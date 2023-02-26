@@ -1,4 +1,4 @@
-package numble.bankingapi.util;
+package numble.bankingapi.util.generator;
 
 import java.util.List;
 import java.util.random.RandomGenerator;

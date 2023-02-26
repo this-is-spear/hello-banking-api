@@ -1,4 +1,4 @@
-package numble.bankingapi.util;
+package numble.bankingapi.util.filter;
 
 import java.io.IOException;
 

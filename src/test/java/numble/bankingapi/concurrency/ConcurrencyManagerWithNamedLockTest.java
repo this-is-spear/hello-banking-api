@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import numble.bankingapi.banking.domain.Account;
 import numble.bankingapi.banking.domain.Money;
-import numble.bankingapi.util.AccountNumberGenerator;
+import numble.bankingapi.util.generator.AccountNumberGenerator;
 
 @SpringBootTest
 class ConcurrencyManagerWithNamedLockTest {

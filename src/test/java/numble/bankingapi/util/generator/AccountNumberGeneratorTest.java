@@ -1,4 +1,4 @@
-package numble.bankingapi.util;
+package numble.bankingapi.util.generator;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -7,6 +7,8 @@ import java.util.random.RandomGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
+
+import numble.bankingapi.util.generator.AccountNumberGenerator;
 
 class AccountNumberGeneratorTest {
 

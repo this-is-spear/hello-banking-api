@@ -11,7 +11,7 @@ import numble.bankingapi.banking.dto.HistoryResponse;
 import numble.bankingapi.banking.dto.HistoryResponses;
 import numble.bankingapi.banking.dto.TargetResponse;
 import numble.bankingapi.banking.dto.TargetResponses;
-import numble.bankingapi.util.AccountNumberGenerator;
+import numble.bankingapi.util.generator.AccountNumberGenerator;
 
 public class DocumentationFixture {
 

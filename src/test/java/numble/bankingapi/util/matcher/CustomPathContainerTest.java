@@ -1,4 +1,4 @@
-package numble.bankingapi.util;
+package numble.bankingapi.util.matcher;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;

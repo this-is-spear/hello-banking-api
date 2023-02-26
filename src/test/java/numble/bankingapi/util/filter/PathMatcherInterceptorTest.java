@@ -1,4 +1,4 @@
-package numble.bankingapi.util;
+package numble.bankingapi.util.filter;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,6 +15,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import numble.bankingapi.util.matcher.CustomPathContainer;
 
 @ExtendWith(MockitoExtension.class)
 class PathMatcherInterceptorTest {

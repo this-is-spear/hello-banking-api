@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import numble.bankingapi.DataLoader;
+import numble.bankingapi.util.data.DataLoader;
 import numble.bankingapi.util.DatabaseCleanup;
 
 @ActiveProfiles("test")

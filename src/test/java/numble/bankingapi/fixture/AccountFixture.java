@@ -3,7 +3,7 @@ package numble.bankingapi.fixture;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.domain.Money;
-import numble.bankingapi.util.AccountNumberGenerator;
+import numble.bankingapi.util.generator.AccountNumberGenerator;
 
 public class AccountFixture {
 	public static final AccountNumber 계좌번호 = AccountNumberGenerator.generate();

@@ -1,4 +1,4 @@
-package numble.bankingapi;
+package numble.bankingapi.util.data;
 
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;

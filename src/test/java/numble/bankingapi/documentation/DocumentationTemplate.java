@@ -26,7 +26,7 @@ import numble.bankingapi.idempotent.domain.IdempotentRequestHistoryService;
 import numble.bankingapi.member.application.MemberApplicationService;
 import numble.bankingapi.member.domain.MemberRepository;
 import numble.bankingapi.social.domain.SocialNetworkService;
-import numble.bankingapi.util.CustomPathContainer;
+import numble.bankingapi.util.matcher.CustomPathContainer;
 
 @WebMvcTest
 @ExtendWith(RestDocumentationExtension.class)

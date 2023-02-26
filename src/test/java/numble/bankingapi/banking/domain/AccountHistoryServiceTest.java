@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberRepository;
-import numble.bankingapi.util.AccountNumberGenerator;
+import numble.bankingapi.util.generator.AccountNumberGenerator;
 
 @Transactional
 @SpringBootTest
