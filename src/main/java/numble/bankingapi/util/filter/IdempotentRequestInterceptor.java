@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.bankingapi.idempotent.domain.IdempotentRequestHistory;
 import numble.bankingapi.idempotent.domain.IdempotentRequestHistoryService;
+import numble.bankingapi.idempotent.exception.InvalidIdempotencyKey;
 
 @Slf4j
 @Component
@@ -54,7 +55,7 @@ public class IdempotentRequestInterceptor implements HandlerInterceptor {
 
 	private void validKey(String key) {
 		if (key == null || key.isBlank()) {
-			throw new NullPointerException();
+			throw new InvalidIdempotencyKey();
 		}
 	}
 }

@@ -23,6 +23,7 @@ import numble.bankingapi.banking.domain.Money;
 import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.idempotent.domain.IdempotentRequestHistory;
 import numble.bankingapi.idempotent.domain.IdempotentRequestHistoryService;
+import numble.bankingapi.idempotent.exception.InvalidIdempotencyKey;
 
 @ExtendWith(MockitoExtension.class)
 class IdempotentRequestInterceptorTest {
@@ -69,7 +70,7 @@ class IdempotentRequestInterceptorTest {
 	void preHandle_notExistKey() {
 		assertThatThrownBy(
 			() -> idempotentRequestInterceptor.preHandle(키가_존재하지_않는_요청, response, handler)
-		).isInstanceOf(NullPointerException.class);
+		).isInstanceOf(InvalidIdempotencyKey.class);
 	}
 
 	@Test
@@ -78,7 +79,7 @@ class IdempotentRequestInterceptorTest {
 		키가_존재하지_않는_요청.addHeader(IDEMPOTENT_KEY, "");
 		assertThatThrownBy(
 			() -> idempotentRequestInterceptor.preHandle(키가_존재하지_않는_요청, response, handler)
-		).isInstanceOf(NullPointerException.class);
+		).isInstanceOf(InvalidIdempotencyKey.class);
 	}
 
 	@Test
@@ -106,7 +107,7 @@ class IdempotentRequestInterceptorTest {
 	void postHandle_notNullKey() {
 		assertThatThrownBy(
 			() -> idempotentRequestInterceptor.postHandle(키가_존재하지_않는_요청, response, handler, modelAndView)
-		).isInstanceOf(NullPointerException.class);
+		).isInstanceOf(InvalidIdempotencyKey.class);
 	}
 
 	private void initializeMockHttpServletRequest(MockHttpServletRequest request) throws
