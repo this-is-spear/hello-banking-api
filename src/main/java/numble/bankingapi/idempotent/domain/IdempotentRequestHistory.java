@@ -25,20 +25,13 @@ public class IdempotentRequestHistory extends BaseEntity {
 	@Column(name = "status")
 	@Enumerated(value = EnumType.STRING)
 	private HttpStatus responseStatus;
-	@Column(name = "body")
-	private String responseBody;
 
-	public IdempotentRequestHistory(String idempotentId, HttpStatus responseStatus, String responseBody) {
+	public IdempotentRequestHistory(String idempotentId, HttpStatus responseStatus) {
 		validId(idempotentId);
 		validStatus(responseStatus);
 
 		this.idempotentId = idempotentId;
 		this.responseStatus = responseStatus;
-		this.responseBody = responseBody;
-	}
-
-	public IdempotentRequestHistory(String idempotentId, HttpStatus responseStatus) {
-		this(idempotentId, responseStatus, null);
 	}
 
 	private void validId(String idempotentId) {

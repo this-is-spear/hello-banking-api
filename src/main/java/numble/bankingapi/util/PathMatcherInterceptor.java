@@ -23,7 +23,6 @@ public class PathMatcherInterceptor implements HandlerInterceptor {
 			return true;
 		}
 
-		log.info("Include Path : {}", request.getPathInfo());
 		return handlerInterceptor.preHandle(request, response, handler);
 	}
 

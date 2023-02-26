@@ -51,9 +51,7 @@ class IdempotentRequestInterceptorTest {
 
 		response = new MockHttpServletResponse();
 		idempotentRequestInterceptor = new IdempotentRequestInterceptor(
-			idempotentRequestHistoryService,
-			objectMapper
-		);
+			idempotentRequestHistoryService);
 	}
 
 	@Test
@@ -69,6 +67,15 @@ class IdempotentRequestInterceptorTest {
 	@Test
 	@DisplayName("키가 없는 경우 예외가 발생한다.")
 	void preHandle_notExistKey() {
+		assertThatThrownBy(
+			() -> idempotentRequestInterceptor.preHandle(키가_존재하지_않는_요청, response, handler)
+		).isInstanceOf(NullPointerException.class);
+	}
+
+	@Test
+	@DisplayName("키가 비어있는 경우 예외가 발생한다.")
+	void preHandle_emptyKey() {
+		키가_존재하지_않는_요청.addHeader(IDEMPOTENT_KEY, "");
 		assertThatThrownBy(
 			() -> idempotentRequestInterceptor.preHandle(키가_존재하지_않는_요청, response, handler)
 		).isInstanceOf(NullPointerException.class);
