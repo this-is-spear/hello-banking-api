@@ -21,7 +21,6 @@ import numble.bankingapi.util.generator.AccountNumberGenerator;
 class AccountServiceTest {
 	private final FakeMemberRepository memberRepository = new FakeMemberRepository();
 	private final FakeAccountRepository accountRepository = new FakeAccountRepository();
-	private final FakeAccountHistoryRepository accountHistoryRepository = new FakeAccountHistoryRepository();
 	private ToBeAccountService accountService;
 	Account 사용자_계좌;
 	Account 상대방_계좌;
@@ -31,7 +30,7 @@ class AccountServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		accountService = new ToBeAccountService(accountRepository, accountHistoryRepository);
+		accountService = new ToBeAccountService(accountRepository);
 		사용자 = memberRepository.save(new Member("member@email.com", "friend1", "password"));
 		사용자의_친구1 = memberRepository.save(new Member("member_friend1@email.com", "friend2", "password"));
 		사용자의_친구2 = memberRepository.save(new Member("member_friend2@email.com", "friend3", "password"));

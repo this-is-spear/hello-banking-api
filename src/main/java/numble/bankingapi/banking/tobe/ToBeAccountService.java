@@ -19,7 +19,6 @@ import numble.bankingapi.util.generator.AccountNumberGenerator;
 @RequiredArgsConstructor
 public class ToBeAccountService {
 	private final AccountRepository accountRepository;
-	private final AccountHistoryRepository accountHistoryRepository;
 
 	@Transactional
 	public Account save(Long userId) {
@@ -74,10 +73,6 @@ public class ToBeAccountService {
 
 	public List<Account> findAll() {
 		return accountRepository.findAll();
-	}
-
-	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(String principal, AccountNumber accountNumber) {
-		return accountHistoryRepository.findByFromAccountNumber(accountNumber);
 	}
 
 	public List<Account> getFriendAccounts(List<Long> friendIds) {
