@@ -20,6 +20,7 @@ public interface JpaAccountRepository extends JpaRepository<Account, Long>, Acco
 
 	@Override
 	Optional<Account> findByAccountNumber(AccountNumber accountNumber);
+
 	@Lock(LockModeType.OPTIMISTIC)
 	@Query("select a from Account a where a.accountNumber = :accountNumber")
 	Optional<Account> findByAccountNumberWithOptimisticLock(AccountNumber accountNumber);

@@ -3,7 +3,6 @@ package numble.bankingapi.fake;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import numble.bankingapi.banking.domain.AccountHistory;
 import numble.bankingapi.banking.domain.AccountHistoryRepository;

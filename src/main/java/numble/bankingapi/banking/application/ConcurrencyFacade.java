@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import numble.bankingapi.banking.domain.AccountNumber;
-import numble.bankingapi.banking.domain.Money;
 import numble.bankingapi.banking.domain.AccountService;
+import numble.bankingapi.banking.domain.Money;
 import numble.bankingapi.concurrency.ConcurrencyManager;
 
 @Service
