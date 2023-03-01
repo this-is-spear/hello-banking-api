@@ -1,5 +1,6 @@
 package numble.bankingapi.acceptance;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -141,11 +142,13 @@ class BankingAcceptanceTest extends AcceptanceTest {
 		계좌_이체_여러번_요청(나의계좌, 상대방계좌, 출금할_돈, 요청_횟수, 이메일, 비밀번호);
 
 		// then
-		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈 * 요청_횟수));
-
-		계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(출금할_돈 * 요청_횟수));
+		assertAll(
+			() ->
+				계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
+					jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈 * 요청_횟수)),
+			() -> 계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(
+				jsonPath(AMOUNT).value(출금할_돈 * 요청_횟수))
+		);
 	}
 
 	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,

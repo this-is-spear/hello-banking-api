@@ -37,9 +37,10 @@ public class AccountApplicationService {
 	public HistoryResponses getHistory(String principal, String stringAccountNumber) {
 		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 
 		return new HistoryResponses(account.getBalance(),
-			accountService.findAccountHistoriesByFromAccountNumber(principal, accountNumber)
+			accountService.findAccountHistoriesByFromAccountNumber(account)
 				.stream().map(this::getHistoryResponse).collect(Collectors.toList())
 		);
 	}
@@ -47,8 +48,9 @@ public class AccountApplicationService {
 	public void deposit(String principal, String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 
-		concurrencyFacade.depositWithLock(principal, accountNumber, money);
+		concurrencyFacade.depositWithLock(accountNumber, money);
 		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 	}
@@ -56,8 +58,9 @@ public class AccountApplicationService {
 	public void withdraw(String principal, String number, Money money) {
 		AccountNumber accountNumber = getAccountNumber(number);
 		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		validateMember(principal, account);
 
-		concurrencyFacade.withdrawWithLock(principal, accountNumber, money);
+		concurrencyFacade.withdrawWithLock(accountNumber, money);
 		notifyService.notify(account.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 	}
@@ -65,16 +68,27 @@ public class AccountApplicationService {
 	public void transfer(String principal, String accountNumber, TransferCommand command) {
 		AccountNumber fromAccountNumber = getAccountNumber(accountNumber);
 		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
-		Money money = command.amount();
-
-		concurrencyFacade.transferWithLock(principal, fromAccountNumber, toAccountNumber, money);
 
 		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
 		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
+
+		validateMember(principal, fromAccount);
+		Money money = command.amount();
+
+		concurrencyFacade.transferWithLock(fromAccountNumber, toAccountNumber, money);
+
 		notifyService.notify(fromAccount.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.TRANSFER));
 		notifyService.notify(toAccount.getUserId(),
 			new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
+	}
+
+	private void validateMember(String principal, Account account) {
+		Member member = memberService.findByEmail(principal);
+
+		if (!member.getId().equals(account.getUserId())) {
+			throw new InvalidMemberException();
+		}
 	}
 
 	public TargetResponses getTargets(String principal, String stringAccountNumber) {

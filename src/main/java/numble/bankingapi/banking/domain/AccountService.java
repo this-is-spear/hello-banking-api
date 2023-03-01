@@ -3,12 +3,10 @@ package numble.bankingapi.banking.domain;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import numble.bankingapi.banking.exception.InvalidMemberException;
-import numble.bankingapi.member.domain.Member;
-import numble.bankingapi.member.domain.MemberRepository;
 import numble.bankingapi.util.generator.AccountNumberGenerator;
 
 @Service
@@ -16,8 +14,8 @@ import numble.bankingapi.util.generator.AccountNumberGenerator;
 public class AccountService {
 	private final AccountRepository accountRepository;
 	private final AccountHistoryRepository accountHistoryRepository;
-	private final MemberRepository memberRepository;
 
+	@Transactional
 	public Account save(Long userId) {
 		AccountNumber accountNumber;
 
@@ -42,28 +40,25 @@ public class AccountService {
 		return accountRepository.findByAccountNumber(accountNumber).orElseThrow();
 	}
 
-	@Transactional
-	public void depositMoney(String principal, AccountNumber accountNumber, Money money) {
-		Account account = getAccountByAccountNumber(accountNumber);
-		validateMember(principal, account);
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void depositMoney(AccountNumber accountNumber, Money money) {
+		Account account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
 		account.deposit(money);
 		recordCompletionDepositMoney(account, money);
 	}
 
-	@Transactional
-	public void withdrawMoney(String principal, AccountNumber accountNumber, Money money) {
-		Account account = getAccountByAccountNumber(accountNumber);
-		validateMember(principal, account);
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void withdrawMoney(AccountNumber accountNumber, Money money) {
+		Account account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
 		account.withdraw(money);
 		recordCompletionWithdrawMoney(account, money);
 	}
 
-	@Transactional
-	public void transferMoney(String principal, AccountNumber fromAccountNumber, AccountNumber toAccountNumber,
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void transferMoney(AccountNumber fromAccountNumber, AccountNumber toAccountNumber,
 		Money money) {
-		Account fromAccount = getAccountByAccountNumber(fromAccountNumber);
-		Account toAccount = getAccountByAccountNumber(toAccountNumber);
-		validateMember(principal, fromAccount);
+		Account fromAccount = getAccountByAccountNumberWithOptimisticLock(fromAccountNumber);
+		Account toAccount = getAccountByAccountNumberWithOptimisticLock(toAccountNumber);
 
 		if (fromAccount.equals(toAccount)) {
 			throw new IllegalArgumentException();
@@ -71,31 +66,26 @@ public class AccountService {
 
 		fromAccount.withdraw(money);
 		toAccount.deposit(money);
+
 		recordCompletionTransferMoney(fromAccount, toAccount, money);
-	}
-
-	private void validateMember(String principal, Account account) {
-		Member member = memberRepository.findByEmail(principal).orElseThrow(InvalidMemberException::new);
-
-		if (!member.getId().equals(account.getUserId())) {
-			throw new InvalidMemberException();
-		}
 	}
 
 	public List<Account> findAll() {
 		return accountRepository.findAll();
 	}
 
-	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(String principal, AccountNumber accountNumber) {
-		Account account = getAccountByAccountNumber(accountNumber);
-		validateMember(principal, account);
-		return accountHistoryRepository.findByFromAccountNumber(accountNumber);
-	}
-
 	public List<Account> getFriendAccounts(List<Long> friendIds) {
 		return accountRepository.findAllByUserIdIn(friendIds)
 			.stream()
 			.toList();
+	}
+
+	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(Account account) {
+		return accountHistoryRepository.findByFromAccountNumber(account.getAccountNumber());
+	}
+
+	private Account getAccountByAccountNumberWithOptimisticLock(AccountNumber accountNumber) {
+		return accountRepository.findByAccountNumberWithOptimisticLock(accountNumber).orElseThrow();
 	}
 
 	private void recordCompletionDepositMoney(Account fromAccount, Money money) {

@@ -81,8 +81,9 @@ class AccountApplicationServiceTest {
 	@Test
 	@DisplayName("계좌 사용기록을 반환한다.")
 	void getHistory() {
+		when(memberService.findByEmail(사용자.getEmail())).thenReturn(사용자);
 		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
-		when(accountService.findAccountHistoriesByFromAccountNumber(EMAIL, 계좌번호)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
+		when(accountService.findAccountHistoriesByFromAccountNumber(계좌)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
 
 		HistoryResponses responses = assertDoesNotThrow(
 			() -> accountApplicationService.getHistory(EMAIL, 계좌번호.getNumber())
@@ -95,6 +96,7 @@ class AccountApplicationServiceTest {
 	@Test
 	@DisplayName("계좌에 금액을 입금한다.")
 	void deposit() {
+		when(memberService.findByEmail(사용자.getEmail())).thenReturn(사용자);
 		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
 		doNothing().when(notifyService).notify(계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 		assertDoesNotThrow(
@@ -103,8 +105,19 @@ class AccountApplicationServiceTest {
 	}
 
 	@Test
+	@DisplayName("계좌에 금액을 입금한할 때 본인이 아니면 예외가 발생한다.")
+	void deposit_accessInvalidMember() {
+		when(memberService.findByEmail(사용자.getEmail())).thenReturn(상대방);
+		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
+		assertThatThrownBy(
+			() -> accountApplicationService.deposit(EMAIL, 계좌번호.getNumber(), 만원)
+		).isInstanceOf(InvalidMemberException.class);
+	}
+
+	@Test
 	@DisplayName("계좌에 금액을 출금한다.")
 	void withdraw() {
+		when(memberService.findByEmail(사용자.getEmail())).thenReturn(사용자);
 		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
 		doNothing().when(notifyService).notify(사용자_ID, new AlarmMessage(TaskStatus.SUCCESS, TaskType.WITHDRAW));
 		assertDoesNotThrow(
@@ -113,10 +126,21 @@ class AccountApplicationServiceTest {
 	}
 
 	@Test
+	@DisplayName("계좌에 금액을 출금할 때 본인이 아니면 예외가 발생한다.")
+	void withdraw_accessInvalidMember() {
+		when(memberService.findByEmail(사용자.getEmail())).thenReturn(상대방);
+		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
+		assertThatThrownBy(
+			() -> accountApplicationService.withdraw(EMAIL, 계좌번호.getNumber(), 만원)
+		).isInstanceOf(InvalidMemberException.class);
+	}
+
+	@Test
 	@DisplayName("계좌 이체한다.")
 	void transfer() {
+		when(memberService.findByEmail(사용자.getEmail())).thenReturn(사용자);
 		doNothing().when(concurrencyFacade)
-			.transferWithLock(EMAIL, 계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
+			.transferWithLock(계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 만원);
 		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
 		when(accountService.getAccountByAccountNumber(상대방_계좌.getAccountNumber())).thenReturn(상대방_계좌);
 
@@ -125,7 +149,24 @@ class AccountApplicationServiceTest {
 		doNothing().when(notifyService)
 			.notify(상대방_계좌.getUserId(), new AlarmMessage(TaskStatus.SUCCESS, TaskType.DEPOSIT));
 
-		accountApplicationService.transfer(EMAIL, 계좌번호.getNumber(), new TransferCommand(상대방_계좌번호.getNumber(), 만원));
+		assertDoesNotThrow(
+			() -> accountApplicationService.transfer(EMAIL, 계좌번호.getNumber(),
+				new TransferCommand(상대방_계좌번호.getNumber(), 만원))
+		);
+	}
+
+	@Test
+	@DisplayName("이체할 때 본인이 아니면 안된다.")
+	void transfer_accessInvalidMember() {
+		when(memberService.findByEmail(사용자.getEmail())).thenReturn(상대방);
+		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
+		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
+		when(accountService.getAccountByAccountNumber(상대방_계좌.getAccountNumber())).thenReturn(상대방_계좌);
+
+		assertThatThrownBy(
+			() -> accountApplicationService.transfer(EMAIL, 계좌번호.getNumber(),
+				new TransferCommand(상대방_계좌번호.getNumber(), 만원))
+		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test

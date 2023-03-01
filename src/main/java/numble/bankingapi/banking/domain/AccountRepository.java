@@ -8,7 +8,11 @@ public interface AccountRepository {
 
 	Optional<Account> findByAccountNumber(AccountNumber accountNumber);
 
+	Optional<Account> findByAccountNumberWithOptimisticLock(AccountNumber accountNumber);
+
 	<S extends Account> S save(S entity);
+
+	void flush();
 
 	List<Account> findAll();
 

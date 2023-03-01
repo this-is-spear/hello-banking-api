@@ -16,53 +16,67 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import numble.bankingapi.common.BaseEntity;
 
 @Getter
 @Entity
+@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public class AccountHistory extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@ToString.Include
 	@EqualsAndHashCode.Include
 	private Long id;
+	@ToString.Include
 	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "number", column = @Column(name = "fromAccountNumber"))
 	})
 	private AccountNumber fromAccountNumber;
+	@ToString.Include
 	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "number", column = @Column(name = "toAccountNumber"))
 	})
 	private AccountNumber toAccountNumber;
+	@ToString.Include
 	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "amount", column = @Column(name = "money"))
 	})
 	private Money money;
+	@ToString.Include
 	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "amount", column = @Column(name = "balance"))
 	})
 	private Money balance;
+	@ToString.Include
 	@Enumerated(EnumType.STRING)
 	private HistoryType type;
 
-	@Builder
-	public AccountHistory(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, HistoryType type,
-		Money money, Money balance) {
+	public AccountHistory(Long id, AccountNumber fromAccountNumber, AccountNumber toAccountNumber, Money money,
+		Money balance, HistoryType type) {
 		Objects.requireNonNull(fromAccountNumber);
 		Objects.requireNonNull(toAccountNumber);
 		Objects.requireNonNull(type);
 		Objects.requireNonNull(money);
 		Objects.requireNonNull(balance);
 
+		this.id = id;
 		this.fromAccountNumber = fromAccountNumber;
 		this.toAccountNumber = toAccountNumber;
-		this.type = type;
 		this.money = money;
 		this.balance = balance;
+		this.type = type;
+	}
+
+	@Builder
+	public AccountHistory(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, HistoryType type,
+		Money money, Money balance) {
+		this(null, fromAccountNumber, toAccountNumber, money, balance, type);
 	}
 }

@@ -5,14 +5,18 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import numble.bankingapi.banking.exception.NotNegativeMoneyException;
 
 @Getter
 @Embeddable
-@EqualsAndHashCode
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Money {
 	private static final int ZERO = 0;
+	@EqualsAndHashCode.Include
+	@ToString.Include
 	private long amount;
 
 	public Money(long amount) {
