@@ -20,7 +20,10 @@ public class ConcurrencyFacade {
 		Money amount) {
 		concurrencyManager.executeWithLock(
 			accountNumber.getNumber(),
-			() -> accountService.transferMoney(accountNumber, toAccountNumber, amount)
+			() -> concurrencyManager.executeWithLock(
+				toAccountNumber.getNumber(),
+				() -> accountService.transferMoney(accountNumber, toAccountNumber, amount)
+			)
 		);
 	}
 
