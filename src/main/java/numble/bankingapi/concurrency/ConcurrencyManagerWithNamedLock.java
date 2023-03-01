@@ -17,7 +17,7 @@ public class ConcurrencyManagerWithNamedLock implements ConcurrencyManager {
 	private static final String GET_LOCK = "SELECT GET_LOCK(:userLockName, :timeoutSeconds)";
 	private static final String RELEASE_LOCK = "SELECT RELEASE_LOCK(:userLockName)";
 	private static final String EXCEPTION_MESSAGE = "LOCK 을 수행하는 중에 오류가 발생하였습니다.";
-	private static final int TIMEOUT_SECONDS = 2;
+	private static final int TIMEOUT_SECONDS = 1;
 	private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	@Override
