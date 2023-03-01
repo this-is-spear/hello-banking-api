@@ -20,24 +20,42 @@ Numble Challenge - Banking API
 ```mermaid
 erDiagram
 	User {
-		long userId
-		string id
+		long id PK
+		string email
+		string anme
 		string password
 	}
 	Account{
-		long id
+		long id PK
 		long userId
 		string number
 		long balance
 	}
 	AccountHistory {
-		long id
-		long accountId
+		long id PK
+		long fromAccountNumber
+		long toAccountNumber
 		string type
+		long amount	
 		long money	
 	}
-
-	User ||--|{ Account : own	
+	
+	Friend{
+		Long id PK
+		Long fromUserId
+		Long toUserId
+	}
+	
+	FriendRequestHistory {
+		Long id PK
+		Long fromUserId
+		Long toUserId
+		Boolean approval
+	}
+	
+	User ||--|| Friend : has
+	Friend ||--|| FriendRequestHistory : contain
+	User }|--|{ Account : own	
 	Account ||--o{ AccountHistory : write
 ```
 
