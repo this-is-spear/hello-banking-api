@@ -1,0 +1,128 @@
+= Money Transfer Service
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+== Banking API
+
+=== 기록 조회
+
+==== HTTP request
+
+include::{snippets}/history/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/history/http-response.adoc[]
+
+=== 금액 입금
+
+==== HTTP request
+
+include::{snippets}/deposit/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/deposit/http-response.adoc[]
+
+=== 금액 출금
+
+==== HTTP request
+
+include::{snippets}/withdraw/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/withdraw/http-response.adoc[]
+
+=== 계좌 이체
+
+==== HTTP request
+
+include::{snippets}/transfer/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/transfer/http-response.adoc[]
+
+=== 이체 대상 확인
+
+==== HTTP request
+
+include::{snippets}/targets/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/targets/http-response.adoc[]
+
+== Member API
+
+=== 회원가입
+
+==== HTTP request
+include::{snippets}/register/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/register/http-response.adoc[]
+
+=== 사용자 조회
+
+==== HTTP request
+include::{snippets}/me/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/me/http-response.adoc[]
+
+== Social API
+
+
+=== 친구 신청
+
+==== HTTP request
+include::{snippets}/social/ask/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/social/ask/http-response.adoc[]
+
+
+=== 친구 신청 승인
+
+==== HTTP request
+include::{snippets}/social/approval/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/social/approval/http-response.adoc[]
+
+
+=== 친구 신청 거절
+
+==== HTTP request
+include::{snippets}/social/rejected/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/social/rejected/http-response.adoc[]
+
+
+=== 친구 목록 조회
+
+==== HTTP request
+include::{snippets}/social/findFriends/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/social/findFriends/http-response.adoc[]
+
+
+=== 친구 신청 목록 조회
+
+==== HTTP request
+include::{snippets}/social/askedFriends/http-request.adoc[]
+
+==== HTTP response
+include::{snippets}/social/askedFriends/http-response.adoc[]

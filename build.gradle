@@ -1,0 +1,146 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'org.springframework.boot' version '3.0.2'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
+}
+
+group = 'numble'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+configurations {
+    asciidoctorExtensions
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+bootJar {
+    dependsOn asciidoctor
+    copy {
+        from "${asciidoctor.outputDir}"
+        into 'BOOT-INF/classes/static/docs'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // testcontainer dependency
+    testImplementation "org.testcontainers:testcontainers:1.17.6"
+    testImplementation "org.testcontainers:junit-jupiter:1.17.6"
+    testImplementation "org.testcontainers:mysql:1.17.6"
+}
+
+checkstyle {
+    toolVersion('10.3.1')
+    configFile = file("config/checkstyle/naver_checks.xml")
+    configProperties = ["suppressionFile": "config/checkstyle/naver_checks.xml"]
+}
+
+checkstyleMain {
+    source = ["src/main/java"]
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+test {
+    outputs.dir snippetsDir
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    finalizedBy asciidoctor
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = layout.buildDirectory.dir('jacocoDirectory')
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true
+            element = 'CLASS'
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+
+            excludes = [
+                    "*.BankingApiApplication",
+                    "*.*Configuration",
+                    "*.AccountService",
+                    "*.application.*",
+                    "*.dto.*",
+                    "*.BaseEntity",
+                    "*.concurrency.*",
+                    "*.NumbleAlarmService"
+            ]
+        }
+    }
+}
+
+asciidoctor {
+    dependsOn test
+    inputs.dir snippetsDir
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+build {
+    dependsOn check
+    dependsOn copyDocument
+}
