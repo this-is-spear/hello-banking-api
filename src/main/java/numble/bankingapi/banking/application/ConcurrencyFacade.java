@@ -1,6 +1,7 @@
 package numble.bankingapi.banking.application;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import numble.bankingapi.banking.domain.AccountNumber;
@@ -14,6 +15,7 @@ public class ConcurrencyFacade {
 	private final ConcurrencyManager concurrencyManager;
 	private final AccountService accountService;
 
+	@Transactional
 	public void transferWithLock(String principal, AccountNumber accountNumber, AccountNumber toAccountNumber,
 		Money amount) {
 		concurrencyManager.executeWithLock(
@@ -22,6 +24,7 @@ public class ConcurrencyFacade {
 		);
 	}
 
+	@Transactional
 	public void depositWithLock(String principal, AccountNumber accountNumber, Money amount) {
 		concurrencyManager.executeWithLock(
 			accountNumber.getNumber(),
@@ -29,6 +32,7 @@ public class ConcurrencyFacade {
 		);
 	}
 
+	@Transactional
 	public void withdrawWithLock(String principal, AccountNumber accountNumber, Money amount) {
 		concurrencyManager.executeWithLock(
 			accountNumber.getNumber(),
