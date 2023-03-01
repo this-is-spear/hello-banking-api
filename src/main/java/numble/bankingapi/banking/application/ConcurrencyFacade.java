@@ -6,14 +6,14 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.Money;
-import numble.bankingapi.banking.tobe.ToBeAccountService;
+import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.concurrency.ConcurrencyManager;
 
 @Service
 @RequiredArgsConstructor
 public class ConcurrencyFacade {
 	private final ConcurrencyManager concurrencyManager;
-	private final ToBeAccountService accountService;
+	private final AccountService accountService;
 
 	@Transactional
 	public void transferWithLock(AccountNumber accountNumber, AccountNumber toAccountNumber,

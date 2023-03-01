@@ -19,7 +19,7 @@ import numble.bankingapi.banking.dto.TargetResponse;
 import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.banking.exception.InvalidMemberException;
-import numble.bankingapi.banking.tobe.ToBeAccountService;
+import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberService;
 import numble.bankingapi.social.domain.Friend;
@@ -30,7 +30,7 @@ import numble.bankingapi.social.domain.FriendService;
 public class AccountApplicationService {
 	private final MemberService memberService;
 	private final FriendService friendService;
-	private final ToBeAccountService accountService;
+	private final AccountService accountService;
 	private final ConcurrencyFacade concurrencyFacade;
 	private final NotifyService notifyService;
 

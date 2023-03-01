@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import numble.bankingapi.banking.tobe.ToBeAccountService;
 import numble.bankingapi.fake.FakeAccountHistoryRepository;
 import numble.bankingapi.fake.FakeAccountRepository;
 import numble.bankingapi.fake.FakeMemberRepository;
@@ -21,13 +20,13 @@ class AccountHistoryServiceTest {
 	FakeAccountRepository accountRepository = new FakeAccountRepository();
 	FakeAccountHistoryRepository accountHistoryRepository = new FakeAccountHistoryRepository();
 	FakeMemberRepository memberRepository = new FakeMemberRepository();
-	ToBeAccountService accountService;
+	AccountService accountService;
 	Member 사용자;
 	Account 사용자_계좌;
 
 	@BeforeEach
 	void setUp() {
-		accountService = new ToBeAccountService(accountRepository, accountHistoryRepository);
+		accountService = new AccountService(accountRepository, accountHistoryRepository);
 
 		사용자 = memberRepository.save(new Member("member@email.com", "friend1", "password"));
 		사용자_계좌 = accountRepository.save(

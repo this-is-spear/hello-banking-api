@@ -25,7 +25,7 @@ import numble.bankingapi.banking.dto.HistoryResponses;
 import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.banking.exception.InvalidMemberException;
-import numble.bankingapi.banking.tobe.ToBeAccountService;
+import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberService;
 import numble.bankingapi.member.domain.RoleType;
@@ -68,7 +68,7 @@ class AccountApplicationServiceTest {
 	@Mock
 	private FriendService friendService;
 	@Mock
-	private ToBeAccountService accountService;
+	private AccountService accountService;
 	@Mock
 	private ConcurrencyFacade concurrencyFacade;
 	@Mock
