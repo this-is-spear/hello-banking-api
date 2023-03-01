@@ -144,10 +144,10 @@ class BankingAcceptanceTest extends AcceptanceTest {
 		// then
 		assertAll(
 			() ->
-				계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
-					jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈 * 요청_횟수)),
-			() -> 계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(
-				jsonPath(AMOUNT).value(출금할_돈 * 요청_횟수))
+				계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
+					.value(입금할_돈 - 출금할_돈 * 요청_횟수)),
+			() -> 계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
+				.value(출금할_돈 * 요청_횟수))
 		);
 	}
 
