@@ -1,15 +1,17 @@
 spring:
   datasource:
-    url: jdbc:tc:mysql:5.7.34://localhost:3306/test
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:mysql:8.0.24://localhost:3306/test
     dbcp2:
       driver-class-name: com.mysql.cj.jdbc.Driver
       test-on-borrow: true
       validation-query: SELECT 1
-      max-total: 1
 
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: create
     generate-ddl: true
+  jdbc:
+    template:
+      query-timeout: 2
