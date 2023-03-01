@@ -13,7 +13,8 @@ Numble Challenge - Banking API
 
 1. execute docker docker
 2. gradle build
-3. http://localhost:8080/docs/index.html 접속
+3. gradle bootRun
+4. http://localhost:8080/docs/index.html 접속
 
 ### Entity Relation Diagram
 
