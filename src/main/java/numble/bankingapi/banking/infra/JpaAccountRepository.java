@@ -23,6 +23,9 @@ public interface JpaAccountRepository extends JpaRepository<Account, Long>, Acco
 	<S extends Account> S save(S entity);
 
 	@Override
+	void flush();
+
+	@Override
 	List<Account> findAll();
 
 	@Query("select a from Account a where a.userId in :userId")

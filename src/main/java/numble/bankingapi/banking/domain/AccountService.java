@@ -47,6 +47,7 @@ public class AccountService {
 		Account account = getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 		account.deposit(money);
+		accountRepository.flush();
 		recordCompletionDepositMoney(account, money);
 	}
 
@@ -55,6 +56,7 @@ public class AccountService {
 		Account account = getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 		account.withdraw(money);
+		accountRepository.flush();
 		recordCompletionWithdrawMoney(account, money);
 	}
 
@@ -71,6 +73,8 @@ public class AccountService {
 
 		fromAccount.withdraw(money);
 		toAccount.deposit(money);
+
+		accountRepository.flush();
 		recordCompletionTransferMoney(fromAccount, toAccount, money);
 	}
 

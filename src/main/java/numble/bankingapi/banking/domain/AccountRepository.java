@@ -10,6 +10,8 @@ public interface AccountRepository {
 
 	<S extends Account> S save(S entity);
 
+	void flush();
+
 	List<Account> findAll();
 
 	List<Account> findAllByUserIdIn(List<Long> userId);
