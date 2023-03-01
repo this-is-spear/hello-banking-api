@@ -9,25 +9,20 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import numble.bankingapi.banking.exception.InvalidMemberException;
 import numble.bankingapi.banking.exception.NotNegativeMoneyException;
+import numble.bankingapi.banking.tobe.ToBeAccountService;
+import numble.bankingapi.fake.FakeAccountHistoryRepository;
+import numble.bankingapi.fake.FakeAccountRepository;
+import numble.bankingapi.fake.FakeMemberRepository;
 import numble.bankingapi.member.domain.Member;
-import numble.bankingapi.member.domain.MemberRepository;
 import numble.bankingapi.util.generator.AccountNumberGenerator;
 
-@Transactional
-@SpringBootTest
 class AccountServiceTest {
-	@Autowired
-	private AccountRepository accountRepository;
-	@Autowired
-	private MemberRepository memberRepository;
-	@Autowired
-	private AccountService accountService;
+	private final FakeMemberRepository memberRepository = new FakeMemberRepository();
+	private final FakeAccountRepository accountRepository = new FakeAccountRepository();
+	private final FakeAccountHistoryRepository accountHistoryRepository = new FakeAccountHistoryRepository();
+	private ToBeAccountService accountService;
 	Account 사용자_계좌;
 	Account 상대방_계좌;
 	Member 사용자;
@@ -36,9 +31,10 @@ class AccountServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		사용자 = memberRepository.findByEmail("member@email.com").get();
-		사용자의_친구1 = memberRepository.save(new Member("member_friend1@email.com", "friend1", "password"));
-		사용자의_친구2 = memberRepository.save(new Member("member_friend2@email.com", "friend1", "password"));
+		accountService = new ToBeAccountService(accountRepository, accountHistoryRepository);
+		사용자 = memberRepository.save(new Member("member@email.com", "friend1", "password"));
+		사용자의_친구1 = memberRepository.save(new Member("member_friend1@email.com", "friend2", "password"));
+		사용자의_친구2 = memberRepository.save(new Member("member_friend2@email.com", "friend3", "password"));
 
 		사용자_계좌 = accountRepository.save(
 			Account.builder()
@@ -87,6 +83,7 @@ class AccountServiceTest {
 				.balance(삼만원)
 				.build()
 		);
+
 	}
 
 	@Test
@@ -110,22 +107,15 @@ class AccountServiceTest {
 	@Test
 	@DisplayName("계좌에 입금하다.")
 	void depositMoney() {
+		accountRepository.flush();
 		Money 계좌_잔액_이만원 = 사용자_계좌.getBalance();
 		Money 입금할_금액_삼만원 = 삼만원;
 
 		// when
-		accountService.depositMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 입금할_금액_삼만원);
+		accountService.depositMoney(사용자_계좌.getAccountNumber(), 입금할_금액_삼만원);
 
 		// then
 		assertThat(사용자_계좌.getBalance()).isEqualTo(계좌_잔액_이만원.plus(입금할_금액_삼만원));
-	}
-
-	@Test
-	@DisplayName("입금할 때, 해당 사용자가 아니면 예외가 발생한다.")
-	void deposit_accessInvalidMember() {
-		assertThatThrownBy(
-			() -> accountService.depositMoney(사용자.getEmail(), 상대방_계좌.getAccountNumber(), 만원)
-		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test
@@ -135,7 +125,7 @@ class AccountServiceTest {
 		Money 출금할_금액_만원 = 만원;
 
 		// when
-		accountService.withdrawMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 출금할_금액_만원);
+		accountService.withdrawMoney(사용자_계좌.getAccountNumber(), 출금할_금액_만원);
 
 		// then
 		assertThat(사용자_계좌.getBalance()).isEqualTo(계좌_잔액_이만원.minus(출금할_금액_만원));
@@ -145,16 +135,8 @@ class AccountServiceTest {
 	@DisplayName("계좌에 들어있는 돈보다 많이 출금하게 되면 NotNegativeMoneyException 예외가 발생한다.")
 	void withDrawMoney_() {
 		assertThatThrownBy(
-			() -> accountService.withdrawMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 삼만원)
+			() -> accountService.withdrawMoney(사용자_계좌.getAccountNumber(), 삼만원)
 		).isInstanceOf(NotNegativeMoneyException.class);
-	}
-
-	@Test
-	@DisplayName("출금할 때, 해당 사용자가 아니면 예외가 발생한다.")
-	void withdraw_accessInvalidMember() {
-		assertThatThrownBy(
-			() -> accountService.withdrawMoney(사용자.getEmail(), 상대방_계좌.getAccountNumber(), 만원)
-		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test
@@ -165,7 +147,7 @@ class AccountServiceTest {
 		Money 이체할_금액_만원 = 만원;
 
 		// when
-		accountService.transferMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 이체할_금액_만원);
+		accountService.transferMoney(사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 이체할_금액_만원);
 
 		// then
 		assertAll(
@@ -183,7 +165,7 @@ class AccountServiceTest {
 
 		assertAll(
 			() -> assertThatThrownBy(
-				() -> accountService.transferMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(),
+				() -> accountService.transferMoney(사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(),
 					이체할_금액_삼만원)
 			).isInstanceOf(NotNegativeMoneyException.class),
 			() -> assertThat(이전_사용자_잔액_이만원).isEqualTo(이만원),
@@ -195,18 +177,9 @@ class AccountServiceTest {
 	@DisplayName("사용자는 같은 계좌에 이체할 수 없다.")
 	void transferMoney_notTransferSameAccount() {
 		assertThatThrownBy(
-			() -> accountService.transferMoney(사용자.getEmail(), 사용자_계좌.getAccountNumber(), 사용자_계좌.getAccountNumber(),
+			() -> accountService.transferMoney(사용자_계좌.getAccountNumber(), 사용자_계좌.getAccountNumber(),
 				삼만원)
 		).isInstanceOf(IllegalArgumentException.class);
-	}
-
-	@Test
-	@DisplayName("이체할 때, 해당 사용자가 아니면 예외가 발생한다.")
-	void transfer_accessInvalidMember() {
-		assertThatThrownBy(
-			() -> accountService.transferMoney(사용자.getEmail(), 상대방_계좌.getAccountNumber(), 사용자_계좌.getAccountNumber(),
-				삼만원)
-		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test
@@ -215,14 +188,6 @@ class AccountServiceTest {
 		assertDoesNotThrow(
 			() -> accountService.getAccountByAccountNumber(사용자_계좌.getAccountNumber())
 		);
-	}
-
-	@Test
-	@DisplayName("계좌 사용기록을 반환할 때, 해당 사용자가 아니면 예외가 발생한다.")
-	void getHistory_accessInvalidMember() {
-		assertThatThrownBy(
-			() -> accountService.findAccountHistoriesByFromAccountNumber(사용자.getEmail(), 상대방_계좌.getAccountNumber())
-		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test
