@@ -12,6 +12,7 @@ import numble.bankingapi.banking.domain.AccountHistory;
 import numble.bankingapi.banking.domain.AccountHistoryRepository;
 import numble.bankingapi.banking.domain.AccountNumber;
 import numble.bankingapi.banking.domain.AccountRepository;
+import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.domain.Money;
 import numble.bankingapi.util.generator.AccountNumberGenerator;
 
@@ -19,6 +20,7 @@ import numble.bankingapi.util.generator.AccountNumberGenerator;
 @RequiredArgsConstructor
 public class ToBeAccountService {
 	private final AccountRepository accountRepository;
+	private final AccountHistoryRepository accountHistoryRepository;
 
 	@Transactional
 	public Account save(Long userId) {
@@ -49,12 +51,14 @@ public class ToBeAccountService {
 	public void depositMoney(AccountNumber accountNumber, Money money) {
 		Account account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
 		account.deposit(money);
+		recordCompletionDepositMoney(account, money);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void withdrawMoney(AccountNumber accountNumber, Money money) {
 		Account account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
 		account.withdraw(money);
+		recordCompletionWithdrawMoney(account, money);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -69,6 +73,8 @@ public class ToBeAccountService {
 
 		fromAccount.withdraw(money);
 		toAccount.deposit(money);
+
+		recordCompletionTransferMoney(fromAccount, toAccount, money);
 	}
 
 	public List<Account> findAll() {
@@ -81,7 +87,52 @@ public class ToBeAccountService {
 			.toList();
 	}
 
+	public List<AccountHistory> findAccountHistoriesByFromAccountNumber(Account account) {
+		return accountHistoryRepository.findByFromAccountNumber(account.getAccountNumber());
+	}
+
 	private Account getAccountByAccountNumberWithOptimisticLock(AccountNumber accountNumber) {
 		return accountRepository.findByAccountNumberWithOptimisticLock(accountNumber).orElseThrow();
+	}
+
+	private void recordCompletionDepositMoney(Account fromAccount, Money money) {
+		accountHistoryRepository.save(
+			AccountHistory.builder()
+				.fromAccountNumber(fromAccount.getAccountNumber())
+				.toAccountNumber(fromAccount.getAccountNumber())
+				.type(HistoryType.DEPOSIT)
+				.money(money)
+				.balance(fromAccount.getBalance())
+				.build());
+	}
+
+	private void recordCompletionWithdrawMoney(Account fromAccount, Money money) {
+		accountHistoryRepository.save(
+			AccountHistory.builder()
+				.fromAccountNumber(fromAccount.getAccountNumber())
+				.toAccountNumber(fromAccount.getAccountNumber())
+				.type(HistoryType.WITHDRAW)
+				.money(money)
+				.balance(fromAccount.getBalance())
+				.build());
+	}
+
+	private void recordCompletionTransferMoney(Account fromAccount, Account toAccount, Money money) {
+		accountHistoryRepository.save(
+			AccountHistory.builder()
+				.fromAccountNumber(fromAccount.getAccountNumber())
+				.toAccountNumber(toAccount.getAccountNumber())
+				.type(HistoryType.WITHDRAW)
+				.money(money)
+				.balance(fromAccount.getBalance())
+				.build());
+		accountHistoryRepository.save(
+			AccountHistory.builder()
+				.fromAccountNumber(toAccount.getAccountNumber())
+				.toAccountNumber(fromAccount.getAccountNumber())
+				.type(HistoryType.DEPOSIT)
+				.money(money)
+				.balance(toAccount.getBalance())
+				.build());
 	}
 }

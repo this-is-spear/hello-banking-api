@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import numble.bankingapi.banking.tobe.ToBeAccountHistoryService;
+import numble.bankingapi.banking.tobe.ToBeAccountService;
 import numble.bankingapi.fake.FakeAccountHistoryRepository;
 import numble.bankingapi.fake.FakeAccountRepository;
 import numble.bankingapi.fake.FakeMemberRepository;
@@ -21,13 +21,13 @@ class AccountHistoryServiceTest {
 	FakeAccountRepository accountRepository = new FakeAccountRepository();
 	FakeAccountHistoryRepository accountHistoryRepository = new FakeAccountHistoryRepository();
 	FakeMemberRepository memberRepository = new FakeMemberRepository();
-	ToBeAccountHistoryService accountHistoryService;
+	ToBeAccountService accountService;
 	Member 사용자;
 	Account 사용자_계좌;
 
 	@BeforeEach
 	void setUp() {
-		accountHistoryService = new ToBeAccountHistoryService(accountHistoryRepository);
+		accountService = new ToBeAccountService(accountRepository, accountHistoryRepository);
 
 		사용자 = memberRepository.save(new Member("member@email.com", "friend1", "password"));
 		사용자_계좌 = accountRepository.save(
@@ -42,8 +42,7 @@ class AccountHistoryServiceTest {
 	@Test
 	@DisplayName("입금할 때 기록한다.")
 	void deposit() {
-		사용자_계좌.deposit(이만원);
-		assertDoesNotThrow(() -> accountHistoryService.recordCompletionDepositMoney(사용자_계좌, 이만원));
+		accountService.depositMoney(사용자_계좌.getAccountNumber(), 이만원);
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			사용자_계좌.getAccountNumber());
@@ -64,8 +63,7 @@ class AccountHistoryServiceTest {
 	@Test
 	@DisplayName("출금할 때 기록한다.")
 	void withdraw() {
-		사용자_계좌.withdraw(이만원);
-		assertDoesNotThrow(() -> accountHistoryService.recordCompletionWithdrawMoney(사용자_계좌, 이만원));
+		accountService.withdrawMoney(사용자_계좌.getAccountNumber(), 이만원);
 
 		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			사용자_계좌.getAccountNumber());
@@ -96,16 +94,11 @@ class AccountHistoryServiceTest {
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
-		Account 사용자_계좌 = accountRepository.save(fromAccount);
-		Account 상대방_계좌 = accountRepository.save(toAccount);
-		AccountNumber 사용자_계좌번호 = 사용자_계좌.getAccountNumber();
-		AccountNumber 상대방_계좌번호 = 상대방_계좌.getAccountNumber();
-
-		사용자_계좌.withdraw(이만원);
-		상대방_계좌.deposit(이만원);
+		AccountNumber 사용자_계좌번호 = accountRepository.save(fromAccount).getAccountNumber();
+		AccountNumber 상대방_계좌번호 = accountRepository.save(toAccount).getAccountNumber();
 
 		assertDoesNotThrow(
-			() -> accountHistoryService.recordCompletionTransferMoney(사용자_계좌, 상대방_계좌, 이만원));
+			() -> accountService.transferMoney(사용자_계좌번호, 상대방_계좌번호, 이만원));
 
 		List<AccountHistory> fromAccountHistories = accountHistoryRepository
 			.findByFromAccountNumber(사용자_계좌번호);
@@ -147,7 +140,7 @@ class AccountHistoryServiceTest {
 			.balance(만원)
 			.type(HistoryType.DEPOSIT)
 			.build());
-		List<AccountHistory> histories = accountHistoryService.findAccountHistoriesByFromAccountNumber(사용자_계좌);
+		List<AccountHistory> histories = accountService.findAccountHistoriesByFromAccountNumber(사용자_계좌);
 		assertThat(histories).hasSize(2);
 	}
 }
