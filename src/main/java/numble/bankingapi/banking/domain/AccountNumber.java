@@ -14,10 +14,11 @@ import numble.bankingapi.banking.exception.InvalidAccountNumberException;
 @Getter
 @ToString
 @Embeddable
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AccountNumber {
 	private static final Pattern PATTERN = Pattern.compile("[\\d\\-]+");
+	@EqualsAndHashCode.Include
 	private String number;
 
 	public AccountNumber(String number) {

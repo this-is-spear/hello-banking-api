@@ -30,26 +30,31 @@ public class AccountHistory extends BaseEntity {
 	@ToString.Include
 	@EqualsAndHashCode.Include
 	private Long id;
+	@ToString.Include
 	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "number", column = @Column(name = "fromAccountNumber"))
 	})
 	private AccountNumber fromAccountNumber;
+	@ToString.Include
 	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "number", column = @Column(name = "toAccountNumber"))
 	})
 	private AccountNumber toAccountNumber;
+	@ToString.Include
 	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "amount", column = @Column(name = "money"))
 	})
 	private Money money;
+	@ToString.Include
 	@Column(nullable = false)
 	@AttributeOverrides({
 		@AttributeOverride(name = "amount", column = @Column(name = "balance"))
 	})
 	private Money balance;
+	@ToString.Include
 	@Enumerated(EnumType.STRING)
 	private HistoryType type;
 
@@ -72,6 +77,6 @@ public class AccountHistory extends BaseEntity {
 	@Builder
 	public AccountHistory(AccountNumber fromAccountNumber, AccountNumber toAccountNumber, HistoryType type,
 		Money money, Money balance) {
-		this(null, fromAccountNumber, toAccountNumber, balance, money, type);
+		this(null, fromAccountNumber, toAccountNumber, money, balance, type);
 	}
 }

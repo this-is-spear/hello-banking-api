@@ -3,6 +3,7 @@ package numble.bankingapi.fake;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import numble.bankingapi.banking.domain.AccountHistory;
 import numble.bankingapi.banking.domain.AccountHistoryRepository;
@@ -24,6 +25,9 @@ public class FakeAccountHistoryRepository implements AccountHistoryRepository {
 
 	@Override
 	public List<AccountHistory> findByFromAccountNumber(AccountNumber accountNumber) {
-		return null;
+		return maps.values()
+			.stream()
+			.filter(accountHistory -> accountHistory.getFromAccountNumber().equals(accountNumber))
+			.toList();
 	}
 }
