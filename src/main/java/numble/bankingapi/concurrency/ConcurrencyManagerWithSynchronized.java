@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
 public class ConcurrencyManagerWithSynchronized implements ConcurrencyManager {
 	@Override
 	public void executeWithLock(String lockName, Runnable runnable) {
