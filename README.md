@@ -12,9 +12,10 @@ Numble Challenge - Banking API
 ### How to Build
 
 1. execute docker docker
-2. gradle build
-3. gradle bootRun
-4. http://localhost:8080/docs/index.html 접속
+2. install mysql 8.0 (read application-local.yml)
+3. gradle build
+4. gradle bootRun
+5. http://localhost:8080/docs/index.html 접속
 
 ### Entity Relation Diagram
 
