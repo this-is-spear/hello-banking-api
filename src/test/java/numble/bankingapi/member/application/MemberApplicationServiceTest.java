@@ -32,7 +32,7 @@ class MemberApplicationServiceTest {
 	@Test
 	@DisplayName("이메일, 비밀번호, 이름을 입력받아 회원가입한다.")
 	void register() {
-		RegisterCommand command = new RegisterCommand(EMAIL, NAME, PASSWORD);
+		var command = new RegisterCommand(EMAIL, NAME, PASSWORD);
 
 		assertDoesNotThrow(
 			() -> memberApplicationService.registerMember(command)
@@ -42,9 +42,9 @@ class MemberApplicationServiceTest {
 	@Test
 	@DisplayName("이메일이 유일하지 않으면 예외가 발생한다.")
 	void register_emailIsUnique() {
-		String duplicatedEmail = EMAIL;
+		var duplicatedEmail = EMAIL;
 		memberRepository.save(new Member(duplicatedEmail, NAME, passwordEncoder.encode(PASSWORD)));
-		RegisterCommand command = new RegisterCommand(duplicatedEmail, NAME, PASSWORD);
+		var command = new RegisterCommand(duplicatedEmail, NAME, PASSWORD);
 
 		assertThatThrownBy(
 			() -> memberApplicationService.registerMember(command)
@@ -54,9 +54,9 @@ class MemberApplicationServiceTest {
 	@Test
 	@DisplayName("저장할 때 비밀번호를 암호화한다.")
 	void register_encodePassword() {
-		RegisterCommand command = new RegisterCommand(EMAIL, NAME, PASSWORD);
+		var command = new RegisterCommand(EMAIL, NAME, PASSWORD);
 		memberApplicationService.registerMember(command);
-		String password = memberRepository.findByEmail(EMAIL).get().getPassword();
+		var password = memberRepository.findByEmail(EMAIL).get().getPassword();
 		assertThat(passwordEncoder.matches(PASSWORD, password)).isTrue();
 	}
 
@@ -72,7 +72,7 @@ class MemberApplicationServiceTest {
 	@Test
 	@DisplayName("사용자가 없으면 IllegalUserException 예외를 발생한다.")
 	void findMe_NotExistMember() {
-		String notExistMemberByEmail = EMAIL;
+		var notExistMemberByEmail = EMAIL;
 
 		assertThatThrownBy(
 			() -> memberApplicationService.getMember(notExistMemberByEmail)

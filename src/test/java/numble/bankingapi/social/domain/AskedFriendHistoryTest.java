@@ -68,7 +68,7 @@ class AskedFriendHistoryTest {
 	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = {"WAITING"})
 	@DisplayName("승인(APPROVED)되는 경우 승인 여부(ApprovalStatus)가 대기(WAITING)여야 한다.")
 	void statusApprove_mustBeWaiting(ApprovalStatus notWaiting) {
-		AskedFriendHistory 대기중이지_않은_요청 = new AskedFriendHistory(2L, 3L, notWaiting);
+		var 대기중이지_않은_요청 = new AskedFriendHistory(2L, 3L, notWaiting);
 
 		assertThatThrownBy(
 			대기중이지_않은_요청::approve
@@ -87,7 +87,7 @@ class AskedFriendHistoryTest {
 	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = {"WAITING"})
 	@DisplayName("거절(REJECTED)되는 경우 승인 여부(ApprovalStatus)가 대기(WAITING)여야 한다.")
 	void statusReject_mustBeWaiting(ApprovalStatus notWaiting) {
-		AskedFriendHistory 대기중이지_않은_요청 = new AskedFriendHistory(2L, 3L, notWaiting);
+		var 대기중이지_않은_요청 = new AskedFriendHistory(2L, 3L, notWaiting);
 
 		assertThatThrownBy(
 			대기중이지_않은_요청::reject
@@ -106,7 +106,7 @@ class AskedFriendHistoryTest {
 	@EnumSource(mode = EnumSource.Mode.EXCLUDE, names = {"REJECTED"})
 	@DisplayName("대기(WAITING) 상태로 변경하는 경우 승인 여부(ApprovalStatus)가 거절(REJECTED)이어야 한다.")
 	void statusWait_mustBeRejected(ApprovalStatus notRejected) {
-		AskedFriendHistory 거절되지_않은_요청 = new AskedFriendHistory(2L, 3L, notRejected);
+		var 거절되지_않은_요청 = new AskedFriendHistory(2L, 3L, notRejected);
 
 		assertThatThrownBy(
 			거절되지_않은_요청::waitAgain

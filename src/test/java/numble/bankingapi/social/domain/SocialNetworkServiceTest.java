@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import numble.bankingapi.member.domain.Member;
 import numble.bankingapi.member.domain.MemberRepository;
-import numble.bankingapi.social.dto.AskedFriendResponses;
-import numble.bankingapi.social.dto.FriendResponses;
 
 @Transactional
 @SpringBootTest
@@ -49,7 +47,7 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("친구 요청을 보낼때, 사용자의 정보가 존재하지 않으면 예외가 발생한다.")
 	void askWantToBefriends_fromMemberNotNull() {
-		String invalidEmail = "invalid-member@email.com";
+		var invalidEmail = "invalid-member@email.com";
 
 		assertThatThrownBy(
 			() -> socialNetworkService.askWantToBefriends(invalidEmail, 받은_사용자.getId())
@@ -59,7 +57,7 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("친구 요청을 보낼때, 상대방의 정보가 존재하지 않으면 예외가 발생한다.")
 	void askWantToBefriends_toMemberNotNull() {
-		long invalidId = 999L;
+		var invalidId = 999L;
 
 		assertThatThrownBy(
 			() -> socialNetworkService.askWantToBefriends(보낸_사용자.getEmail(), invalidId)
@@ -69,14 +67,14 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("사용자 정보(Principal))와 친구 요청 식별자(AskedFriendHistoryId)를 입력해 친구 요청을 승낙한다.")
 	void approvalRequest() {
-		AskedFriendHistory 대기중인_친구추가_요청 = askedFriendHistoryRepository.save(
+		var 대기중인_친구추가_요청 = askedFriendHistoryRepository.save(
 			new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING));
 
 		assertDoesNotThrow(
 			() -> socialNetworkService.approvalRequest(받은_사용자.getEmail(), 대기중인_친구추가_요청.getId())
 		);
 
-		AskedFriendHistory 친구추가_요청 = askedFriendHistoryRepository.findById(대기중인_친구추가_요청.getId()).get();
+		var 친구추가_요청 = askedFriendHistoryRepository.findById(대기중인_친구추가_요청.getId()).get();
 		assertThat(친구추가_요청.getStatus()).isEqualTo(ApprovalStatus.APPROVED);
 
 	}
@@ -84,8 +82,8 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("승인하는 사람은 요청 받은 사용자 본인이 아니면 예외가 발생한다.")
 	void approvalRequest_equalsToMemberAndNowMember() {
-		String 받은_사용자가_아님 = 보낸_사용자.getEmail();
-		AskedFriendHistory 대기중인_친구추가_요청 = askedFriendHistoryRepository.save(
+		var 받은_사용자가_아님 = 보낸_사용자.getEmail();
+		var 대기중인_친구추가_요청 = askedFriendHistoryRepository.save(
 			new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING));
 
 		assertThatThrownBy(
@@ -96,7 +94,7 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("친구 요청을 승인할 때, 친구 요청 정보가 존재하지 않으면 예외가 발생한다.")
 	void approvalRequest_notEmpty() {
-		long 존재하지않는_요청 = 999L;
+		var 존재하지않는_요청 = 999L;
 
 		assertThatThrownBy(
 			() -> socialNetworkService.approvalRequest(받은_사용자.getEmail(), 존재하지않는_요청)
@@ -106,7 +104,7 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("친구 요청을 승인하면 친구 정보가 생성된다.")
 	void approvalRequest_getFriend() {
-		AskedFriendHistory 대기중인_친구추가_요청 = askedFriendHistoryRepository.save(
+		var 대기중인_친구추가_요청 = askedFriendHistoryRepository.save(
 			new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING));
 
 		assertDoesNotThrow(
@@ -129,7 +127,7 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("사용자 정보(Principal)와 친구 요청 식별자(AskedFriendHistoryId)를 입력해 친구 요청을 거절한다.")
 	void rejectRequest() {
-		AskedFriendHistory 대기중인_요청 = askedFriendHistoryRepository.save(
+		var 대기중인_요청 = askedFriendHistoryRepository.save(
 			new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING));
 
 		assertDoesNotThrow(
@@ -141,7 +139,7 @@ class SocialNetworkServiceTest {
 	@DisplayName("거절하는 사람은 요청 받은 사용자 본인이 아니면 예외가 발생한다.")
 	void rejectRequest_equalsToMemberAndNowMember() {
 		String 받은_사용자가_아님 = 보낸_사용자.getEmail();
-		AskedFriendHistory 대기중인_친구추가_요청 = askedFriendHistoryRepository.save(
+		var 대기중인_친구추가_요청 = askedFriendHistoryRepository.save(
 			new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING));
 
 		assertThatThrownBy(
@@ -165,7 +163,7 @@ class SocialNetworkServiceTest {
 		friendRepository.save(new Friend(보낸_사용자.getId(), 익명의_사용자.getId()));
 		friendRepository.save(new Friend(보낸_사용자.getId(), 100L));
 
-		FriendResponses responses = assertDoesNotThrow(
+		var responses = assertDoesNotThrow(
 			() -> socialNetworkService.findFriends(보낸_사용자.getEmail())
 		);
 		assertThat(responses.friendResponses()).hasSize(2);
@@ -174,12 +172,12 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("자신의 정보(Principal)를 이용해 친구 목록을 조회한다.")
 	void findRequestWandToBeFriend() {
-		AskedFriendHistory 첫_번째_요청 = new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING);
-		AskedFriendHistory 두_번째_요청 = new AskedFriendHistory(익명의_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING);
+		var 첫_번째_요청 = new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING);
+		var 두_번째_요청 = new AskedFriendHistory(익명의_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING);
 		askedFriendHistoryRepository.save(첫_번째_요청);
 		askedFriendHistoryRepository.save(두_번째_요청);
 
-		AskedFriendResponses friendResponses = assertDoesNotThrow(
+		var friendResponses = assertDoesNotThrow(
 			() -> socialNetworkService.findRequestWandToBeFriend(받은_사용자.getEmail())
 		);
 		assertThat(friendResponses.askedFriendResponses()).hasSize(2);
@@ -188,9 +186,9 @@ class SocialNetworkServiceTest {
 	@Test
 	@DisplayName("친구 요청 목록을 조회할 때, ")
 	void findRequestWandToBeFriend_noInvalidUser() {
-		long 유효하지_않은_사용자 = 999L;
-		AskedFriendHistory 첫_번째_요청 = new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING);
-		AskedFriendHistory 두_번째_요청 = new AskedFriendHistory(유효하지_않은_사용자, 받은_사용자.getId(), ApprovalStatus.WAITING);
+		var 유효하지_않은_사용자 = 999L;
+		var 첫_번째_요청 = new AskedFriendHistory(보낸_사용자.getId(), 받은_사용자.getId(), ApprovalStatus.WAITING);
+		var 두_번째_요청 = new AskedFriendHistory(유효하지_않은_사용자, 받은_사용자.getId(), ApprovalStatus.WAITING);
 		askedFriendHistoryRepository.save(첫_번째_요청);
 		askedFriendHistoryRepository.save(두_번째_요청);
 

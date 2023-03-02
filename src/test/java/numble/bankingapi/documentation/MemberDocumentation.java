@@ -9,12 +9,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import numble.bankingapi.member.domain.Member;
@@ -26,11 +24,11 @@ class MemberDocumentation extends DocumentationTemplate {
 	@Test
 	@WithMockMember
 	void register() throws Exception {
-		String email = "rjsckdd12@gmail.com";
-		String name = "tis";
-		String password = "password";
+		var email = "rjsckdd12@gmail.com";
+		var name = "tis";
+		var password = "password";
 
-		Map<String, String> params = new HashMap<>();
+		var params = new HashMap<>();
 		params.put("email", email);
 		params.put("name", name);
 		params.put("password", password);
@@ -38,7 +36,7 @@ class MemberDocumentation extends DocumentationTemplate {
 		when(memberRepository.findByEmail(any())).thenReturn(Optional.empty());
 		when(memberRepository.save(any())).thenReturn(new Member(email, name, password));
 
-		MockHttpServletRequestBuilder builder = post("/members/register")
+		var builder = post("/members/register")
 			.with(csrf())
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(params));
@@ -62,7 +60,7 @@ class MemberDocumentation extends DocumentationTemplate {
 		when(memberApplicationService.getMember(USER.getUsername()))
 			.thenReturn(new MemberResponse(2L, USER.getUsername()));
 
-		MockHttpServletRequestBuilder builder = get("/members/me")
+		var builder = get("/members/me")
 			.with(csrf());
 
 		mockMvc.perform(builder)

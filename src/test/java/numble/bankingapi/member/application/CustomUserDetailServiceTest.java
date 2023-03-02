@@ -39,7 +39,7 @@ class CustomUserDetailServiceTest {
 	@Test
 	@DisplayName("principal 로 조회되지 않으면 NotExistMemberException 예외가 발생한다.")
 	void loadUserByUsername_NotExistMember() {
-		String invalidEmail = EMAIL;
+		var invalidEmail = EMAIL;
 		assertThatThrownBy(
 			() -> userDetailsService.loadUserByUsername(invalidEmail)
 		).isInstanceOf(NotExistMemberException.class);

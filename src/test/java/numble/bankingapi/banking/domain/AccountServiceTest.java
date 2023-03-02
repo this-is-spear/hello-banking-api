@@ -97,7 +97,7 @@ class AccountServiceTest {
 	@DisplayName("계좌를 조회한다.")
 	void findById() {
 		// when
-		Account 찾은_계좌 = accountService.findById(사용자_계좌.getId());
+		var 찾은_계좌 = accountService.findById(사용자_계좌.getId());
 
 		// then
 		assertThat(사용자_계좌).isEqualTo(찾은_계좌);
@@ -107,8 +107,8 @@ class AccountServiceTest {
 	@DisplayName("계좌에 입금하다.")
 	void depositMoney() {
 		accountRepository.flush();
-		Money 계좌_잔액_이만원 = 사용자_계좌.getBalance();
-		Money 입금할_금액_삼만원 = 삼만원;
+		var 계좌_잔액_이만원 = 사용자_계좌.getBalance();
+		var 입금할_금액_삼만원 = 삼만원;
 
 		// when
 		accountService.depositMoney(사용자_계좌.getAccountNumber(), 입금할_금액_삼만원);
@@ -120,8 +120,8 @@ class AccountServiceTest {
 	@Test
 	@DisplayName("계좌에 출금하다.")
 	void withDrawMoney() {
-		Money 계좌_잔액_이만원 = 사용자_계좌.getBalance();
-		Money 출금할_금액_만원 = 만원;
+		var 계좌_잔액_이만원 = 사용자_계좌.getBalance();
+		var 출금할_금액_만원 = 만원;
 
 		// when
 		accountService.withdrawMoney(사용자_계좌.getAccountNumber(), 출금할_금액_만원);
@@ -141,9 +141,9 @@ class AccountServiceTest {
 	@Test
 	@DisplayName("계좌 이체한다.")
 	void transferMoney() {
-		Money 이전_사용자_잔액_이만원 = 사용자_계좌.getBalance();
-		Money 이전_상대방_잔액_만원 = 상대방_계좌.getBalance();
-		Money 이체할_금액_만원 = 만원;
+		var 이전_사용자_잔액_이만원 = 사용자_계좌.getBalance();
+		var 이전_상대방_잔액_만원 = 상대방_계좌.getBalance();
+		var 이체할_금액_만원 = 만원;
 
 		// when
 		accountService.transferMoney(사용자_계좌.getAccountNumber(), 상대방_계좌.getAccountNumber(), 이체할_금액_만원);
@@ -158,9 +158,9 @@ class AccountServiceTest {
 	@Test
 	@DisplayName("계좌 이체에 실패하면 모든 정보가 복구된다.")
 	void transferMoney_ifFailedRollback() {
-		Money 이전_사용자_잔액_이만원 = 사용자_계좌.getBalance();
-		Money 이전_상대방_잔액_만원 = 상대방_계좌.getBalance();
-		Money 이체할_금액_삼만원 = 삼만원;
+		var 이전_사용자_잔액_이만원 = 사용자_계좌.getBalance();
+		var 이전_상대방_잔액_만원 = 상대방_계좌.getBalance();
+		var 이체할_금액_삼만원 = 삼만원;
 
 		assertAll(
 			() -> assertThatThrownBy(

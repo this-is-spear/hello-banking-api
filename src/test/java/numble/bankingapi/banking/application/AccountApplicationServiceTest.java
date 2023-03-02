@@ -22,8 +22,6 @@ import numble.bankingapi.banking.domain.AccountHistory;
 import numble.bankingapi.banking.domain.AccountService;
 import numble.bankingapi.banking.domain.HistoryType;
 import numble.bankingapi.banking.domain.NotifyService;
-import numble.bankingapi.banking.dto.HistoryResponses;
-import numble.bankingapi.banking.dto.TargetResponses;
 import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.banking.exception.InvalidMemberException;
 import numble.bankingapi.member.domain.Member;
@@ -85,7 +83,7 @@ class AccountApplicationServiceTest {
 		when(accountService.getAccountByAccountNumber(계좌번호)).thenReturn(계좌);
 		when(accountService.findAccountHistoriesByFromAccountNumber(계좌)).thenReturn(List.of(첫_번째_기록, 두_번째_기록));
 
-		HistoryResponses responses = assertDoesNotThrow(
+		var responses = assertDoesNotThrow(
 			() -> accountApplicationService.getHistory(EMAIL, 계좌번호.getNumber())
 		);
 
@@ -178,7 +176,7 @@ class AccountApplicationServiceTest {
 		when(memberService.findAllById(List.of(상대방_ID))).thenReturn(List.of(상대방));
 		when(accountService.getFriendAccounts(List.of(상대방_ID))).thenReturn(List.of(상대방_계좌));
 
-		TargetResponses responses = assertDoesNotThrow(
+		var responses = assertDoesNotThrow(
 			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber()));
 		assertThat(responses.targets()).hasSize(1);
 	}
