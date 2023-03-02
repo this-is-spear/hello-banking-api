@@ -18,14 +18,14 @@ public class MemberApplicationService {
 	private final PasswordEncoder passwordEncoder;
 
 	public void registerMember(RegisterCommand registerCommand) {
-		var encodedPassword = passwordEncoder.encode(registerCommand.password());
+		final var encodedPassword = passwordEncoder.encode(registerCommand.password());
 		validateEmailDuplication(registerCommand.email());
-		var member = new Member(registerCommand.email(), registerCommand.name(), encodedPassword);
+		final var member = new Member(registerCommand.email(), registerCommand.name(), encodedPassword);
 		memberRepository.save(member);
 	}
 
 	public MemberResponse getMember(String principal) {
-		var member = memberRepository.findByEmail(principal).orElseThrow(NotExistMemberException::new);
+		final var member = memberRepository.findByEmail(principal).orElseThrow(NotExistMemberException::new);
 		return new MemberResponse(member.getId(), member.getName());
 	}
 
