@@ -23,14 +23,14 @@ public class SocialNetworkService {
 	@Transactional
 	public void askWantToBefriends(String principal, Long toMemberId) {
 		final var fromMember = getMember(principal);
-		final var  toMember = memberService.findById(toMemberId);
-		final var  waitingAskedFriend = new AskedFriendHistory(fromMember.getId(), toMember.getId());
+		final var toMember = memberService.findById(toMemberId);
+		final var waitingAskedFriend = new AskedFriendHistory(fromMember.getId(), toMember.getId());
 		friendService.saveAskedFriendHistory(waitingAskedFriend);
 	}
 
 	@Transactional
 	public void approvalRequest(String principal, Long requestId) {
-		final var  toMember = getMember(principal);
+		final var toMember = getMember(principal);
 		var askedFriendHistory = friendService.findFriendHistoryById(requestId);
 
 		if (!askedFriendHistory.getToMemberId().equals(toMember.getId())) {
@@ -43,7 +43,7 @@ public class SocialNetworkService {
 
 	@Transactional
 	public void rejectRequest(String principal, Long requestId) {
-		final var  toMember = getMember(principal);
+		final var toMember = getMember(principal);
 		var askedFriendHistory = friendService.findFriendHistoryById(requestId);
 
 		if (!askedFriendHistory.getToMemberId().equals(toMember.getId())) {
@@ -54,7 +54,7 @@ public class SocialNetworkService {
 	}
 
 	public FriendResponses findFriends(String principal) {
-		final var  member = getMember(principal);
+		final var member = getMember(principal);
 
 		final List<Long> longStream = friendService.findFriends(member.getId())
 			.stream()
