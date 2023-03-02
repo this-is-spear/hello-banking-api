@@ -3,7 +3,7 @@ Numble Challenge - Banking API
 
 ### API
 
-https://this-is-spear.github.io/numble-banking-api/
+[링크](https://this-is-spear.github.io/numble-banking-api/src/main/resources/static/docs/index.html)에서 확인할 수 있습니다.
 
 ### Development Environment
 
