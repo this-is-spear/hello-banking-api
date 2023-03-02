@@ -18,11 +18,13 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import numble.bankingapi.common.BaseEntity;
 import numble.bankingapi.member.exception.InvalidFormatException;
 
 @Getter
 @Entity
+@ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
@@ -34,9 +36,11 @@ public class Member extends BaseEntity {
 	);
 
 	@Id
+	@ToString.Include
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@EqualsAndHashCode.Include
 	private Long id;
+	@ToString.Include
 	@Column(unique = true, nullable = false)
 	private String email;
 	@Column(nullable = false)
