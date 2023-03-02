@@ -43,7 +43,7 @@ class PathMatcherInterceptorTest {
 	void preHandle_returnTrue() {
 		when(customPathContainer.notIncludedPath(request)).thenReturn(true);
 
-		Boolean actual = assertDoesNotThrow(
+		var actual = assertDoesNotThrow(
 			() -> pathMatcherInterceptor.preHandle(request, response, handler)
 		);
 		assertThat(actual).isTrue();
@@ -55,7 +55,7 @@ class PathMatcherInterceptorTest {
 		when(customPathContainer.notIncludedPath(request)).thenReturn(false);
 		when(handlerInterceptor.preHandle(request, response, handler)).thenReturn(true);
 
-		Boolean actual = assertDoesNotThrow(
+		var actual = assertDoesNotThrow(
 			() -> pathMatcherInterceptor.preHandle(request, response, handler)
 		);
 		assertThat(actual).isTrue();

@@ -6,11 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
 
 public class IdempotencyAcceptanceTest extends AcceptanceTest {
 	/**
@@ -19,13 +17,13 @@ public class IdempotencyAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deposit_and_withdraw_5000() throws Exception {
 		// given
-		long 입금할_돈 = 오천원;
-		String 나의계좌 = 계좌_정보_조회(MEMBER);
+		var 입금할_돈 = 오천원;
+		var 나의계좌 = 계좌_정보_조회(MEMBER);
 
-		Map<String, Object> depositParams = new HashMap<>();
+		var depositParams = new HashMap<>();
 		depositParams.put("amount", 입금할_돈);
 
-		ResultActions 계좌_입금 = mockMvc.perform(
+		var 계좌_입금 = mockMvc.perform(
 			post("/account/{accountNumber}/deposit", 나의계좌)
 				.with(user(이메일).password(비밀번호).roles("MEMBER"))
 				.contentType(MediaType.APPLICATION_JSON)

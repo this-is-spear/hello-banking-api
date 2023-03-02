@@ -31,12 +31,12 @@ public class AccountApplicationService {
 	private final MemberService memberService;
 	private final FriendService friendService;
 	private final AccountService accountService;
-	private final ConcurrencyFacade concurrencyFacade;
 	private final NotifyService notifyService;
+	private final ConcurrencyFacade concurrencyFacade;
 
 	public HistoryResponses getHistory(String principal, String stringAccountNumber) {
-		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		final var accountNumber = getAccountNumber(stringAccountNumber);
+		final var account = accountService.getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 
 		return new HistoryResponses(account.getBalance(),
@@ -46,8 +46,8 @@ public class AccountApplicationService {
 	}
 
 	public void deposit(String principal, String number, Money money) {
-		AccountNumber accountNumber = getAccountNumber(number);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		final var accountNumber = getAccountNumber(number);
+		final var account = accountService.getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 
 		concurrencyFacade.depositWithLock(accountNumber, money);
@@ -56,8 +56,8 @@ public class AccountApplicationService {
 	}
 
 	public void withdraw(String principal, String number, Money money) {
-		AccountNumber accountNumber = getAccountNumber(number);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		final var accountNumber = getAccountNumber(number);
+		final var account = accountService.getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 
 		concurrencyFacade.withdrawWithLock(accountNumber, money);
@@ -66,11 +66,11 @@ public class AccountApplicationService {
 	}
 
 	public void transfer(String principal, String accountNumber, TransferCommand command) {
-		AccountNumber fromAccountNumber = getAccountNumber(accountNumber);
-		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
+		final var fromAccountNumber = getAccountNumber(accountNumber);
+		final var toAccountNumber = getAccountNumber(command.toAccountNumber());
 
-		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
-		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
+		final var fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
+		final var toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
 
 		validateMember(principal, fromAccount);
 		Money money = command.amount();
@@ -84,7 +84,7 @@ public class AccountApplicationService {
 	}
 
 	private void validateMember(String principal, Account account) {
-		Member member = memberService.findByEmail(principal);
+		final var member = memberService.findByEmail(principal);
 
 		if (!member.getId().equals(account.getUserId())) {
 			throw new InvalidMemberException();
@@ -92,21 +92,21 @@ public class AccountApplicationService {
 	}
 
 	public TargetResponses getTargets(String principal, String stringAccountNumber) {
-		var accountNumber = new AccountNumber(stringAccountNumber);
-		var account = accountService.getAccountByAccountNumber(accountNumber);
+		final var accountNumber = new AccountNumber(stringAccountNumber);
+		final var account = accountService.getAccountByAccountNumber(accountNumber);
 
-		var member = memberService.findByEmail(principal);
+		final var member = memberService.findByEmail(principal);
 		if (!member.getId().equals(account.getUserId())) {
 			throw new InvalidMemberException();
 		}
 
-		var friendIds = friendService.findFriends(member.getId())
+		final var friendIds = friendService.findFriends(member.getId())
 			.stream()
 			.map(Friend::getToMemberId)
 			.toList();
 
-		var targetList = memberService.findAllById(friendIds);
-		var targetResponseList = accountService.getFriendAccounts(friendIds)
+		final var targetList = memberService.findAllById(friendIds);
+		final var targetResponseList = accountService.getFriendAccounts(friendIds)
 			.stream()
 			.map(friendAccount -> {
 				Member friend = targetList.stream()

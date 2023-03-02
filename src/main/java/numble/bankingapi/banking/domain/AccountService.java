@@ -42,14 +42,14 @@ public class AccountService {
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void depositMoney(AccountNumber accountNumber, Money money) {
-		Account account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
+		var account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
 		account.deposit(money);
 		recordCompletionDepositMoney(account, money);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void withdrawMoney(AccountNumber accountNumber, Money money) {
-		Account account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
+		var account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
 		account.withdraw(money);
 		recordCompletionWithdrawMoney(account, money);
 	}
@@ -57,8 +57,8 @@ public class AccountService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void transferMoney(AccountNumber fromAccountNumber, AccountNumber toAccountNumber,
 		Money money) {
-		Account fromAccount = getAccountByAccountNumberWithOptimisticLock(fromAccountNumber);
-		Account toAccount = getAccountByAccountNumberWithOptimisticLock(toAccountNumber);
+		var fromAccount = getAccountByAccountNumberWithOptimisticLock(fromAccountNumber);
+		var toAccount = getAccountByAccountNumberWithOptimisticLock(toAccountNumber);
 
 		if (fromAccount.equals(toAccount)) {
 			throw new IllegalArgumentException();
@@ -89,43 +89,15 @@ public class AccountService {
 	}
 
 	private void recordCompletionDepositMoney(Account fromAccount, Money money) {
-		accountHistoryRepository.save(
-			AccountHistory.builder()
-				.fromAccountNumber(fromAccount.getAccountNumber())
-				.toAccountNumber(fromAccount.getAccountNumber())
-				.type(HistoryType.DEPOSIT)
-				.money(money)
-				.balance(fromAccount.getBalance())
-				.build());
+		accountHistoryRepository.save(AccountHistory.recordDepositHistory(fromAccount, fromAccount, money));
 	}
 
 	private void recordCompletionWithdrawMoney(Account fromAccount, Money money) {
-		accountHistoryRepository.save(
-			AccountHistory.builder()
-				.fromAccountNumber(fromAccount.getAccountNumber())
-				.toAccountNumber(fromAccount.getAccountNumber())
-				.type(HistoryType.WITHDRAW)
-				.money(money)
-				.balance(fromAccount.getBalance())
-				.build());
+		accountHistoryRepository.save(AccountHistory.recordWithdrawHistory(fromAccount, fromAccount, money));
 	}
 
 	private void recordCompletionTransferMoney(Account fromAccount, Account toAccount, Money money) {
-		accountHistoryRepository.save(
-			AccountHistory.builder()
-				.fromAccountNumber(fromAccount.getAccountNumber())
-				.toAccountNumber(toAccount.getAccountNumber())
-				.type(HistoryType.WITHDRAW)
-				.money(money)
-				.balance(fromAccount.getBalance())
-				.build());
-		accountHistoryRepository.save(
-			AccountHistory.builder()
-				.fromAccountNumber(toAccount.getAccountNumber())
-				.toAccountNumber(fromAccount.getAccountNumber())
-				.type(HistoryType.DEPOSIT)
-				.money(money)
-				.balance(toAccount.getBalance())
-				.build());
+		accountHistoryRepository.save(AccountHistory.recordWithdrawHistory(fromAccount, toAccount, money));
+		accountHistoryRepository.save(AccountHistory.recordDepositHistory(toAccount, fromAccount, money));
 	}
 }
