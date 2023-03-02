@@ -1,5 +1,6 @@
 package numble.bankingapi.banking.ui;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,27 +25,39 @@ public class AccountController {
 
 	private final AccountApplicationService accountApplicationService;
 
-	@GetMapping("/{accountNumber}/history")
+	@GetMapping(
+		value = "/{accountNumber}/history",
+		produces = MediaType.APPLICATION_JSON_VALUE
+	)
 	public ResponseEntity<HistoryResponses> getHistory(@AuthenticationPrincipal UserDetails principal,
 		@PathVariable String accountNumber) {
 		return ResponseEntity.ok(accountApplicationService.getHistory(principal.getUsername(), accountNumber));
 	}
 
-	@PostMapping("/{accountNumber}/deposit")
+	@PostMapping(
+		value = "/{accountNumber}/deposit",
+		consumes = MediaType.APPLICATION_JSON_VALUE
+	)
 	public ResponseEntity<Void> depositMoney(@AuthenticationPrincipal UserDetails principal,
 		@PathVariable String accountNumber, @RequestBody Money money) {
 		accountApplicationService.deposit(principal.getUsername(), accountNumber, money);
 		return ResponseEntity.ok().build();
 	}
 
-	@PostMapping("/{accountNumber}/withdraw")
+	@PostMapping(
+		value = "/{accountNumber}/withdraw",
+		consumes = MediaType.APPLICATION_JSON_VALUE
+	)
 	public ResponseEntity<Void> withdrawMoney(@AuthenticationPrincipal UserDetails principal,
 		@PathVariable String accountNumber, @RequestBody Money money) {
 		accountApplicationService.withdraw(principal.getUsername(), accountNumber, money);
 		return ResponseEntity.ok().build();
 	}
 
-	@PostMapping("/{accountNumber}/transfer")
+	@PostMapping(
+		value = "/{accountNumber}/transfer",
+		consumes = MediaType.APPLICATION_JSON_VALUE
+	)
 	public ResponseEntity<Void> transferMoney(@AuthenticationPrincipal UserDetails principal,
 		@PathVariable String accountNumber,
 		@RequestBody TransferCommand transferCommand) {
@@ -52,7 +65,10 @@ public class AccountController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/{accountNumber}/transfer/targets")
+	@GetMapping(
+		value = "/{accountNumber}/transfer/targets",
+		produces = MediaType.APPLICATION_JSON_VALUE
+	)
 	public ResponseEntity<TargetResponses> getTargets(@AuthenticationPrincipal UserDetails principal,
 		@PathVariable String accountNumber) {
 		return ResponseEntity.ok(accountApplicationService.getTargets(principal.getUsername(), accountNumber));
