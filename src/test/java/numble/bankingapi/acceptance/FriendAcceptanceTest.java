@@ -31,25 +31,25 @@ class FriendAcceptanceTest extends AcceptanceTest {
 	@DisplayName("친구 신청을 받은 사용자가 승인을 하면 친구 목록에 추가가 된다.")
 	void approval_and_getFriends() throws Exception {
 		// given : action 사용자
-		Long memberId = Long.parseLong(loadData.get(MEMBER_ID));
-		Long adminId = Long.parseLong(loadData.get(ADMIN_ID));
+		var memberId = Long.parseLong(loadData.get(MEMBER_ID));
+		var adminId = Long.parseLong(loadData.get(ADMIN_ID));
 
-		ResultActions 친구_신청 = 친구_신청(adminId, 이메일, 비밀번호);
+		var 친구_신청 = 친구_신청(adminId, 이메일, 비밀번호);
 		친구_신청.andExpect(status().isOk());
 
 		// given : action 상대방
-		ResultActions 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
+		var 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
 		친구_신청_목록_조회.andExpect(status().isOk());
 		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 
-		Long requestId = getRequestId(memberId, 친구_신청_목록_조회);
+		var requestId = getRequestId(memberId, 친구_신청_목록_조회);
 
 		// when : action 상대방
-		ResultActions 친구_승인 = 친구_추가_승인(requestId, 어드민이메일, 비밀번호);
+		var 친구_승인 = 친구_추가_승인(requestId, 어드민이메일, 비밀번호);
 		친구_승인.andExpect(status().isOk());
 
 		// then : action 상대방
-		ResultActions 친구_목록_조회 = 친구_목록_조회(어드민이메일, 비밀번호);
+		var 친구_목록_조회 = 친구_목록_조회(어드민이메일, 비밀번호);
 		친구_목록_조회.andExpect(status().isOk());
 		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 	}
@@ -64,24 +64,24 @@ class FriendAcceptanceTest extends AcceptanceTest {
 	@DisplayName("친구 요청을 받은 사용자가 거절하면 친구 목록에서 볼 수 없다.")
 	void reject_and_getFriends() throws Exception {
 		// given : action 사용자
-		Long memberId = Long.parseLong(loadData.get(MEMBER_ID));
-		Long adminId = Long.parseLong(loadData.get(ADMIN_ID));
-		ResultActions 친구_신청 = 친구_신청(adminId, 이메일, 비밀번호);
+		var memberId = Long.parseLong(loadData.get(MEMBER_ID));
+		var adminId = Long.parseLong(loadData.get(ADMIN_ID));
+		var 친구_신청 = 친구_신청(adminId, 이메일, 비밀번호);
 		친구_신청.andExpect(status().isOk());
 
 		// given : action 상대방
-		ResultActions 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
+		var 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
 		친구_신청_목록_조회.andExpect(status().isOk());
 		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 
-		Long requestId = getRequestId(memberId, 친구_신청_목록_조회);
+		var requestId = getRequestId(memberId, 친구_신청_목록_조회);
 
 		// when : action 상대방
-		ResultActions 친구_승인 = 친구_추가_거절(requestId, 어드민이메일, 비밀번호);
+		var 친구_승인 = 친구_추가_거절(requestId, 어드민이메일, 비밀번호);
 		친구_승인.andExpect(status().isOk());
 
 		// then : action 상대방
-		ResultActions 친구_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
+		var 친구_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
 		친구_목록_조회.andExpect(status().isOk());
 		친구_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).doesNotExist());
 	}
@@ -95,28 +95,28 @@ class FriendAcceptanceTest extends AcceptanceTest {
 	@DisplayName("거절한 사용자에게 다시 친구 신청을 보낼 수 있다.")
 	void reject_requestAgain() throws Exception {
 		// given : action 사용자
-		Long memberId = Long.parseLong(loadData.get(MEMBER_ID));
-		Long adminId = Long.parseLong(loadData.get(ADMIN_ID));
-		ResultActions 친구_신청 = 친구_신청(adminId, 이메일, 비밀번호);
+		var memberId = Long.parseLong(loadData.get(MEMBER_ID));
+		var adminId = Long.parseLong(loadData.get(ADMIN_ID));
+		var 친구_신청 = 친구_신청(adminId, 이메일, 비밀번호);
 		친구_신청.andExpect(status().isOk());
 
 		// given : action 상대방
-		ResultActions 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
+		var 친구_신청_목록_조회 = 친구_신청_목록_조회(어드민이메일, 비밀번호);
 		친구_신청_목록_조회.andExpect(status().isOk());
 		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 
-		Long requestId = getRequestId(memberId, 친구_신청_목록_조회);
+		var requestId = getRequestId(memberId, 친구_신청_목록_조회);
 
 		// when : action 상대방
-		ResultActions 친구_승인 = 친구_추가_거절(requestId, 어드민이메일, 비밀번호);
+		var 친구_승인 = 친구_추가_거절(requestId, 어드민이메일, 비밀번호);
 		친구_승인.andExpect(status().isOk());
 
 		// given : action 사용자
-		ResultActions 친구_재신청 = 친구_신청(adminId, 이메일, 비밀번호);
+		var 친구_재신청 = 친구_신청(adminId, 이메일, 비밀번호);
 		친구_재신청.andExpect(status().isOk());
 
 		// then : action 상대방
-		ResultActions 친구_목록_조회 = 친구_목록_조회(어드민이메일, 비밀번호);
+		var 친구_목록_조회 = 친구_목록_조회(어드민이메일, 비밀번호);
 		친구_목록_조회.andExpect(status().isOk());
 		친구_신청_목록_조회.andExpect(jsonPath(FROM_USER_ID, memberId).exists());
 	}
@@ -160,7 +160,7 @@ class FriendAcceptanceTest extends AcceptanceTest {
 
 	private Long getRequestId(Long memberId, ResultActions resultActions) throws
 		JsonProcessingException, UnsupportedEncodingException {
-		AskedFriendResponses friendResponses = objectMapper.readValue(
+		var friendResponses = objectMapper.readValue(
 			resultActions.andReturn().getResponse().getContentAsString(), AskedFriendResponses.class);
 
 		return friendResponses.askedFriendResponses()

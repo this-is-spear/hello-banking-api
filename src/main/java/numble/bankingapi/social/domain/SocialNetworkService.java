@@ -22,16 +22,16 @@ public class SocialNetworkService {
 
 	@Transactional
 	public void askWantToBefriends(String principal, Long toMemberId) {
-		Member fromMember = getMember(principal);
-		Member toMember = memberService.findById(toMemberId);
-		AskedFriendHistory waitingAskedFriend = new AskedFriendHistory(fromMember.getId(), toMember.getId());
+		final var fromMember = getMember(principal);
+		final var toMember = memberService.findById(toMemberId);
+		final var waitingAskedFriend = new AskedFriendHistory(fromMember.getId(), toMember.getId());
 		friendService.saveAskedFriendHistory(waitingAskedFriend);
 	}
 
 	@Transactional
 	public void approvalRequest(String principal, Long requestId) {
-		Member toMember = getMember(principal);
-		AskedFriendHistory askedFriendHistory = friendService.findFriendHistoryById(requestId);
+		final var toMember = getMember(principal);
+		var askedFriendHistory = friendService.findFriendHistoryById(requestId);
 
 		if (!askedFriendHistory.getToMemberId().equals(toMember.getId())) {
 			throw new IllegalArgumentException();
@@ -43,8 +43,8 @@ public class SocialNetworkService {
 
 	@Transactional
 	public void rejectRequest(String principal, Long requestId) {
-		Member toMember = getMember(principal);
-		AskedFriendHistory askedFriendHistory = friendService.findFriendHistoryById(requestId);
+		final var toMember = getMember(principal);
+		var askedFriendHistory = friendService.findFriendHistoryById(requestId);
 
 		if (!askedFriendHistory.getToMemberId().equals(toMember.getId())) {
 			throw new IllegalArgumentException();
@@ -54,14 +54,14 @@ public class SocialNetworkService {
 	}
 
 	public FriendResponses findFriends(String principal) {
-		Member member = getMember(principal);
+		final var member = getMember(principal);
 
-		List<Long> longStream = friendService.findFriends(member.getId())
+		final List<Long> longStream = friendService.findFriends(member.getId())
 			.stream()
 			.map(Friend::getToMemberId)
 			.toList();
 
-		List<FriendResponse> responseList = memberService.findAllById(longStream)
+		final List<FriendResponse> responseList = memberService.findAllById(longStream)
 			.stream()
 			.map(m -> new FriendResponse(m.getId(), m.getName(), m.getEmail()))
 			.toList();
@@ -70,19 +70,19 @@ public class SocialNetworkService {
 	}
 
 	public AskedFriendResponses findRequestWandToBeFriend(String principal) {
-		Member member = getMember(principal);
+		final var member = getMember(principal);
 
-		List<AskedFriendHistory> waitingAskedFriendHistories = friendService.findWaitingAskedFriendHistories(
+		final var waitingAskedFriendHistories = friendService.findWaitingAskedFriendHistories(
 			member.getId());
 
-		List<Long> longStream = waitingAskedFriendHistories
+		final var longStream = waitingAskedFriendHistories
 			.stream()
 			.map(AskedFriendHistory::getFromMemberId)
 			.toList();
 
-		List<Member> memberList = memberService.findAllById(longStream);
+		final var memberList = memberService.findAllById(longStream);
 
-		List<AskedFriendResponse> askedFriendResponses = waitingAskedFriendHistories.stream()
+		final var askedFriendResponses = waitingAskedFriendHistories.stream()
 			.map(askedFriendHistory -> {
 				Member friend = memberList.stream()
 					.filter(m -> m.getId().equals(askedFriendHistory.getFromMemberId()))
@@ -99,7 +99,6 @@ public class SocialNetworkService {
 		return memberService.findByEmail(principal);
 	}
 
-	@Transactional
 	private void makeFriend(AskedFriendHistory askedFriendHistory) {
 		friendService.saveFriend(new Friend(askedFriendHistory.getFromMemberId(), askedFriendHistory.getToMemberId()));
 		friendService.saveFriend(new Friend(askedFriendHistory.getToMemberId(), askedFriendHistory.getFromMemberId()));

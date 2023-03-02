@@ -18,18 +18,18 @@ public class MemberApplicationService {
 	private final PasswordEncoder passwordEncoder;
 
 	public void registerMember(RegisterCommand registerCommand) {
-		String encodedPassword = passwordEncoder.encode(registerCommand.password());
-		ensureEmailDuplication(registerCommand.email());
-		Member member = new Member(registerCommand.email(), registerCommand.name(), encodedPassword);
+		final var encodedPassword = passwordEncoder.encode(registerCommand.password());
+		validateEmailDuplication(registerCommand.email());
+		final var member = new Member(registerCommand.email(), registerCommand.name(), encodedPassword);
 		memberRepository.save(member);
 	}
 
 	public MemberResponse getMember(String principal) {
-		Member member = memberRepository.findByEmail(principal).orElseThrow(NotExistMemberException::new);
+		final var member = memberRepository.findByEmail(principal).orElseThrow(NotExistMemberException::new);
 		return new MemberResponse(member.getId(), member.getName());
 	}
 
-	private void ensureEmailDuplication(String email) {
+	private void validateEmailDuplication(String email) {
 		if (memberRepository.findByEmail(email).isPresent()) {
 			throw new DuplicateEmailException();
 		}

@@ -4,8 +4,6 @@ import static numble.bankingapi.fixture.AccountFixture.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,13 +41,11 @@ class AccountHistoryServiceTest {
 	void deposit() {
 		accountService.depositMoney(사용자_계좌.getAccountNumber(), 이만원);
 
-		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
+		var accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			사용자_계좌.getAccountNumber());
 
 		assertThat(accountHistories).hasSize(1);
 		AccountHistory accountHistory = accountHistories.get(accountHistories.size() - 1);
-
-		System.out.println(accountHistory);
 
 		assertAll(
 			() -> assertThat(accountHistory.getType()).isEqualTo(HistoryType.DEPOSIT),
@@ -64,7 +60,7 @@ class AccountHistoryServiceTest {
 	void withdraw() {
 		accountService.withdrawMoney(사용자_계좌.getAccountNumber(), 이만원);
 
-		List<AccountHistory> accountHistories = accountHistoryRepository.findByFromAccountNumber(
+		var accountHistories = accountHistoryRepository.findByFromAccountNumber(
 			사용자_계좌.getAccountNumber());
 
 		assertThat(accountHistories).hasSize(1);
@@ -81,31 +77,30 @@ class AccountHistoryServiceTest {
 	@Test
 	@DisplayName("이체할 때 기록한다.")
 	void transfer() {
-		Account fromAccount = Account.builder()
+		var fromAccount = Account.builder()
 			.userId(사용자.getId())
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
-		Account toAccount = Account.builder()
+		var toAccount = Account.builder()
 			.userId(999L)
 			.balance(이만원)
 			.accountNumber(AccountNumberGenerator.generate())
 			.build();
 
-		AccountNumber 사용자_계좌번호 = accountRepository.save(fromAccount).getAccountNumber();
-		AccountNumber 상대방_계좌번호 = accountRepository.save(toAccount).getAccountNumber();
+		var 사용자_계좌번호 = accountRepository.save(fromAccount).getAccountNumber();
+		var 상대방_계좌번호 = accountRepository.save(toAccount).getAccountNumber();
 
 		assertDoesNotThrow(
 			() -> accountService.transferMoney(사용자_계좌번호, 상대방_계좌번호, 이만원));
 
-		List<AccountHistory> fromAccountHistories = accountHistoryRepository
+		var fromAccountHistories = accountHistoryRepository
 			.findByFromAccountNumber(사용자_계좌번호);
 		AccountHistory fromAccountHistory = fromAccountHistories.get(fromAccountHistories.size() - 1);
 
-		List<AccountHistory> toAccountHistories = accountHistoryRepository
-			.findByFromAccountNumber(상대방_계좌번호);
-		AccountHistory toAccountHistory = toAccountHistories.get(toAccountHistories.size() - 1);
+		var toAccountHistories = accountHistoryRepository.findByFromAccountNumber(상대방_계좌번호);
+		var toAccountHistory = toAccountHistories.get(toAccountHistories.size() - 1);
 
 		assertAll(
 			() -> assertThat(fromAccountHistory.getType()).isEqualTo(HistoryType.WITHDRAW),
@@ -139,7 +134,7 @@ class AccountHistoryServiceTest {
 			.balance(만원)
 			.type(HistoryType.DEPOSIT)
 			.build());
-		List<AccountHistory> histories = accountService.findAccountHistoriesByFromAccountNumber(사용자_계좌);
+		var histories = accountService.findAccountHistoriesByFromAccountNumber(사용자_계좌);
 		assertThat(histories).hasSize(2);
 	}
 }

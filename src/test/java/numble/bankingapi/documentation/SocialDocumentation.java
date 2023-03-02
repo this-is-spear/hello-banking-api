@@ -12,7 +12,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import numble.bankingapi.social.dto.AskedFriendResponse;
 import numble.bankingapi.social.dto.AskedFriendResponses;
@@ -30,9 +29,9 @@ class SocialDocumentation extends DocumentationTemplate {
 	@WithMockMember
 	@DisplayName("상대방에게 친구 요청을 보낸다.")
 	void askWantToBefriends() throws Exception {
-		Long someoneId = 2L;
+		var someoneId = 2L;
 		doNothing().when(socialNetworkService).askWantToBefriends(USERNAME, someoneId);
-		MockHttpServletRequestBuilder builder = post("/members/friends/{someoneId}", someoneId)
+		var builder = post("/members/friends/{someoneId}", someoneId)
 			.with(user(USERNAME).password(PASSWORD))
 			.with(csrf());
 
@@ -53,9 +52,9 @@ class SocialDocumentation extends DocumentationTemplate {
 	@WithMockMember
 	@DisplayName("자신에게 온 친구 요청을 승낙한다.")
 	void approvalRequest() throws Exception {
-		Long requestId = 1L;
+		var requestId = 1L;
 		doNothing().when(socialNetworkService).approvalRequest(SOMEONE_USERNAME, requestId);
-		MockHttpServletRequestBuilder builder = post("/members/friends/{requestId}/approval", requestId)
+		var builder = post("/members/friends/{requestId}/approval", requestId)
 			.with(user(SOMEONE_USERNAME).password(PASSWORD))
 			.with(csrf());
 
@@ -76,9 +75,9 @@ class SocialDocumentation extends DocumentationTemplate {
 	@WithMockMember
 	@DisplayName("자신에게 온 친구 요청을 거절한다.")
 	void rejectRequest() throws Exception {
-		Long requestId = 1L;
+		var requestId = 1L;
 		doNothing().when(socialNetworkService).rejectRequest(SOMEONE_USERNAME, requestId);
-		MockHttpServletRequestBuilder builder = post("/members/friends/{requestId}/rejected", requestId)
+		var builder = post("/members/friends/{requestId}/rejected", requestId)
 			.with(user(SOMEONE_USERNAME).password(PASSWORD))
 			.with(csrf());
 
@@ -99,13 +98,13 @@ class SocialDocumentation extends DocumentationTemplate {
 	@WithMockMember
 	@DisplayName("자신의 친구 목록을 조회한다.")
 	void findFriends() throws Exception {
-		FriendResponses friendResponses = new FriendResponses(
+		var friendResponses = new FriendResponses(
 			List.of(new FriendResponse(4L, "name", "member@email.com"),
 				new FriendResponse(11L, "name113", "member14@email.com"))
 		);
 
 		when(socialNetworkService.findFriends(SOMEONE_USERNAME)).thenReturn(friendResponses);
-		MockHttpServletRequestBuilder builder = get("/members/friends")
+		var builder = get("/members/friends")
 			.with(user(SOMEONE_USERNAME).password(PASSWORD))
 			.with(csrf());
 
@@ -125,13 +124,13 @@ class SocialDocumentation extends DocumentationTemplate {
 	@WithMockMember
 	@DisplayName("자신에게 온 친구 요청 목록을 확인한다.")
 	void findRequestWandToBeFriend() throws Exception {
-		AskedFriendResponses askedFriendResponses = new AskedFriendResponses(
+		var askedFriendResponses = new AskedFriendResponses(
 			List.of(new AskedFriendResponse(2L, 13L, "name", "member@gmail.com"),
 				new AskedFriendResponse(22L, 133L, "name123", "member123@email.com"))
 		);
 
 		when(socialNetworkService.findRequestWandToBeFriend(SOMEONE_USERNAME)).thenReturn(askedFriendResponses);
-		MockHttpServletRequestBuilder builder = get("/members/friends/requests")
+		var builder = get("/members/friends/requests")
 			.with(user(SOMEONE_USERNAME).password(PASSWORD))
 			.with(csrf());
 

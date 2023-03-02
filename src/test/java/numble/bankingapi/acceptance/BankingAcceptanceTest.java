@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
@@ -36,18 +35,18 @@ class BankingAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deposit_and_withdraw_5000() throws Exception {
 		// given
-		long 입금할_돈 = 오천원;
-		long 출금할_돈 = 오천원;
-		String 나의계좌 = 계좌_정보_조회(MEMBER);
+		var 입금할_돈 = 오천원;
+		var 출금할_돈 = 오천원;
+		var 나의계좌 = 계좌_정보_조회(MEMBER);
 
-		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
+		var 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
 		계좌_입금.andExpect(status().isOk());
 
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(입금할_돈));
 
 		// when
-		ResultActions 계좌_출금 = 계좌_출금_요청(나의계좌, 출금할_돈, 이메일, 비밀번호);
+		var 계좌_출금 = 계좌_출금_요청(나의계좌, 출금할_돈, 이메일, 비밀번호);
 		계좌_출금.andExpect(status().isOk());
 
 		// then
@@ -65,19 +64,19 @@ class BankingAcceptanceTest extends AcceptanceTest {
 	@Test
 	void transfer_5000() throws Exception {
 		// given
-		long 입금할_돈 = 만원;
-		long 출금할_돈 = 오천원;
-		String 나의계좌 = 계좌_정보_조회(MEMBER);
-		String 상대방계좌 = 계좌_정보_조회(ADMIN);
+		var 입금할_돈 = 만원;
+		var 출금할_돈 = 오천원;
+		var 나의계좌 = 계좌_정보_조회(MEMBER);
+		var 상대방계좌 = 계좌_정보_조회(ADMIN);
 
-		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
+		var 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
 		계좌_입금.andExpect(status().isOk());
 
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(입금할_돈));
 
 		// when
-		ResultActions 계좌_이체 = 계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호);
+		var 계좌_이체 = 계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호);
 		계좌_이체.andExpect(status().isOk());
 
 		// then
@@ -98,19 +97,19 @@ class BankingAcceptanceTest extends AcceptanceTest {
 	@Test
 	void transfer_failed() throws Exception {
 		// given
-		long 입금할_돈 = 삼천원;
-		long 출금할_돈 = 오천원;
-		String 나의계좌 = 계좌_정보_조회(MEMBER);
-		String 상대방계좌 = 계좌_정보_조회(ADMIN);
+		var 입금할_돈 = 삼천원;
+		var 출금할_돈 = 오천원;
+		var 나의계좌 = 계좌_정보_조회(MEMBER);
+		var 상대방계좌 = 계좌_정보_조회(ADMIN);
 
-		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
+		var 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
 		계좌_입금.andExpect(status().isOk());
 
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
 			jsonPath(AMOUNT).value(입금할_돈));
 
 		// when
-		ResultActions 계좌_이체 = 계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호);
+		var 계좌_이체 = 계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호);
 
 		// then
 		계좌_이체.andExpect(status().isBadRequest());
@@ -126,13 +125,13 @@ class BankingAcceptanceTest extends AcceptanceTest {
 	@Test
 	void transfer_concurrency_50_times() throws Exception {
 		// given
-		long 입금할_돈 = 백만원;
-		long 출금할_돈 = 천원;
-		int 요청_횟수 = 50;
-		String 나의계좌 = 계좌_정보_조회(MEMBER);
-		String 상대방계좌 = 계좌_정보_조회(ADMIN);
+		var 입금할_돈 = 백만원;
+		var 출금할_돈 = 천원;
+		var 요청_횟수 = 50;
+		var 나의계좌 = 계좌_정보_조회(MEMBER);
+		var 상대방계좌 = 계좌_정보_조회(ADMIN);
 
-		ResultActions 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
+		var 계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
 		계좌_입금.andExpect(status().isOk());
 
 		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
@@ -153,10 +152,10 @@ class BankingAcceptanceTest extends AcceptanceTest {
 
 	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
 		String username, String password) throws InterruptedException {
-		int 스레드_개수 = 6;
-		CountDownLatch latch = new CountDownLatch(times);
+		var 스레드_개수 = 6;
+		var latch = new CountDownLatch(times);
 
-		ExecutorService executorService = Executors.newFixedThreadPool(스레드_개수);
+		var executorService = Executors.newFixedThreadPool(스레드_개수);
 
 		for (int i = 0; i < times; i++) {
 			executorService.execute(() -> {
@@ -188,7 +187,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 
 	private ResultActions 계좌_입금_요청(String accountNumber, long depositMoney, String username, String password)
 		throws Exception {
-		Map<String, Object> depositParams = new HashMap<>();
+		var depositParams = new HashMap<>();
 		depositParams.put("amount", depositMoney);
 
 		return mockMvc.perform(
@@ -202,7 +201,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 
 	private ResultActions 계좌_출금_요청(String accountNumber, long depositMoney, String username, String password)
 		throws Exception {
-		Map<String, Object> depositParams = new HashMap<>();
+		var depositParams = new HashMap<>();
 		depositParams.put("amount", depositMoney);
 
 		return mockMvc.perform(

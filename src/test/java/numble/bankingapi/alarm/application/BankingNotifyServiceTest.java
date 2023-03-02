@@ -14,7 +14,7 @@ class BankingNotifyServiceTest {
 	@Test
 	@DisplayName("알람 메시지를 전송한다.")
 	void notifyMessage() {
-		AlarmMessage message = new AlarmMessage(TaskStatus.FAIL, TaskType.DEPOSIT);
+		var message = new AlarmMessage(TaskStatus.FAIL, TaskType.DEPOSIT);
 		bankingNotifyService.notify(2L, message);
 	}
 }

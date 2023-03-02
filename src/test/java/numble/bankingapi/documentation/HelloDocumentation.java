@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import numble.bankingapi.util.WithMockMember;
@@ -17,7 +16,7 @@ class HelloDocumentation extends DocumentationTemplate {
 	@Test
 	@WithMockMember
 	void hello() throws Exception {
-		MockHttpServletRequestBuilder builder = RestDocumentationRequestBuilders
+		var builder = RestDocumentationRequestBuilders
 			.get("/hello")
 			.with(csrf());
 

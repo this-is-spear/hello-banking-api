@@ -14,9 +14,6 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import numble.bankingapi.banking.dto.TransferCommand;
 import numble.bankingapi.util.WithMockMember;
@@ -85,10 +82,7 @@ class AccountDocumentation extends DocumentationTemplate {
 	@Test
 	@WithMockMember
 	void transfer() throws Exception {
-		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(
-			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
-		TransferCommand command = new TransferCommand(계좌_번호, 이만원);
+		var command = new TransferCommand(계좌_번호, 이만원);
 		doNothing().when(accountApplicationService).transfer(USER.getUsername(), 계좌_번호, command);
 
 		mockMvc.perform(
@@ -111,9 +105,6 @@ class AccountDocumentation extends DocumentationTemplate {
 	@WithMockMember
 	void getTargets() throws Exception {
 		when(accountApplicationService.getTargets(USER.getUsername(), 계좌_번호)).thenReturn(타겟목록);
-		SecurityContext securityContext = SecurityContextHolder.getContext();
-		securityContext.setAuthentication(
-			new UsernamePasswordAuthenticationToken(USER, USER.getPassword(), USER.getAuthorities()));
 		mockMvc.perform(
 				get("/account/{accountNumber}/transfer/targets", 계좌_번호)
 					.with(user(USER.getUsername()).roles("MEMBER"))

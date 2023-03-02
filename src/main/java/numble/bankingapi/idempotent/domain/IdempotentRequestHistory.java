@@ -11,15 +11,18 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import numble.bankingapi.common.BaseEntity;
 
 @Entity
 @Getter
+@ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class IdempotentRequestHistory extends BaseEntity {
 	@Id
 	@Column(name = "id")
+	@ToString.Include
 	@EqualsAndHashCode.Include
 	private String idempotentId;
 	@Column(name = "status")

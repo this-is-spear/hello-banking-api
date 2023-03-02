@@ -19,7 +19,7 @@ class AlarmMessageTest {
 	@Test
 	@DisplayName("알람 실패 메시지륾 문자열로 받는다.")
 	void getMessageUsingAlarmMessage() {
-		AlarmMessage message = new AlarmMessage(TaskStatus.FAIL, TaskType.DEPOSIT);
+		var message = new AlarmMessage(TaskStatus.FAIL, TaskType.DEPOSIT);
 		Assertions.assertThat(message.toString()).isEqualTo("입금 실패");
 	}
 }

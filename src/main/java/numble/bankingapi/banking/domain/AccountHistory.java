@@ -79,4 +79,14 @@ public class AccountHistory extends BaseEntity {
 		Money money, Money balance) {
 		this(null, fromAccountNumber, toAccountNumber, money, balance, type);
 	}
+
+	public static AccountHistory recordWithdrawHistory(Account fromAccount, Account toAccount, Money money) {
+		return new AccountHistory(fromAccount.getAccountNumber(), toAccount.getAccountNumber(), HistoryType.WITHDRAW,
+			money, fromAccount.getBalance());
+	}
+
+	public static AccountHistory recordDepositHistory(Account fromAccount, Account toAccount, Money money) {
+		return new AccountHistory(fromAccount.getAccountNumber(), toAccount.getAccountNumber(), HistoryType.DEPOSIT,
+			money, fromAccount.getBalance());
+	}
 }

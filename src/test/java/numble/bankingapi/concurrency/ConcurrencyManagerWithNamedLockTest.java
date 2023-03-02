@@ -3,11 +3,9 @@ package numble.bankingapi.concurrency;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +31,8 @@ class ConcurrencyManagerWithNamedLockTest {
 	@Test
 	@DisplayName("멀티 스레드 환경에서 동시성을 제어하지 않으면 원자성이 보장되지 않는다.")
 	void calculateAtSameTime_notControllingConcurrency() throws InterruptedException {
-		ExecutorService service = Executors.newFixedThreadPool(POLL_SIZE);
-		Account account = Account.builder()
+		var service = Executors.newFixedThreadPool(POLL_SIZE);
+		var account = Account.builder()
 			.accountNumber(AccountNumberGenerator.generate())
 			.balance(Money.zero())
 			.userId(2L)
@@ -52,11 +50,10 @@ class ConcurrencyManagerWithNamedLockTest {
 	}
 
 	@Test
-	@Disabled
 	@DisplayName("멀티 스레드 환경에서 동시성을 제어해 원자성을 보장한다.")
 	void calculateAtSameTime_controllingConcurrency() throws InterruptedException {
-		ExecutorService service = Executors.newFixedThreadPool(POLL_SIZE);
-		Account account = Account.builder()
+		var service = Executors.newFixedThreadPool(POLL_SIZE);
+		var account = Account.builder()
 			.accountNumber(AccountNumberGenerator.generate())
 			.balance(Money.zero())
 			.userId(2L)
@@ -73,7 +70,6 @@ class ConcurrencyManagerWithNamedLockTest {
 		}
 
 		latch.await();
-		System.out.println("last : " + account.getBalance().getAmount());
 		assertThat((int)account.getBalance().getAmount()).isEqualTo(NUMBER_OF_THREADS);
 	}
 }

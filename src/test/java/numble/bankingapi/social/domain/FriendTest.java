@@ -39,7 +39,7 @@ class FriendTest {
 	@Test
 	@DisplayName("사용자 식별자와 상대방 식별자는 같을 수 없다.")
 	void createFriend_notEqualsFromMemberIdAndToMemberId() {
-		long memberId = 3L;
+		var memberId = 3L;
 
 		assertThatThrownBy(
 			() -> new Friend(memberId, memberId)
