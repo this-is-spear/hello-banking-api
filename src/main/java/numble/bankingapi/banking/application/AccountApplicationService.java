@@ -31,12 +31,12 @@ public class AccountApplicationService {
 	private final MemberService memberService;
 	private final FriendService friendService;
 	private final AccountService accountService;
-	private final ConcurrencyFacade concurrencyFacade;
 	private final NotifyService notifyService;
+	private final ConcurrencyFacade concurrencyFacade;
 
 	public HistoryResponses getHistory(String principal, String stringAccountNumber) {
-		AccountNumber accountNumber = getAccountNumber(stringAccountNumber);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		var accountNumber = getAccountNumber(stringAccountNumber);
+		var account = accountService.getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 
 		return new HistoryResponses(account.getBalance(),
@@ -46,8 +46,8 @@ public class AccountApplicationService {
 	}
 
 	public void deposit(String principal, String number, Money money) {
-		AccountNumber accountNumber = getAccountNumber(number);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		var accountNumber = getAccountNumber(number);
+		var account = accountService.getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 
 		concurrencyFacade.depositWithLock(accountNumber, money);
@@ -56,8 +56,8 @@ public class AccountApplicationService {
 	}
 
 	public void withdraw(String principal, String number, Money money) {
-		AccountNumber accountNumber = getAccountNumber(number);
-		Account account = accountService.getAccountByAccountNumber(accountNumber);
+		var accountNumber = getAccountNumber(number);
+		var account = accountService.getAccountByAccountNumber(accountNumber);
 		validateMember(principal, account);
 
 		concurrencyFacade.withdrawWithLock(accountNumber, money);
@@ -66,11 +66,11 @@ public class AccountApplicationService {
 	}
 
 	public void transfer(String principal, String accountNumber, TransferCommand command) {
-		AccountNumber fromAccountNumber = getAccountNumber(accountNumber);
-		AccountNumber toAccountNumber = getAccountNumber(command.toAccountNumber());
+		var fromAccountNumber = getAccountNumber(accountNumber);
+		var toAccountNumber = getAccountNumber(command.toAccountNumber());
 
-		Account fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
-		Account toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
+		var fromAccount = accountService.getAccountByAccountNumber(fromAccountNumber);
+		var toAccount = accountService.getAccountByAccountNumber(toAccountNumber);
 
 		validateMember(principal, fromAccount);
 		Money money = command.amount();
@@ -84,7 +84,7 @@ public class AccountApplicationService {
 	}
 
 	private void validateMember(String principal, Account account) {
-		Member member = memberService.findByEmail(principal);
+		var member = memberService.findByEmail(principal);
 
 		if (!member.getId().equals(account.getUserId())) {
 			throw new InvalidMemberException();
