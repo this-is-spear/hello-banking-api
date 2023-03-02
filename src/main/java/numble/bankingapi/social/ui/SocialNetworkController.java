@@ -1,9 +1,9 @@
 package numble.bankingapi.social.ui;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,42 +23,40 @@ public class SocialNetworkController {
 	private final SocialNetworkService socialNetworkService;
 
 	@PostMapping("/friends/{someoneId}")
-	public ResponseEntity<Void> askWantToBefriends(@PathVariable Long someoneId) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
+	public ResponseEntity<Void> askWantToBefriends(@AuthenticationPrincipal UserDetails principal,
+		@PathVariable Long someoneId) {
 		socialNetworkService.askWantToBefriends(principal.getUsername(), someoneId);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/friends/{requestId}/approval")
-	public ResponseEntity<Void> approvalRequest(@PathVariable Long requestId) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
+	public ResponseEntity<Void> approvalRequest(@AuthenticationPrincipal UserDetails principal,
+		@PathVariable Long requestId) {
 		socialNetworkService.approvalRequest(principal.getUsername(), requestId);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping("/friends/{requestId}/rejected")
-	public ResponseEntity<Void> rejectRequest(@PathVariable Long requestId) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
+	public ResponseEntity<Void> rejectRequest(@AuthenticationPrincipal UserDetails principal,
+		@PathVariable Long requestId) {
 		socialNetworkService.rejectRequest(principal.getUsername(), requestId);
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/friends")
-	public ResponseEntity<FriendResponses> findFriends() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
-		FriendResponses friendResponses = socialNetworkService.findFriends(principal.getUsername());
-		return ResponseEntity.ok(friendResponses);
+	@GetMapping(
+		value = "/friends",
+		produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<FriendResponses> findFriends(@AuthenticationPrincipal UserDetails principal) {
+		return ResponseEntity.ok(socialNetworkService.findFriends(principal.getUsername()));
 	}
 
-	@GetMapping("/friends/requests")
-	public ResponseEntity<AskedFriendResponses> findRequestWandToBeFriend() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		User principal = (User)authentication.getPrincipal();
-		AskedFriendResponses friendResponses = socialNetworkService.findRequestWandToBeFriend(principal.getUsername());
-		return ResponseEntity.ok(friendResponses);
+	@GetMapping(
+		value = "/friends/requests",
+		produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<AskedFriendResponses> findRequestWandToBeFriend(
+		@AuthenticationPrincipal UserDetails principal) {
+		return ResponseEntity.ok(socialNetworkService.findRequestWandToBeFriend(principal.getUsername()));
 	}
 }
