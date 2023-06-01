@@ -173,11 +173,9 @@ class BankingAcceptanceTest extends AcceptanceTest {
 		var 상대방_계좌_입금 = 계좌_입금_요청(상대방계좌, 입금할_돈, 어드민이메일, 비밀번호);
 		상대방_계좌_입금.andExpect(status().isOk());
 
-		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(입금할_돈));
+		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈));
 
-		계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(
-			jsonPath(AMOUNT).value(입금할_돈));
+		계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈));
 
 		var latch = new CountDownLatch(요청_횟수);
 
@@ -204,6 +202,86 @@ class BankingAcceptanceTest extends AcceptanceTest {
 				.value(입금할_돈)),
 			() -> assertEquals(objectMapper.readValue(계좌_조회_요청(나의계좌, 이메일, 비밀번호).andReturn().getResponse()
 				.getContentAsByteArray(), HistoryResponses.class).historyResponses().size(), 요청_횟수 * 2 + 1)
+		);
+	}
+
+	/**
+	 * 입금을 동시에 10번한다.
+	 *
+	 * @When : 사용자의 계좌에 만원씩 10번 입금하면
+	 * @Then : 사용자의 계좌에 백만원이 남는다.
+	 */
+	@Test
+	void deposit_concurrency_10times() throws Exception {
+		// when
+		var 입금할_돈 = 만원;
+		var 요청_횟수 = 10;
+		var 나의계좌 = 계좌_정보_조회(MEMBER);
+
+		var latch = new CountDownLatch(요청_횟수);
+
+		var executorService = Executors.newFixedThreadPool(4);
+
+		for (int i = 0; i < 요청_횟수; i++) {
+			executorService.execute(() -> {
+				try {
+					계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
+					latch.countDown();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+		latch.await();
+
+		// then
+		assertAll(
+			() -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈 * 요청_횟수)),
+			() -> assertEquals(objectMapper.readValue(계좌_조회_요청(나의계좌, 이메일, 비밀번호).andReturn().getResponse()
+				.getContentAsByteArray(), HistoryResponses.class).historyResponses().size(), 요청_횟수)
+		);
+	}
+
+	/**
+	 * 출금을 동시에 10번한다.
+	 *
+	 * @Given : 사용자와 상배방은 백만원씩 있고
+	 * @When : 사용자의 계좌에 만원씩 10번 출금하면
+	 * @Then : 사용자의 계좌에 구십 만원이 남는다.
+	 */
+	@Test
+	void withdraw_concurrency_10times() throws Exception {
+		// when
+		var 입금할_돈 = 백만원;
+		var 출금할_돈 = 만원;
+		var 요청_횟수 = 10;
+		var 나의계좌 = 계좌_정보_조회(MEMBER);
+
+		var 내_계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
+		내_계좌_입금.andExpect(status().isOk());
+		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈));
+
+		var latch = new CountDownLatch(요청_횟수);
+
+		var executorService = Executors.newFixedThreadPool(4);
+
+		for (int i = 0; i < 요청_횟수; i++) {
+			executorService.execute(() -> {
+				try {
+					계좌_출금_요청(나의계좌, 출금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
+					latch.countDown();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+		latch.await();
+
+		// then
+		assertAll(
+			() -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈 * 요청_횟수)),
+			() -> assertEquals(objectMapper.readValue(계좌_조회_요청(나의계좌, 이메일, 비밀번호).andReturn().getResponse()
+				.getContentAsByteArray(), HistoryResponses.class).historyResponses().size(), 요청_횟수 + 1)
 		);
 	}
 

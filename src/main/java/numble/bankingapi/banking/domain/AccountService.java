@@ -40,14 +40,14 @@ public class AccountService {
 		return accountRepository.findByAccountNumber(accountNumber).orElseThrow();
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void depositMoney(AccountNumber accountNumber, Money money) {
 		var account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
 		account.deposit(money);
 		recordCompletionDepositMoney(account, money);
 	}
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void withdrawMoney(AccountNumber accountNumber, Money money) {
 		var account = getAccountByAccountNumberWithOptimisticLock(accountNumber);
 		account.withdraw(money);

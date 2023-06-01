@@ -33,6 +33,16 @@ public class ConcurrencyManagerWithNamedLock implements ConcurrencyManager {
 		}
 	}
 
+	@Override
+	public void executeWithLock(String lockName, Runnable runnable) {
+		try {
+			getLock(lockName);
+			runnable.run();
+		} finally {
+			releaseSessionLocks();
+		}
+	}
+
 	private void getLock(String userLockName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("userLockName", userLockName);

@@ -22,12 +22,17 @@ public class ConcurrencyFacade {
 			() -> accountService.transferMoney(accountNumber, toAccountNumber, amount)
 		);
 	}
-
+	@Transactional
 	public void depositWithLock(AccountNumber accountNumber, Money amount) {
-		accountService.depositMoney(accountNumber, amount);
+		concurrencyManager.executeWithLock(accountNumber.getNumber(), () -> {
+			accountService.depositMoney(accountNumber, amount);
+		});
 	}
 
+	@Transactional
 	public void withdrawWithLock(AccountNumber accountNumber, Money amount) {
-		accountService.withdrawMoney(accountNumber, amount);
+		concurrencyManager.executeWithLock(accountNumber.getNumber(), () -> {
+			accountService.withdrawMoney(accountNumber, amount);
+		});
 	}
 }

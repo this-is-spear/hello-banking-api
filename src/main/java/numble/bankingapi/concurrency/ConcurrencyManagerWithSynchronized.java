@@ -12,4 +12,13 @@ public class ConcurrencyManagerWithSynchronized implements ConcurrencyManager {
 		}
 		log.debug("End Concurrency Control : {}, {}", lockName1, lockName2);
 	}
+
+	@Override
+	public void executeWithLock(String lockName, Runnable runnable) {
+		log.debug("Start Concurrency Control : {}", lockName);
+		synchronized (this) {
+			runnable.run();
+		}
+		log.debug("End Concurrency Control : {}", lockName);
+	}
 }
