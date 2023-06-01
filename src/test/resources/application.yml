@@ -6,7 +6,6 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       test-on-borrow: true
       validation-query: SELECT 1
-
   jpa:
     show-sql: true
     hibernate:

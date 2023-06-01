@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
+import numble.bankingapi.banking.dto.HistoryResponses;
+
 class BankingAcceptanceTest extends AcceptanceTest {
 	private static final String IDEMPOTENT_KEY = "Idempotency-Key";
 	private static final String AMOUNT = "$.balance.amount";
@@ -147,6 +149,61 @@ class BankingAcceptanceTest extends AcceptanceTest {
 					.value(입금할_돈 - 출금할_돈 * 요청_횟수)),
 			() -> 계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
 				.value(출금할_돈 * 요청_횟수))
+		);
+	}
+
+	/**
+	 * 서로 이체를 10번한다.
+	 *
+	 * @Given : 사용자와 상배방은 백만원씩 있고
+	 * @When : 서로 만원씩 10번 이체하면
+	 * @Then : 서로 계좌에 백만원이 남는다.
+	 */
+	@Test
+	void transfer_concurrency_10times() throws Exception {
+		// given
+		var 입금할_돈 = 백만원;
+		var 출금할_돈 = 만원;
+		var 요청_횟수 = 10;
+		var 나의계좌 = 계좌_정보_조회(MEMBER);
+		var 상대방계좌 = 계좌_정보_조회(ADMIN);
+
+		var 내_계좌_입금 = 계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호);
+		내_계좌_입금.andExpect(status().isOk());
+		var 상대방_계좌_입금 = 계좌_입금_요청(상대방계좌, 입금할_돈, 어드민이메일, 비밀번호);
+		상대방_계좌_입금.andExpect(status().isOk());
+
+		계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(
+			jsonPath(AMOUNT).value(입금할_돈));
+
+		계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(
+			jsonPath(AMOUNT).value(입금할_돈));
+
+		var latch = new CountDownLatch(요청_횟수);
+
+		var executorService = Executors.newFixedThreadPool(4);
+
+		for (int i = 0; i < 요청_횟수; i++) {
+			executorService.execute(() -> {
+				try {
+					계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
+					계좌_이체_요청(상대방계좌, 나의계좌, 출금할_돈, 어드민이메일, 비밀번호).andExpect(status().isOk());
+					latch.countDown();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+		latch.await();
+
+		// then
+		assertAll(
+			() -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
+				.value(입금할_돈)),
+			() -> 계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
+				.value(입금할_돈)),
+			() -> assertEquals(objectMapper.readValue(계좌_조회_요청(나의계좌, 이메일, 비밀번호).andReturn().getResponse()
+				.getContentAsByteArray(), HistoryResponses.class).historyResponses().size(), 요청_횟수 * 2 + 1)
 		);
 	}
 
