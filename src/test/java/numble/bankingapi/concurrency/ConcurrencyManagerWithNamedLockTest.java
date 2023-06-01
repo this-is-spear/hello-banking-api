@@ -61,7 +61,7 @@ class ConcurrencyManagerWithNamedLockTest {
 
 		for (int i = 0; i < NUMBER_OF_THREADS; i++) {
 			service.execute(() -> {
-				concurrencyManager.executeWithLock("lock", () -> {
+				concurrencyManager.executeWithLock("lock1", "lock2", () -> {
 						account.deposit(new Money(1));
 						latch.countDown();
 					}

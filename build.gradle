@@ -144,3 +144,4 @@ build {
     dependsOn check
     dependsOn copyDocument
 }
+
