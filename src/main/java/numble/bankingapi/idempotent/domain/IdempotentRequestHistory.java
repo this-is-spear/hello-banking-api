@@ -17,7 +17,7 @@ import numble.bankingapi.common.BaseEntity;
 @Entity
 @Getter
 @ToString(onlyExplicitlyIncluded = true)
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class IdempotentRequestHistory extends BaseEntity {
 	@Id

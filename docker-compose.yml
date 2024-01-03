@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  database:
+    container_name: mysql_db
+    image: mysql/mysql-server:8.0-aarch64
+    environment:
+      MYSQL_DATABASE: money_transfer_service
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: password!
+      TZ: 'Asia/Seoul'
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/conf.d:/etc/mysql/conf.d
+    command:
+      - "mysqld"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+      - "--innodb_buffer_pool_size=256M"
+
+  application:
+    container_name: money-transfer
+    deploy:
+      replicas: 1
+    restart: on-failure
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/money_transfer_service?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "password!"
+    depends_on:
+      database:
+        condition: service_healthy

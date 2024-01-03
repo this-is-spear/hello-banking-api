@@ -1,9 +1,10 @@
 # numble-banking-api
 Numble Challenge - Banking API
 
-### API
+### 테스트
 
-[링크](https://this-is-spear.github.io/hello-banking-api/src/main/resources/static/docs/index.html)에서 확인할 수 있습니다.
+- 테스트 할 API는 [API 문서](https://this-is-spear.github.io/hello-banking-api/src/main/resources/static/docs/index.html)에서 확인 할 수 있습니다.
+- 서버는 `run.sh` 를 실행하면 됩니다.
 
 ### Development Environment
 
