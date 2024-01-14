@@ -1,16 +1,42 @@
-version: "3.8"
+version: "3.6"
 
 services:
-  database:
-    container_name: mysql_db
-    image: mysql/mysql-server:8.0-aarch64
+  money-transfer:
+    deploy:
+      replicas: 1
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - PINPOINT_VERSION=2.5.3
+        - AGENT_ID=java-app-in-docker
+        - APP_NAME=money-transfer
+        - SPRING_PROFILES=local
+    volumes:
+      - data-volume:/pinpoint-agent
+    ports:
+      - "8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3307/money_transfer_service?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "password!"
+    depends_on:
+      - pinpoint-web
+      - pinpoint-hbase
+      - pinpoint-agent
+      - money-transfer-database
+    networks:
+      - pinpoint
+
+  money-transfer-database:
+    image: mysql/mysql-server:latest-aarch64
     environment:
       MYSQL_DATABASE: money_transfer_service
       MYSQL_ROOT_HOST: '%'
       MYSQL_ROOT_PASSWORD: password!
       TZ: 'Asia/Seoul'
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - ./mysql/conf.d:/etc/mysql/conf.d
     command:
@@ -18,21 +44,72 @@ services:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
       - "--innodb_buffer_pool_size=256M"
+    networks:
+      - pinpoint
 
-  application:
-    container_name: money-transfer
-    deploy:
-      replicas: 1
-    restart: on-failure
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/money_transfer_service?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-      SPRING_DATASOURCE_USERNAME: "root"
-      SPRING_DATASOURCE_PASSWORD: "password!"
-    depends_on:
-      database:
-        condition: service_healthy
+  pinpoint-hbase:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: pinpoint-hbase
+
+  pinpoint-web:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: pinpoint-web
+
+  pinpoint-collector:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: pinpoint-collector
+
+  pinpoint-agent:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: pinpoint-agent
+
+  zoo1:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: zoo1
+
+  zoo2:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: zoo2
+
+  zoo3:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: zoo3
+
+  jobmanager:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: jobmanager
+
+  taskmanager:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: taskmanager
+
+  redis:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: redis
+
+  pinpoint-mysql:
+    extends:
+      file: ./pinpoint/docker-compose.yml
+      service: pinpoint-mysql
+
+volumes:
+  data-volume:
+  hbase_data:
+  mysql_data:
+
+networks:
+  pinpoint:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${PINPOINT_NETWORK_SUBNET}
