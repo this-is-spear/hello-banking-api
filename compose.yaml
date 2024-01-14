@@ -2,9 +2,9 @@ services:
   mysql:
     image: 'mysql:latest'
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      MYSQL_DATABASE: money_transfer_service
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: password!
+      TZ: 'Asia/Seoul'
     ports:
       - '3306'
