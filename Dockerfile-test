@@ -1,8 +1,0 @@
-FROM openjdk:17-jdk
-
-ARG PINPOINT_VERSION
-ARG AGENT_ID
-ARG APP_NAME
-COPY ./build/libs/*SNAPSHOT.jar app.jar
-
-CMD java -jar app.jar
