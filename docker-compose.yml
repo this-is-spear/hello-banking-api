@@ -18,27 +18,26 @@ services:
       - "8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3307/money_transfer_service?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-      SPRING_DATASOURCE_USERNAME: "root"
-      SPRING_DATASOURCE_PASSWORD: "password!"
+      SPRING_DATASOURCE_USERNAME: 'root'
+      SPRING_DATASOURCE_PASSWORD: 'password!'
     depends_on:
       - pinpoint-web
       - pinpoint-hbase
       - pinpoint-agent
+      - pinpoint-collector
       - money-transfer-database
     networks:
       - pinpoint
 
   money-transfer-database:
-    image: mysql/mysql-server:latest-aarch64
+    image: mysql:8.0
     environment:
       MYSQL_DATABASE: money_transfer_service
       MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_PASSWORD: password!
+      MYSQL_ROOT_PASSWORD: 'password!'
       TZ: 'Asia/Seoul'
     ports:
       - "3307:3306"
-    volumes:
-      - ./mysql/conf.d:/etc/mysql/conf.d
     command:
       - "mysqld"
       - "--character-set-server=utf8mb4"
@@ -51,31 +50,43 @@ services:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: pinpoint-hbase
+    networks:
+      - pinpoint
 
   pinpoint-web:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: pinpoint-web
+    networks:
+      - pinpoint
 
   pinpoint-collector:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: pinpoint-collector
+    networks:
+      - pinpoint
 
   pinpoint-agent:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: pinpoint-agent
+    networks:
+      - pinpoint
 
   zoo1:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: zoo1
+    networks:
+      - pinpoint
 
   zoo2:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: zoo2
+    networks:
+      - pinpoint
 
   zoo3:
     extends:
@@ -86,21 +97,29 @@ services:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: jobmanager
+    networks:
+      - pinpoint
 
   taskmanager:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: taskmanager
+    networks:
+      - pinpoint
 
   redis:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: redis
+    networks:
+      - pinpoint
 
   pinpoint-mysql:
     extends:
       file: ./pinpoint/docker-compose.yml
       service: pinpoint-mysql
+    networks:
+      - pinpoint
 
 volumes:
   data-volume:
