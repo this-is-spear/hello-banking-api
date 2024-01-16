@@ -17,4 +17,6 @@ public interface AccountRepository {
 	List<Account> findAll();
 
 	List<Account> findAllByUserIdIn(List<Long> userId);
+
+	List<Account> findByUserId(Long memberId);
 }

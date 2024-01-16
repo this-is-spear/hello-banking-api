@@ -1,5 +1,6 @@
 package bankingapi.banking.application;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import bankingapi.alarm.dto.AlarmMessage;
@@ -127,5 +128,13 @@ public class AccountApplicationService {
 
 	private AccountNumber getAccountNumber(String accountNumber) {
 		return new AccountNumber(accountNumber);
+	}
+
+	public List<AccountNumber> findAccounts(String principal) {
+		final var member = memberService.findByEmail(principal);
+		return accountService.getAccountByMemberId(member.getId())
+				.stream()
+				.map(Account::getAccountNumber)
+				.toList();
 	}
 }

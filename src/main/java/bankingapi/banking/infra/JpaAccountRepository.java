@@ -37,4 +37,6 @@ public interface JpaAccountRepository extends JpaRepository<Account, Long>, Acco
 	@Query("select a from Account a where a.userId in :userId")
 	List<Account> findAllByUserIdIn(List<Long> userId);
 
+	@Override
+	List<Account> findByUserId(Long memberId);
 }

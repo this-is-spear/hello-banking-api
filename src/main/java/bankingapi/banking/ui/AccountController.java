@@ -1,5 +1,6 @@
 package bankingapi.banking.ui;
 
+import bankingapi.banking.domain.AccountNumber;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +18,8 @@ import bankingapi.banking.domain.Money;
 import bankingapi.banking.dto.HistoryResponses;
 import bankingapi.banking.dto.TargetResponses;
 import bankingapi.banking.dto.TransferCommand;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("account")
@@ -72,5 +75,13 @@ public class AccountController {
 	public ResponseEntity<TargetResponses> getTargets(@AuthenticationPrincipal UserDetails principal,
 		@PathVariable String accountNumber) {
 		return ResponseEntity.ok(accountApplicationService.getTargets(principal.getUsername(), accountNumber));
+	}
+
+	@GetMapping(
+		value = "/{accountNumber}/targets",
+		produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<List<AccountNumber>> findAccounts(@AuthenticationPrincipal UserDetails principal) {
+		return ResponseEntity.ok(accountApplicationService.findAccounts(principal.getUsername()));
 	}
 }

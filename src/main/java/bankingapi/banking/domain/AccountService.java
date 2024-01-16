@@ -1,5 +1,6 @@
 package bankingapi.banking.domain;
 
+import java.util.Collection;
 import java.util.List;
 
 import bankingapi.util.generator.AccountNumberGenerator;
@@ -99,5 +100,9 @@ public class AccountService {
 	private void recordCompletionTransferMoney(Account fromAccount, Account toAccount, Money money) {
 		accountHistoryRepository.save(AccountHistory.recordWithdrawHistory(fromAccount, toAccount, money));
 		accountHistoryRepository.save(AccountHistory.recordDepositHistory(toAccount, fromAccount, money));
+	}
+
+	public List<Account> getAccountByMemberId(Long memberId) {
+		return accountRepository.findByUserId(memberId);
 	}
 }
