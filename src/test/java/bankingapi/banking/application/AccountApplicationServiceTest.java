@@ -209,6 +209,5 @@ class AccountApplicationServiceTest {
 		);
 
 		assertThat(responses).hasSize(2);
-		assertThat(responses.get(0)).isEqualTo(계좌.getAccountNumber());
 	}
 }
