@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Git Submodule 업데이트
+
+sudo git submodule update --init --recursive
+
+if [ $? -ne 0 ]; then
+    echo "Git submodule update failed. Exiting script."
+    exit 1
+fi
+
 # Gradle 빌드 실행
 sudo ./gradlew clean build
 
