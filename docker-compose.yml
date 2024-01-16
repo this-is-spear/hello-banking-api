@@ -15,7 +15,7 @@ services:
     volumes:
       - data-volume:/pinpoint-agent
     ports:
-      - "8080"
+      - "80:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3307/money_transfer_service?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
       SPRING_DATASOURCE_USERNAME: 'root'
