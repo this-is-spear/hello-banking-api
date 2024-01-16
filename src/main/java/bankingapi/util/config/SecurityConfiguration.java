@@ -27,19 +27,16 @@ public class SecurityConfiguration {
 		http.userDetailsService(userDetailsService);
 		http.csrf(AbstractHttpConfigurer::disable);
 
-		http
-			.httpBasic(withDefaults())
-			.formLogin()
-			.successHandler((request, response, authentication) -> response.sendRedirect("/hello"))
-			.and()
-			.authorizeHttpRequests((authorize) -> authorize
+		http.httpBasic(withDefaults()).formLogin(withDefaults());
+
+		http.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers("/hello").permitAll()
 				.requestMatchers("/docs/index.html").permitAll()
 				.requestMatchers("/members/register").anonymous()
 				.requestMatchers("/login").anonymous()
 				.requestMatchers("/account/**").authenticated()
 				.requestMatchers("/members/**").authenticated()
-			);
+        );
 
 		return http.build();
 	}
