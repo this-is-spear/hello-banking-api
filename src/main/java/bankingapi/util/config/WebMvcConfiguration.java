@@ -19,7 +19,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		PathMatcherInterceptor matcherInterceptor = new PathMatcherInterceptor(idempotentRequestInterceptor,
-			customPathContainer).includePathPattern("/account/**", HttpMethod.POST);
+			customPathContainer).includePathPattern("/accounts/**", HttpMethod.POST);
 		registry.addInterceptor(matcherInterceptor)
 			.addPathPatterns();
 	}

@@ -22,7 +22,7 @@ import bankingapi.banking.dto.TransferCommand;
 import java.util.List;
 
 @RestController
-@RequestMapping("account")
+@RequestMapping("/accounts")
 @RequiredArgsConstructor
 public class AccountController {
 
@@ -69,19 +69,24 @@ public class AccountController {
 	}
 
 	@GetMapping(
-		value = "/{accountNumber}/transfer/targets",
+		value = "/transfer/targets",
 		produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<TargetResponses> getTargets(@AuthenticationPrincipal UserDetails principal,
-		@PathVariable String accountNumber) {
-		return ResponseEntity.ok(accountApplicationService.getTargets(principal.getUsername(), accountNumber));
+	public ResponseEntity<TargetResponses> getTargets(@AuthenticationPrincipal UserDetails principal) {
+		return ResponseEntity.ok(accountApplicationService.getTargets(principal.getUsername()));
 	}
 
 	@GetMapping(
-		value = "/{accountNumber}/targets",
 		produces = MediaType.APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<List<AccountNumber>> findAccounts(@AuthenticationPrincipal UserDetails principal) {
 		return ResponseEntity.ok(accountApplicationService.findAccounts(principal.getUsername()));
+	}
+
+	@PostMapping(
+			produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<AccountNumber> createAccount(@AuthenticationPrincipal UserDetails principal) {
+		return ResponseEntity.ok(accountApplicationService.createAccount(principal.getUsername()));
 	}
 }

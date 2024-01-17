@@ -92,15 +92,8 @@ public class AccountApplicationService {
 		}
 	}
 
-	public TargetResponses getTargets(String principal, String stringAccountNumber) {
-		final var accountNumber = new AccountNumber(stringAccountNumber);
-		final var account = accountService.getAccountByAccountNumber(accountNumber);
-
+	public TargetResponses getTargets(String principal) {
 		final var member = memberService.findByEmail(principal);
-		if (!member.getId().equals(account.getUserId())) {
-			throw new InvalidMemberException();
-		}
-
 		final var friendIds = friendService.findFriends(member.getId())
 			.stream()
 			.map(Friend::getToMemberId)
@@ -136,5 +129,10 @@ public class AccountApplicationService {
 				.stream()
 				.map(Account::getAccountNumber)
 				.toList();
+	}
+
+	public AccountNumber createAccount(String username) {
+		final var member = memberService.findByEmail(username);
+		return accountService.createAccount(member.getId()).getAccountNumber();
 	}
 }

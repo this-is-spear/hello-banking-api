@@ -177,25 +177,14 @@ class AccountApplicationServiceTest {
 	@Test
 	@DisplayName("계좌 이체할 상대방을 찾는다.")
 	void getTargets() {
-		when(accountService.getAccountByAccountNumber(AccountFixture.계좌번호)).thenReturn(계좌);
 		when(memberService.findByEmail(EMAIL)).thenReturn(사용자);
 		when(friendService.findFriends(사용자_ID)).thenReturn(List.of(new Friend(사용자_ID, 상대방_ID)));
 		when(memberService.findAllById(List.of(상대방_ID))).thenReturn(List.of(상대방));
 		when(accountService.getFriendAccounts(List.of(상대방_ID))).thenReturn(List.of(상대방_계좌));
 
 		var responses = assertDoesNotThrow(
-			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber()));
+			() -> accountApplicationService.getTargets(EMAIL));
 		assertThat(responses.targets()).hasSize(1);
-	}
-
-	@Test
-	@DisplayName("계좌 이체할 상대방을 찾을 때, 본인이 아니면 InvalidMemberException 예외가 발생한다.")
-	void getTargets_accessInvalidMember() {
-		when(accountService.getAccountByAccountNumber(계좌.getAccountNumber())).thenReturn(계좌);
-		when(memberService.findByEmail(EMAIL)).thenReturn(상대방);
-		assertThatThrownBy(
-			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber())
-		).isInstanceOf(InvalidMemberException.class);
 	}
 
 	@Test
