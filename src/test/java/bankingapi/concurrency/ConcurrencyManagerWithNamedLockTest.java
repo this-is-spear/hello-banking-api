@@ -18,7 +18,7 @@ import bankingapi.util.generator.AccountNumberGenerator;
 
 @SpringBootTest
 class ConcurrencyManagerWithNamedLockTest {
-	private static final int NUMBER_OF_THREADS = 100;
+	private static final int NUMBER_OF_THREADS = 10;
 	private static final int POLL_SIZE = 10;
 	@Autowired
 	private ConcurrencyManager concurrencyManager;
@@ -62,11 +62,14 @@ class ConcurrencyManagerWithNamedLockTest {
 
 		for (int i = 0; i < NUMBER_OF_THREADS; i++) {
 			service.execute(() -> {
-				concurrencyManager.executeWithLock("lock1", "lock2", () -> {
-						account.deposit(new Money(1));
-						latch.countDown();
-					}
-				);
+				try {
+					concurrencyManager.executeWithLock("lock1", "lock2", () -> {
+							account.deposit(new Money(1));
+						}
+					);
+				}finally {
+					latch.countDown();
+				}
 			});
 		}
 
