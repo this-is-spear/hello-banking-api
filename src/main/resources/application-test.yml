@@ -1,0 +1,43 @@
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      max-lifetime: 60000
+      driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+      jdbc-url: jdbc:tc:mysql:8.0.24://localhost:3306/test
+      connection-timeout: 5000
+      pool-name: Spring-HikariPool
+    dbcp2:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      test-on-borrow: true
+      validation-query: SELECT 1
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
+  jdbc:
+    template:
+      query-timeout: 2
+
+userlock:
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      max-lifetime: 60000
+      driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+      jdbc-url: jdbc:tc:mysql:8.0.24://localhost:3306/test
+      connection-timeout: 5000
+      pool-name: UserLock-HikariPool
+
+logging:
+  level:
+    org.hibernate:
+      SQL: debug
+      tool.hbm2ddl: debug
+      type: trace
+      stat: debug
+      type.BasicTypeRegistry: warn
+    org.springframework.jdbc: debug
+    org.springframework.transaction: debug
+    bankingapi.concurrency: debug

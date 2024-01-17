@@ -11,12 +11,14 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import bankingapi.member.domain.Member;
 import bankingapi.member.domain.MemberRepository;
 import bankingapi.member.exception.NotExistMemberException;
 
+@ActiveProfiles("test")
 @Transactional
 @SpringBootTest
 class CustomUserDetailServiceTest {

@@ -1,3 +1,30 @@
 spring:
-  profiles:
-    active: local
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      max-lifetime: 60000
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/money_transfer_service?characterEncoding=UTF-8&serverTimezone=Asia/Seoul}
+      username: ${SPRING_DATASOURCE_USERNAME:root}
+      password: ${SPRING_DATASOURCE_PASSWORD:password!}
+      connection-timeout: 5000
+      pool-name: Spring-HikariPool
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+
+userlock:
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      max-lifetime: 60000
+      jdbc-url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/money_transfer_service?characterEncoding=UTF-8&serverTimezone=Asia/Seoul}
+      username: ${SPRING_DATASOURCE_USERNAME:root}
+      password: ${SPRING_DATASOURCE_PASSWORD:password!}
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      connection-timeout: 5000
+      pool-name: UserLock-HikariPool

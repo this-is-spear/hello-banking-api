@@ -26,46 +26,51 @@ public class ConcurrencyManagerWithNamedLock implements ConcurrencyManager {
     private static final String EMPTY_RESULT_MESSAGE = "USER LEVEL LOCK 쿼리 결과 값이 NULL 입니다. type = [{}], userLockName : [{}]";
     private static final String INVALID_RESULT_MESSAGE = "USER LEVEL LOCK 쿼리 결과 값이 0 입니다. type = [{}], result : [{}] userLockName : [{}]";
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final DataSource dataSource;
+    private final DataSource userLoackDataSource;
 
     @Override
     public void executeWithLock(String lockName1, String lockName2, Runnable runnable) {
-        try(var connection = dataSource.getConnection()) {
-            getLock(connection, getMultiLockName(lockName1, lockName2));
-            getLock(connection, lockName1);
-            getLock(connection, lockName2);
-            runnable.run();
-            releaseLock(connection, lockName2);
-            releaseLock(connection, lockName1);
-            releaseLock(connection, getMultiLockName(lockName1, lockName2));
+        try (var connection = userLoackDataSource.getConnection()) {
+            try {
+                log.debug("start getLock=[{}], timeoutSeconds : [{}], connection=[{}]", getMultiLockName(lockName1, lockName2), TIMEOUT_SECONDS, connection);
+                getLock(connection, getMultiLockName(lockName1, lockName2));
+                try {
+                    log.debug("start getLock=[{}], timeoutSeconds : [{}], connection=[{}]", lockName1, TIMEOUT_SECONDS, connection);
+                    getLock(connection, lockName1);
+                    try {
+                        log.debug("start getLock=[{}], timeoutSeconds : [{}], connection=[{}]", lockName2, TIMEOUT_SECONDS, connection);
+                        getLock(connection, lockName2);
+                        runnable.run();
+                    } finally {
+                        log.debug("start releaseLock=[{}], connection=[{}]", lockName2, connection);
+                        releaseLock(connection, lockName2);
+                    }
+                }finally {
+                    log.debug("start releaseLock=[{}], connection=[{}]", lockName1, connection);
+                    releaseLock(connection, lockName1);
+                }
+            } finally {
+                log.debug("start releaseLock=[{}], connection=[{}]", getMultiLockName(lockName1, lockName2), connection);
+                releaseLock(connection, getMultiLockName(lockName1, lockName2));
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            releaseSessionLocks();
         }
     }
 
     @Override
     public void executeWithLock(String lockName, Runnable runnable) {
-        try(var connection = dataSource.getConnection()) {
+        try (var connection = userLoackDataSource.getConnection()) {
+            log.info("start getLock=[{}], timeoutSeconds : [{}], connection=[{}]", lockName, TIMEOUT_SECONDS, connection);
             getLock(connection, lockName);
-            runnable.run();
-            releaseLock(connection, lockName);
+            try {
+                runnable.run();
+            } finally {
+                log.info("start releaseLock, connection=[{}]", connection);
+                releaseLock(connection, lockName);
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            releaseSessionLocks();
-        }
-    }
-
-    private void releaseLock(Connection connection, String lockName) {
-        try (var preparedStatement = connection.prepareStatement(RELEASE_LOCK)) {
-            preparedStatement.setString(1, lockName);
-            var resultSet = preparedStatement.executeQuery();
-            validateResult(resultSet, lockName, "ReleaseLock");
-        } catch (SQLException e) {
-            log.error("ReleaseLock_{} : {}", lockName, e.getMessage());
-            throw new IllegalStateException("SQL Exception");
         }
     }
 
@@ -73,14 +78,27 @@ public class ConcurrencyManagerWithNamedLock implements ConcurrencyManager {
         try (var preparedStatement = connection.prepareStatement(GET_LOCK)) {
             preparedStatement.setString(1, userLockName);
             preparedStatement.setInt(2, TIMEOUT_SECONDS);
-
-            synchronized (this) {
-                var resultSet = preparedStatement.executeQuery();
-                validateResult(resultSet, userLockName, "GetLock");
-            }
-
+            var resultSet = preparedStatement.executeQuery();
+            validateResult(resultSet, userLockName, "GetLock");
         } catch (SQLException e) {
             log.error("GetLock_{} : {}", userLockName, e.getMessage());
+            throw new IllegalStateException("SQL Exception");
+        }
+    }
+    private void releaseLock(Connection connection, String userLockName) {
+        try (var preparedStatement = connection.prepareStatement(RELEASE_LOCK)) {
+            preparedStatement.setString(1, userLockName);
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            log.error("Release Lock : {}", e.getMessage());
+            throw new IllegalStateException("SQL Exception");
+        }
+    }
+    private void releaseSessionLocks(Connection connection) {
+        try (var preparedStatement = connection.prepareStatement(RELEASE_SESSION_LOCKS)) {
+            preparedStatement.executeQuery();
+        } catch (SQLException e) {
+            log.error("ReleaseSessionLocks : {}", e.getMessage());
             throw new IllegalStateException("SQL Exception");
         }
     }
