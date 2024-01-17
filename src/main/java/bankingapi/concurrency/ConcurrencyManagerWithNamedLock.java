@@ -22,7 +22,7 @@ public class ConcurrencyManagerWithNamedLock implements ConcurrencyManager {
     private static final String RELEASE_SESSION_LOCKS = "SELECT RELEASE_ALL_LOCKS()";
     private static final String RELEASE_LOCK = "SELECT RELEASE_LOCK(?)";
     private static final String EXCEPTION_MESSAGE = "LOCK 을 수행하는 중에 오류가 발생하였습니다.";
-    private static final int TIMEOUT_SECONDS = 2;
+    private static final int TIMEOUT_SECONDS = 5;
     private static final String EMPTY_RESULT_MESSAGE = "USER LEVEL LOCK 쿼리 결과 값이 NULL 입니다. type = [{}], userLockName : [{}]";
     private static final String INVALID_RESULT_MESSAGE = "USER LEVEL LOCK 쿼리 결과 값이 0 입니다. type = [{}], result : [{}] userLockName : [{}]";
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
