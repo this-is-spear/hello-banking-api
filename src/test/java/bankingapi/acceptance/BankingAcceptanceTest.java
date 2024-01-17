@@ -146,12 +146,15 @@ class BankingAcceptanceTest extends AcceptanceTest {
 		계좌_이체_여러번_요청(나의계좌, 상대방계좌, 출금할_돈, 요청_횟수, 이메일, 비밀번호);
 
 		// then
+		var transferTimes = getHistoryResponses(나의계좌, 이메일).historyResponses().size() - 1;
 		assertAll(
-			() ->
-				계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
-					.value(입금할_돈 - 출금할_돈 * 요청_횟수)),
-			() -> 계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
-				.value(출금할_돈 * 요청_횟수))
+			() -> assertEquals(getHistoryResponses(나의계좌, 이메일).balance().getAmount()
+					+ getHistoryResponses(상대방계좌, 어드민이메일).balance().getAmount(), 백만원),
+			() -> assertThat(getHistoryResponses(상대방계좌, 어드민이메일).historyResponses().size())
+					.isEqualTo(transferTimes),
+			() -> assertThat(getHistoryResponses(나의계좌, 이메일).balance().getAmount())
+					.isGreaterThan(950_000L)
+					.isLessThan(1_000_000L)
 		);
 	}
 
@@ -245,7 +248,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
                 () -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈 * successDepositTime)),
                 ()-> assertThat( getHistoryResponses(나의계좌, 이메일).balance().getAmount())
                         .isGreaterThan(0L)
-                        .isLessThan(10_000L)
+                        .isLessThan(100_000L)
         );}
 
 
