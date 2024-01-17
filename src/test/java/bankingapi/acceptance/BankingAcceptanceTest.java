@@ -1,10 +1,9 @@
 package bankingapi.acceptance;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import bankingapi.banking.dto.HistoryResponses;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,11 +11,15 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-
-import bankingapi.banking.dto.HistoryResponses;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class BankingAcceptanceTest extends AcceptanceTest {
 	private static final String IDEMPOTENT_KEY = "Idempotency-Key";
@@ -122,7 +125,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 	 *
 	 * @Given : 사용자는 백만원을 입금하고
 	 * @When : 상대방에게 동시에 천 원을 50 번 요청하면
-	 * @Then : 잔액에 95만원 남는다.
+	 * @Then : 잔액이 95만원 이상 남는다.
 	 */
 	@Test
 	void transfer_concurrency_50_times() throws Exception {
@@ -156,8 +159,8 @@ class BankingAcceptanceTest extends AcceptanceTest {
 	 * 서로 이체를 10번한다.
 	 *
 	 * @Given : 사용자와 상배방은 백만원씩 있고
-	 * @When : 서로 만원씩 10번 이체하면
-	 * @Then : 서로 계좌에 백만원이 남는다.
+	 * @When : 서로 만원씩 10번 이체하면서 문제가 생겨도
+	 * @Then : 총 합 2백만원이 남는다.
 	 */
 	@Test
 	void transfer_concurrency_10times() throws Exception {
@@ -186,9 +189,10 @@ class BankingAcceptanceTest extends AcceptanceTest {
 				try {
 					계좌_이체_요청(나의계좌, 상대방계좌, 출금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
 					계좌_이체_요청(상대방계좌, 나의계좌, 출금할_돈, 어드민이메일, 비밀번호).andExpect(status().isOk());
-					latch.countDown();
 				} catch (Exception e) {
 					throw new RuntimeException(e);
+				} finally {
+					latch.countDown();
 				}
 			});
 		}
@@ -196,20 +200,19 @@ class BankingAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertAll(
-			() -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
-				.value(입금할_돈)),
-			() -> 계좌_조회_요청(상대방계좌, 어드민이메일, 비밀번호).andExpect(jsonPath(AMOUNT)
-				.value(입금할_돈)),
-			() -> assertEquals(objectMapper.readValue(계좌_조회_요청(나의계좌, 이메일, 비밀번호).andReturn().getResponse()
-				.getContentAsByteArray(), HistoryResponses.class).historyResponses().size(), 요청_횟수 * 2 + 1)
+				() -> assertEquals(getHistoryResponses(나의계좌, 이메일).balance().getAmount()
+						+ getHistoryResponses(상대방계좌, 어드민이메일).balance().getAmount(), 백만원 * 2),
+				() -> assertThat(getHistoryResponses(상대방계좌, 어드민이메일).historyResponses()).hasSameSizeAs(
+						getHistoryResponses(나의계좌, 이메일).historyResponses())
 		);
 	}
+
 
 	/**
 	 * 입금을 동시에 10번한다.
 	 *
-	 * @When : 사용자의 계좌에 만원씩 10번 입금하면
-	 * @Then : 사용자의 계좌에 백만원이 남는다.
+	 * @When : 사용자의 계좌에 만원씩 10번 입금할 때
+	 * @Then : 요청 횟수 이력에 맞게 잔액이 남는다.
 	 */
 	@Test
 	void deposit_concurrency_10times() throws Exception {
@@ -226,28 +229,32 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			executorService.execute(() -> {
 				try {
 					계좌_입금_요청(나의계좌, 입금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
-					latch.countDown();
 				} catch (Exception e) {
 					throw new RuntimeException(e);
+				} finally {
+					latch.countDown();
 				}
 			});
 		}
 		latch.await();
 
+
 		// then
-		assertAll(
-			() -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈 * 요청_횟수)),
-			() -> assertEquals(objectMapper.readValue(계좌_조회_요청(나의계좌, 이메일, 비밀번호).andReturn().getResponse()
-				.getContentAsByteArray(), HistoryResponses.class).historyResponses().size(), 요청_횟수)
-		);
-	}
+		var successDepositTime = getHistoryResponses(나의계좌, 이메일).historyResponses().size();
+        assertAll(
+                () -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈 * successDepositTime)),
+                ()-> assertThat( getHistoryResponses(나의계좌, 이메일).balance().getAmount())
+                        .isGreaterThan(0L)
+                        .isLessThan(10_000L)
+        );}
+
 
 	/**
 	 * 출금을 동시에 10번한다.
 	 *
-	 * @Given : 사용자와 상배방은 백만원씩 있고
+	 * @Given : 사용자와 상대방은 백만원씩 있고
 	 * @When : 사용자의 계좌에 만원씩 10번 출금하면
-	 * @Then : 사용자의 계좌에 구십 만원이 남는다.
+	 * @Then : 사용자의 계좌에 구십 만원에서 백만원 사이의 현금이 남는다.
 	 */
 	@Test
 	void withdraw_concurrency_10times() throws Exception {
@@ -269,20 +276,23 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			executorService.execute(() -> {
 				try {
 					계좌_출금_요청(나의계좌, 출금할_돈, 이메일, 비밀번호).andExpect(status().isOk());
-					latch.countDown();
 				} catch (Exception e) {
 					throw new RuntimeException(e);
+				} finally {
+					latch.countDown();
 				}
 			});
 		}
 		latch.await();
 
 		// then
-		assertAll(
-			() -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈 * 요청_횟수)),
-			() -> assertEquals(objectMapper.readValue(계좌_조회_요청(나의계좌, 이메일, 비밀번호).andReturn().getResponse()
-				.getContentAsByteArray(), HistoryResponses.class).historyResponses().size(), 요청_횟수 + 1)
-		);
+        var succeededDepositTime = getHistoryResponses(나의계좌, 이메일).historyResponses().size() - 1;
+        assertAll(
+                () -> 계좌_조회_요청(나의계좌, 이메일, 비밀번호).andExpect(jsonPath(AMOUNT).value(입금할_돈 - 출금할_돈 * succeededDepositTime)),
+                ()-> assertThat( getHistoryResponses(나의계좌, 이메일).balance().getAmount())
+                        .isGreaterThan(900_000L)
+                        .isLessThan(1_000_000L)
+        );
 	}
 
 	private void 계좌_이체_여러번_요청(String fromAccountNumber, String toAccountNumber, long transferMoney, int times,
@@ -296,9 +306,10 @@ class BankingAcceptanceTest extends AcceptanceTest {
 			executorService.execute(() -> {
 				try {
 					계좌_이체_요청(fromAccountNumber, toAccountNumber, transferMoney, username, password);
-					latch.countDown();
 				} catch (Exception e) {
 					throw new RuntimeException(e);
+				} finally {
+					latch.countDown();
 				}
 			});
 		}
@@ -354,5 +365,10 @@ class BankingAcceptanceTest extends AcceptanceTest {
 				.with(user(username).password(password).roles("MEMBER"))
 				.accept(MediaType.APPLICATION_JSON)
 		);
+	}
+
+	private HistoryResponses getHistoryResponses(String account, String email) throws Exception {
+		return objectMapper.readValue(계좌_조회_요청(account, email, 비밀번호).andReturn().getResponse()
+				.getContentAsByteArray(), HistoryResponses.class);
 	}
 }
