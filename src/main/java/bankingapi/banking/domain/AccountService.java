@@ -1,13 +1,12 @@
 package bankingapi.banking.domain;
 
-import java.util.List;
-
 import bankingapi.util.generator.AccountNumberGenerator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -99,5 +98,9 @@ public class AccountService {
 	private void recordCompletionTransferMoney(Account fromAccount, Account toAccount, Money money) {
 		accountHistoryRepository.save(AccountHistory.recordWithdrawHistory(fromAccount, toAccount, money));
 		accountHistoryRepository.save(AccountHistory.recordDepositHistory(toAccount, fromAccount, money));
+	}
+
+	public List<Account> getAccountByMemberId(Long memberId) {
+		return accountRepository.findByUserId(memberId);
 	}
 }

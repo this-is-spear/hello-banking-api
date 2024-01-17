@@ -58,7 +58,14 @@ class AccountApplicationServiceTest {
 		.balance(AccountFixture.이만원)
 		.userId(사용자_ID)
 		.build();
-	private static final Account 상대방_계좌 = Account.builder()
+
+    private static final Account 자신의_계좌 = Account.builder()
+            .accountNumber(AccountFixture.자신의_계좌반호)
+            .balance(AccountFixture.이만원)
+            .userId(사용자_ID)
+            .build();
+
+    private static final Account 상대방_계좌 = Account.builder()
 		.accountNumber(AccountFixture.상대방_계좌번호)
 		.balance(AccountFixture.만원)
 		.userId(상대방_ID)
@@ -189,5 +196,18 @@ class AccountApplicationServiceTest {
 		assertThatThrownBy(
 			() -> accountApplicationService.getTargets(EMAIL, 계좌.getAccountNumber().getNumber())
 		).isInstanceOf(InvalidMemberException.class);
+	}
+
+	@Test
+	@DisplayName("자신의 계좌를 조회한다.")
+	void findAccounts() {
+        when(memberService.findByEmail(EMAIL)).thenReturn(사용자);
+		when(accountService.getAccountByMemberId(사용자_ID)).thenReturn(List.of(자신의_계좌, 계좌));
+
+		var responses = assertDoesNotThrow(
+			() -> accountApplicationService.findAccounts(EMAIL)
+		);
+
+		assertThat(responses).hasSize(2);
 	}
 }

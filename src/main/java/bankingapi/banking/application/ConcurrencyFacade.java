@@ -15,21 +15,18 @@ public class ConcurrencyFacade {
 	private final ConcurrencyManager concurrencyManager;
 	private final AccountService accountService;
 
-	@Transactional
 	public void transferWithLock(AccountNumber accountNumber, AccountNumber toAccountNumber,
                                  Money amount) {
 		concurrencyManager.executeWithLock(accountNumber.getNumber(), toAccountNumber.getNumber(),
 			() -> accountService.transferMoney(accountNumber, toAccountNumber, amount)
 		);
 	}
-	@Transactional
 	public void depositWithLock(AccountNumber accountNumber, Money amount) {
 		concurrencyManager.executeWithLock(accountNumber.getNumber(), () -> {
 			accountService.depositMoney(accountNumber, amount);
 		});
 	}
 
-	@Transactional
 	public void withdrawWithLock(AccountNumber accountNumber, Money amount) {
 		concurrencyManager.executeWithLock(accountNumber.getNumber(), () -> {
 			accountService.withdrawMoney(accountNumber, amount);

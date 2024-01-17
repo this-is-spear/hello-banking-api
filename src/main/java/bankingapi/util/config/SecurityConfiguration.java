@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,27 +25,34 @@ public class SecurityConfiguration {
 	@Primary
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.userDetailsService(userDetailsService);
-		http.csrf().disable();
+		http.csrf(AbstractHttpConfigurer::disable);
 
-		http
-			.httpBasic(withDefaults())
-			.formLogin()
-			.successHandler((request, response, authentication) -> response.sendRedirect("/hello"))
-			.and()
-			.authorizeHttpRequests((authorize) -> authorize
+		http.httpBasic(withDefaults()).formLogin(withDefaults());
+
+		http.authorizeHttpRequests((authorize) -> authorize
 				.requestMatchers("/hello").permitAll()
 				.requestMatchers("/docs/index.html").permitAll()
 				.requestMatchers("/members/register").anonymous()
 				.requestMatchers("/login").anonymous()
 				.requestMatchers("/account/**").authenticated()
 				.requestMatchers("/members/**").authenticated()
-			);
+        );
 
 		return http.build();
 	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+		return new PasswordEncoder() {
+			@Override
+			public String encode(CharSequence rawPassword) {
+				return rawPassword.toString();
+			}
+
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				return rawPassword.equals(encodedPassword);
+			}
+		};
 	}
 }

@@ -1,14 +1,14 @@
 package bankingapi.fake;
 
+import bankingapi.banking.domain.Account;
+import bankingapi.banking.domain.AccountNumber;
+import bankingapi.banking.domain.AccountRepository;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import bankingapi.banking.domain.Account;
-import bankingapi.banking.domain.AccountNumber;
-import bankingapi.banking.domain.AccountRepository;
 
 public class FakeAccountRepository implements AccountRepository {
 
@@ -55,5 +55,12 @@ public class FakeAccountRepository implements AccountRepository {
 			.stream()
 			.filter(account -> userIds.contains(account.getUserId()))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Account> findByUserId(Long memberId) {
+		return maps.values().stream()
+                .filter(account -> account.getUserId().equals(memberId))
+                .toList();
 	}
 }

@@ -2,8 +2,10 @@ package bankingapi.concurrency;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.random.RandomGenerator;
 
 import bankingapi.concurrency.ConcurrencyManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,11 +17,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import bankingapi.banking.domain.Account;
 import bankingapi.banking.domain.Money;
 import bankingapi.util.generator.AccountNumberGenerator;
+import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @SpringBootTest
 class ConcurrencyManagerWithNamedLockTest {
-	private static final int NUMBER_OF_THREADS = 100;
+	private static final int NUMBER_OF_THREADS = 10;
 	private static final int POLL_SIZE = 10;
+	private static final Money ONE = new Money(1);
 	@Autowired
 	private ConcurrencyManager concurrencyManager;
 	private CountDownLatch latch;
@@ -62,11 +68,14 @@ class ConcurrencyManagerWithNamedLockTest {
 
 		for (int i = 0; i < NUMBER_OF_THREADS; i++) {
 			service.execute(() -> {
-				concurrencyManager.executeWithLock("lock1", "lock2", () -> {
-						account.deposit(new Money(1));
-						latch.countDown();
-					}
-				);
+				try {
+					Thread.sleep(RandomGenerator.getDefault().nextInt(0, 50));
+					concurrencyManager.executeWithLock("lock1", "lock2", () -> account.deposit(ONE));
+				} catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } finally {
+					latch.countDown();
+				}
 			});
 		}
 

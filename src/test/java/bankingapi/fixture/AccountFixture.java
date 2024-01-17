@@ -8,6 +8,7 @@ import bankingapi.util.generator.AccountNumberGenerator;
 public class AccountFixture {
 	public static final AccountNumber 계좌번호 = AccountNumberGenerator.generate();
 	public static final AccountNumber 상대방_계좌번호 = AccountNumberGenerator.generate();
+	public static final AccountNumber 자신의_계좌반호 = AccountNumberGenerator.generate();
 	public static final Money 오천원 = new Money(5_000);
 	public static final Money 만원 = new Money(10_000);
 	public static final Money 만오천원 = new Money(15_000);
