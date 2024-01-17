@@ -7,6 +7,7 @@ import bankingapi.banking.domain.AccountNumber;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.LockModeType;
@@ -23,7 +24,7 @@ public interface JpaAccountRepository extends JpaRepository<Account, Long>, Acco
 
 	@Lock(LockModeType.OPTIMISTIC)
 	@Query("select a from Account a where a.accountNumber = :accountNumber")
-	Optional<Account> findByAccountNumberWithOptimisticLock(AccountNumber accountNumber);
+	Optional<Account> findByAccountNumberWithOptimisticLock(@Param("accountNumber") AccountNumber accountNumber);
 
 	@Override
 	<S extends Account> S save(S entity);

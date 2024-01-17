@@ -1,14 +1,12 @@
 package bankingapi.banking.domain;
 
-import java.util.Collection;
-import java.util.List;
-
 import bankingapi.util.generator.AccountNumberGenerator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
