@@ -92,15 +92,8 @@ public class AccountApplicationService {
 		}
 	}
 
-	public TargetResponses getTargets(String principal, String stringAccountNumber) {
-		final var accountNumber = new AccountNumber(stringAccountNumber);
-		final var account = accountService.getAccountByAccountNumber(accountNumber);
-
+	public TargetResponses getTargets(String principal) {
 		final var member = memberService.findByEmail(principal);
-		if (!member.getId().equals(account.getUserId())) {
-			throw new InvalidMemberException();
-		}
-
 		final var friendIds = friendService.findFriends(member.getId())
 			.stream()
 			.map(Friend::getToMemberId)

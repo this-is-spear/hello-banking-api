@@ -69,16 +69,15 @@ public class AccountController {
 	}
 
 	@GetMapping(
-		value = "/{accountNumber}/transfer/targets",
+		value = "/transfer/targets",
 		produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<TargetResponses> getTargets(@AuthenticationPrincipal UserDetails principal,
-		@PathVariable String accountNumber) {
-		return ResponseEntity.ok(accountApplicationService.getTargets(principal.getUsername(), accountNumber));
+	public ResponseEntity<TargetResponses> getTargets(@AuthenticationPrincipal UserDetails principal) {
+		return ResponseEntity.ok(accountApplicationService.getTargets(principal.getUsername()));
 	}
 
 	@GetMapping(
-		value = "/{accountNumber}/targets",
+		value = "/targets",
 		produces = MediaType.APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<List<AccountNumber>> findAccounts(@AuthenticationPrincipal UserDetails principal) {

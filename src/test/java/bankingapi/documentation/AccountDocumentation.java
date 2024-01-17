@@ -104,17 +104,16 @@ class AccountDocumentation extends DocumentationTemplate {
 	@Test
 	@WithMockMember
 	void getTargets() throws Exception {
-		when(accountApplicationService.getTargets(USER.getUsername(), 계좌_번호)).thenReturn(타겟목록);
+		when(accountApplicationService.getTargets(USER.getUsername())).thenReturn(타겟목록);
 		mockMvc.perform(
-				get("/account/{accountNumber}/transfer/targets", 계좌_번호)
+				get("/account/transfer/targets")
 					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(print())
 			.andDo(document(
 				"targets",
 				getDocumentRequest(),
-				getDocumentResponse(),
-				pathParameters(parameterWithName("accountNumber").description("사용자의 계좌 정보"))
+				getDocumentResponse()
 			));
 	}
 }
