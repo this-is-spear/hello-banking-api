@@ -24,7 +24,7 @@ public class IdempotencyAcceptanceTest extends AcceptanceTest {
 		depositParams.put("amount", 입금할_돈);
 
 		var 계좌_입금 = mockMvc.perform(
-			post("/account/{accountNumber}/deposit", 나의계좌)
+			post("/accounts/{accountNumber}/deposit", 나의계좌)
 				.with(user(이메일).password(비밀번호).roles("MEMBER"))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(depositParams))

@@ -130,4 +130,9 @@ public class AccountApplicationService {
 				.map(Account::getAccountNumber)
 				.toList();
 	}
+
+	public AccountNumber createAccount(String username) {
+		final var member = memberService.findByEmail(username);
+		return accountService.createAccount(member.getId()).getAccountNumber();
+	}
 }

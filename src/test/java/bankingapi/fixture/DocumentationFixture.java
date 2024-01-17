@@ -3,8 +3,10 @@ package bankingapi.fixture;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import bankingapi.banking.domain.Account;
 import bankingapi.banking.domain.AccountNumber;
 import bankingapi.banking.domain.HistoryType;
+import bankingapi.banking.domain.Money;
 import bankingapi.banking.dto.HistoryResponse;
 import bankingapi.banking.dto.HistoryResponses;
 import bankingapi.banking.dto.TargetResponse;
@@ -34,4 +36,10 @@ public class DocumentationFixture {
 		new TargetResponse("name2", "member2@email.com", AccountNumberGenerator.generate()),
 		new TargetResponse("name3", "member3@email.com", AccountNumberGenerator.generate())
 	));
+
+	public static final List<AccountNumber> 계좌목록 =List.of(
+			AccountNumberGenerator.generate(),
+			AccountNumberGenerator.generate(),
+			AccountNumberGenerator.generate()
+	);
 }

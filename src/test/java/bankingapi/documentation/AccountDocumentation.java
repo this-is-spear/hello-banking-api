@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
+import bankingapi.banking.domain.AccountNumber;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
@@ -27,9 +28,8 @@ class AccountDocumentation extends DocumentationTemplate {
 		when(accountApplicationService.getHistory(USER.getUsername(), 계좌_번호))
 			.thenReturn(계좌_내역);
 		mockMvc.perform(
-				get("/account/{accountNumber}/history", 계좌_번호)
+				get("/accounts/{accountNumber}/history", 계좌_번호)
 					.with(csrf())
-					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"history",
@@ -44,12 +44,11 @@ class AccountDocumentation extends DocumentationTemplate {
 	void deposit() throws Exception {
 		doNothing().when(accountApplicationService).deposit(USER.getUsername(), 계좌_번호, 이만원);
 		mockMvc.perform(
-				post("/account/{accountNumber}/deposit", 계좌_번호)
+				post("/accounts/{accountNumber}/deposit", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
 					.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 					.with(csrf())
-					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"deposit",
@@ -64,12 +63,11 @@ class AccountDocumentation extends DocumentationTemplate {
 	void withdraw() throws Exception {
 		doNothing().when(accountApplicationService).withdraw(USER.getUsername(), 계좌_번호, 이만원);
 		mockMvc.perform(
-				post("/account/{accountNumber}/withdraw", 계좌_번호)
+				post("/accounts/{accountNumber}/withdraw", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(이만원))
 					.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 					.with(csrf())
-					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"withdraw",
@@ -86,12 +84,11 @@ class AccountDocumentation extends DocumentationTemplate {
 		doNothing().when(accountApplicationService).transfer(USER.getUsername(), 계좌_번호, command);
 
 		mockMvc.perform(
-				post("/account/{accountNumber}/transfer", 계좌_번호)
+				post("/accounts/{accountNumber}/transfer", 계좌_번호)
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(command))
 					.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
 					.with(csrf())
-					.with(user(USER.getUsername()).roles("MEMBER"))
 			).andExpect(status().isOk())
 			.andDo(document(
 				"transfer",
@@ -106,8 +103,8 @@ class AccountDocumentation extends DocumentationTemplate {
 	void getTargets() throws Exception {
 		when(accountApplicationService.getTargets(USER.getUsername())).thenReturn(타겟목록);
 		mockMvc.perform(
-				get("/account/transfer/targets")
-					.with(user(USER.getUsername()).roles("MEMBER"))
+				get("/accounts/transfer/targets")
+					.with(csrf())
 			).andExpect(status().isOk())
 			.andDo(print())
 			.andDo(document(
@@ -115,5 +112,37 @@ class AccountDocumentation extends DocumentationTemplate {
 				getDocumentRequest(),
 				getDocumentResponse()
 			));
+	}
+
+	@Test
+	@WithMockMember
+	void findAccounts() throws Exception {
+		when(accountApplicationService.findAccounts(USER.getUsername())).thenReturn(계좌목록);
+		mockMvc.perform(
+						get("/accounts")
+								.with(csrf())
+				).andExpect(status().isOk())
+				.andDo(print())
+				.andDo(document(
+						"accounts",
+						getDocumentRequest(),
+						getDocumentResponse()
+				));
+	}
+
+	@Test
+	@WithMockMember
+	void createAccount() throws Exception {
+		when(accountApplicationService.createAccount(USER.getUsername())).thenReturn(new AccountNumber(계좌_번호));
+		mockMvc.perform(
+						post("/accounts")
+								.with(csrf())
+				).andExpect(status().isOk())
+				.andDo(print())
+				.andDo(document(
+						"create-account",
+						getDocumentRequest(),
+						getDocumentResponse()
+				));
 	}
 }

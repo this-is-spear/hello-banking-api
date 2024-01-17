@@ -12,6 +12,36 @@ endif::[]
 
 == Banking API
 
+=== 계좌 개설
+
+==== HTTP request
+
+include::{snippets}/create-account/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/create-account/http-response.adoc[]
+
+=== 계좌 조회
+
+==== HTTP request
+
+include::{snippets}/accounts/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/accounts/http-response.adoc[]
+
+=== 이체 대상 확인
+
+==== HTTP request
+
+include::{snippets}/targets/http-request.adoc[]
+
+==== HTTP response
+
+include::{snippets}/targets/http-response.adoc[]
+
 === 기록 조회
 
 ==== HTTP request
@@ -51,16 +81,6 @@ include::{snippets}/transfer/http-request.adoc[]
 ==== HTTP response
 
 include::{snippets}/transfer/http-response.adoc[]
-
-=== 이체 대상 확인
-
-==== HTTP request
-
-include::{snippets}/targets/http-request.adoc[]
-
-==== HTTP response
-
-include::{snippets}/targets/http-response.adoc[]
 
 == Member API
 

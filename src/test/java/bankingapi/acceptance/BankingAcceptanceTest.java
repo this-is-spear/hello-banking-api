@@ -326,7 +326,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 		transferParams.put("amount", transferMoney);
 
 		return mockMvc.perform(
-			post("/account/{accountNumber}/transfer", fromAccountNumber)
+			post("/accounts/{accountNumber}/transfer", fromAccountNumber)
 				.with(user(username).password(password).roles("MEMBER"))
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
@@ -340,7 +340,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 		depositParams.put("amount", depositMoney);
 
 		return mockMvc.perform(
-			post("/account/{accountNumber}/deposit", accountNumber)
+			post("/accounts/{accountNumber}/deposit", accountNumber)
 				.with(user(username).password(password).roles("MEMBER"))
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
@@ -354,7 +354,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 		depositParams.put("amount", depositMoney);
 
 		return mockMvc.perform(
-			post("/account/{accountNumber}/withdraw", accountNumber)
+			post("/accounts/{accountNumber}/withdraw", accountNumber)
 				.with(user(username).password(password).roles("MEMBER"))
 				.contentType(MediaType.APPLICATION_JSON)
 				.header(IDEMPOTENT_KEY, UUID.randomUUID().toString())
@@ -364,7 +364,7 @@ class BankingAcceptanceTest extends AcceptanceTest {
 
 	private ResultActions 계좌_조회_요청(String accountNumber, String username, String password) throws Exception {
 		return mockMvc.perform(
-			get("/account/{accountNumber}/history", accountNumber)
+			get("/accounts/{accountNumber}/history", accountNumber)
 				.with(user(username).password(password).roles("MEMBER"))
 				.accept(MediaType.APPLICATION_JSON)
 		);

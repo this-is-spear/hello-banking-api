@@ -83,6 +83,27 @@ public class AccountService {
 		return accountHistoryRepository.findByFromAccountNumber(account.getAccountNumber());
 	}
 
+
+	public List<Account> getAccountByMemberId(Long memberId) {
+		return accountRepository.findByUserId(memberId);
+	}
+
+	public Account createAccount(Long id) {
+		AccountNumber accountNumber;
+
+		do {
+			accountNumber = AccountNumberGenerator.generate();
+		} while (accountRepository.findByAccountNumber(accountNumber).isPresent());
+
+		return accountRepository.save(
+				Account.builder()
+						.accountNumber(accountNumber)
+						.balance(Money.zero())
+						.userId(id)
+						.build()
+		);
+	}
+
 	private Account getAccountByAccountNumberWithOptimisticLock(AccountNumber accountNumber) {
 		return accountRepository.findByAccountNumberWithOptimisticLock(accountNumber).orElseThrow();
 	}
@@ -98,9 +119,5 @@ public class AccountService {
 	private void recordCompletionTransferMoney(Account fromAccount, Account toAccount, Money money) {
 		accountHistoryRepository.save(AccountHistory.recordWithdrawHistory(fromAccount, toAccount, money));
 		accountHistoryRepository.save(AccountHistory.recordDepositHistory(toAccount, fromAccount, money));
-	}
-
-	public List<Account> getAccountByMemberId(Long memberId) {
-		return accountRepository.findByUserId(memberId);
 	}
 }
