@@ -127,29 +127,15 @@ export default function () {
             return;
         }
 
-        // B는 A의 친구 신청을 수락하거나 거절. 수락하는 확률을 더 높여야 함.
-        let acceptRequest = Math.random() > 0.2;
-        if (acceptRequest) {
-            let approveRequestResponse = http.post(`${BASE_URL}/members/friends/${requestId}/approval`, null, {
-                headers: {
-                    Authorization: `Basic ${encoding.b64encode(toUserAuth)}`,
-                }
-            });
-            check(approveRequestResponse, {
-                'approveRequestResponse status is 200': (r) => r.status === 200,
-            });
-        } else {
-            let rejectRequestResponse = http.post(`${BASE_URL}/members/friends/${requestId}/rejected`, null, {
-                headers: {
-                    Authorization: `Basic ${encoding.b64encode(toUserAuth)}`,
-                }
-            });
-
-            check(rejectRequestResponse, {
-                'rejectRequestResponse status is 200': (r) => r.status === 200,
-            });
-            return;
-        }
+        // B는 A의 친구 신청을 수락
+        let approveRequestResponse = http.post(`${BASE_URL}/members/friends/${requestId}/approval`, null, {
+            headers: {
+                Authorization: `Basic ${encoding.b64encode(toUserAuth)}`,
+            }
+        });
+        check(approveRequestResponse, {
+            'approveRequestResponse status is 200': (r) => r.status === 200,
+        });
     }
 
     // A는 자신의 계좌를 확인하고 임의로 선택
