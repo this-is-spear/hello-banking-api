@@ -9,8 +9,8 @@ function setup() {
     // 사용자 등록 및 정보 저장한다. 이 떄 이름과 이메일은 임의 값을 부여한다.
     for (let i = 0; i < 10; i++) {
         let user = {
-            email: `${generateUUID().slice(1, 5)}@test.com`,
-            name: `User ${generateUUID().slice(1, 5)}`,
+            email: `${generateUUID().slice(1, 10)}@test.com`,
+            name: `User ${generateUUID().slice(1, 10)}`,
             password: `password${i}`,
         };
 
