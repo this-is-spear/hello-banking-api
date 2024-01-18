@@ -3,14 +3,13 @@ Numble Challenge - Banking API
 
 ### 테스트
 
-- 테스트 할 API는 [API 문서](https://this-is-spear.github.io/hello-banking-api/src/main/resources/static/docs/index.html)에서 확인 할 수 있습니다.
 - 서버는 `run.sh` 를 실행하면 됩니다.
-- 
+- 테스트는 `test.sh` 를 실행하면 됩니다.
 
 ### Development Environment
 
 - Back-End : Spring-Boot, Spring-Security, JPA, MySQL, Testcontainers
-- Fornt-End : Thymeleaf
+- Front-End : Thymeleaf
 - Cloud : AWS - RDS
 - Infra : Docker
 - Document : Rest Docs
